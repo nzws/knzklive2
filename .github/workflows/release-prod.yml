@@ -1,0 +1,27 @@
+name: Release - production
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  check:
+    uses: ./.github/workflows/_lint.yml
+
+  deploy:
+    name: Deploy Edge Network
+    needs: check
+    uses: ./.github/workflows/_edge.yml
+    with:
+      environment: production
+    secrets:
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+
+  build:
+    name: Build images
+    needs: check
+    uses: ./.github/workflows/_build.yml
+    with:
+      tag: latest

@@ -1,0 +1,32 @@
+FROM node:18-slim AS builder
+RUN apt-get update && apt-get install -y ca-certificates gnupg openssl libssl-dev libc6
+
+USER node
+RUN mkdir /home/node/app
+WORKDIR /home/node/app
+
+COPY --chown=node:node ./yarn.lock ./package.json ./.yarnrc.yml ./
+COPY --chown=node:node ./apps/server ./apps/server
+COPY --chown=node:node ./packages/api-types ./packages/api-types
+COPY --chown=node:node ./.yarn ./.yarn
+
+RUN yarn workspaces focus server && yarn workspace server build
+
+FROM node:18-slim
+RUN apt-get update && apt-get install -y ca-certificates gnupg openssl libssl-dev libc6
+
+USER node
+RUN mkdir /home/node/app
+WORKDIR /home/node/app
+
+COPY --chown=node:node ./*.json ./*.yml ./yarn.lock ./
+COPY --chown=node:node ./.yarn ./.yarn
+COPY --chown=node:node ./apps/server/prisma ./apps/server/prisma
+COPY --chown=node:node ./apps/server/*.json ./apps/server/
+COPY --chown=node:node ./packages/api-types ./packages/api-types
+RUN yarn workspaces focus server --production
+
+COPY --chown=node:node --from=builder /home/node/app/apps/server/dist ./apps/server/dist
+COPY --chown=node:node --from=builder /home/node/app/node_modules/.prisma/client ./node_modules/.prisma/client
+
+CMD ["node", "packages/server/dist"]

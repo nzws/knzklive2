@@ -1,0 +1,7 @@
+name: Lint and Test
+
+on: [push]
+
+jobs:
+  check:
+    uses: ./.github/workflows/_lint.yml

@@ -1,0 +1,28 @@
+{
+  "name": "knzklive2",
+  "version": "0.1.0",
+  "repository": "https://github.com/nzws/knzklive2",
+  "license": "AGPL-3.0",
+  "private": true,
+  "packageManager": "yarn@3.2.2",
+  "workspaces": {
+    "packages": [
+      "./apps/*",
+      "./packages/*"
+    ]
+  },
+  "scripts": {
+    "prettier:lint": "prettier --check .",
+    "prettier:format": "prettier --write .",
+    "dev": "docker-compose up -d && dotenv -- yarn workspaces foreach --verbose --parallel -j unlimited --interlaced --exclude knzklive2 run dev",
+    "lint": "yarn prettier:lint && yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run lint",
+    "format": "yarn prettier:format && yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run format",
+    "test": "yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run test"
+  },
+  "devDependencies": {
+    "@knzk/prettier-config": "^1.0.0",
+    "dotenv-cli": "^6.0.0",
+    "prettier": "2.7.1"
+  },
+  "prettier": "@knzk/prettier-config"
+}

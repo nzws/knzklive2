@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  account        String    @unique @db.VarChar(200)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  lastSignedInAt DateTime?
+  displayName    String?   @db.VarChar(200)
+  avatarUrl      String?   @db.VarChar(200)
+  config         Json
+
+  tenants  Tenant[]
+  lives    Live[]
+  comments Comment[]
+}
+
+model Tenant {
+  id           Int      @id @default(autoincrement())
+  slug         String   @unique @db.VarChar(50)
+  ownerId      Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  displayName  String?  @db.VarChar(200)
+  customDomain String?  @unique @db.VarChar(100)
+  config       Json
+
+  owner User @relation(fields: [ownerId], references: [id])
+
+  lives Live[]
+}
+
+model AuthProvider {
+  type         AuthProviderType
+  domain       String           @id @db.VarChar(100)
+  clientId     String           @db.VarChar(100)
+  clientSecret String           @db.VarChar(100)
+}
+
+enum AuthProviderType {
+  Mastodon
+}
+
+model Live {
+  id          Int         @id @default(autoincrement())
+  idInTenant  Int
+  userId      Int
+  tenantId    Int
+  createdAt   DateTime    @default(now())
+  startedAt   DateTime?
+  endedAt     DateTime?
+  title       String      @db.VarChar(200)
+  description String?     @db.Text
+  status      LiveStatus
+  privacy     LivePrivacy
+  streamId    Int         @unique
+  hashtag     String?     @db.VarChar(100)
+  sensitive   Boolean     @default(false)
+
+  user   User   @relation(fields: [userId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  stream Stream @relation(fields: [streamId], references: [id])
+
+  comments Comment[]
+
+  @@unique([idInTenant, tenantId])
+}
+
+enum LiveStatus {
+  Provisioning
+  Ready
+  Live
+  Ended
+}
+
+enum LivePrivacy {
+  Public
+  Private
+}
+
+model Stream {
+  id             Int          @id @default(autoincrement())
+  status         StreamStatus
+  updatedAt      DateTime     @updatedAt
+  firstStartedAt DateTime?
+  lastStartedAt  DateTime?
+  lastEndedAt    DateTime?
+
+  live Live?
+}
+
+enum StreamStatus {
+  Provisioning
+  Ready
+  Live
+  Paused
+  Ended
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  liveId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  content   String   @db.Text
+  sourceUrl String?  @db.VarChar(200)
+  isDeleted Boolean  @default(false)
+
+  live Live @relation(fields: [liveId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([liveId, createdAt, isDeleted])
+}
