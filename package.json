@@ -1,0 +1,36 @@
+{
+  "name": "@knzk/live",
+  "packageManager": "yarn@3.2.1",
+  "version": "0.0.0",
+  "repository": "https://github.com/nzws/live",
+  "license": "AGPL-3.0",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "foreach:format": "prettier --write .",
+    "foreach:lint": "npm-run-all -p 'lint:*'",
+    "foreach:test": "",
+    "lint:format": "prettier --check .",
+    "lint:js": "eslint --cache '**/*.{ts,tsx}'",
+    "lint": "yarn workspaces foreach run foreach:lint",
+    "format": "yarn workspaces foreach run foreach:format",
+    "test": "yarn workspaces foreach run foreach:test",
+    "postinstall": "husky install"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.2",
+    "@types/node": "^17.0.41",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
+    "husky": "^8.0.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.6.2",
+    "typescript": "^4.7.3"
+  }
+}

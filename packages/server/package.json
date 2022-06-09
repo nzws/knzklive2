@@ -1,0 +1,38 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "license": "AGPL-3.0",
+  "private": true,
+  "scripts": {
+    "foreach:format": "prisma format",
+    "foreach:lint": "tsc",
+    "foreach:test": "jest",
+    "dev": "ts-node-dev src",
+    "build": "tsc --project tsconfig.build.json",
+    "start": "node dist",
+    "generate:key": "ts-node ./scripts/generate-key.ts"
+  },
+  "dependencies": {
+    "@koa/router": "^10.1.1",
+    "@prisma/client": "^3.14.0",
+    "ajv": "^8.11.0",
+    "dotenv": "^16.0.1",
+    "jose": "^4.8.1",
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
+    "koa-logger": "^3.2.1",
+    "prisma": "^3.14.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.2",
+    "@types/jest": "^27.5.1",
+    "@types/koa": "^2.13.4",
+    "@types/koa-bodyparser": "^4.3.7",
+    "@types/koa-logger": "^3.1.2",
+    "@types/koa__router": "^8.0.11",
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.3",
+    "ts-node": "^10.7.0",
+    "ts-node-dev": "^2.0.0"
+  }
+}

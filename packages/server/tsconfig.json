@@ -1,0 +1,10 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "baseUrl": "./src"
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
+}

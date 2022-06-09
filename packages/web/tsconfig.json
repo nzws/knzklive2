@@ -1,0 +1,13 @@
+{
+  "extends": "@tsconfig/next/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@server/*": ["../server/src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", ".next"]
+}
