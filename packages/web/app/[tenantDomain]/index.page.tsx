@@ -2,12 +2,7 @@ import { GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment } from 'react';
 import useSWR from 'swr';
-import {
-  getV1Tenant,
-  path as tenantPath,
-  Response as TenantResponse
-} from 'utils/api/v1/tenant';
-import { withQuery } from 'utils/fetcher';
+import { getV1Tenant, Response as TenantResponse } from 'utils/api/v1/tenant';
 
 type Props = {
   tenant?: TenantResponse;
@@ -19,9 +14,10 @@ type PathProps = {
 
 const Page: NextPage<Props> = ({ tenant: tenantFallback }) => {
   const { data: tenant } = useSWR(
-    withQuery(tenantPath, {
+    {
       tenantDomain: location.host
-    }),
+    },
+    getV1Tenant,
     { fallbackData: tenantFallback }
   );
 
@@ -51,7 +47,7 @@ export const getStaticProps: GetStaticProps<Props, PathProps> = async ({
       })
     },
     revalidate: 60,
-    fallback: true
+    fallback: 'blocking'
   };
 };
 
