@@ -15,7 +15,7 @@ type PathProps = {
 const Page: NextPage<Props> = ({ tenant: tenantFallback }) => {
   const { data: tenant } = useSWR(
     {
-      tenantDomain: location.host
+      tenantDomain: location?.host
     },
     getV1Tenant,
     { fallbackData: tenantFallback }
@@ -35,15 +35,10 @@ const Page: NextPage<Props> = ({ tenant: tenantFallback }) => {
 export const getStaticProps: GetStaticProps<Props, PathProps> = async ({
   params
 }) => {
-  const tenantDomain = params?.tenantDomain;
-  if (!tenantDomain) {
-    throw new Error('Missing tenantDomain');
-  }
-
   return {
     props: {
       tenant: await getV1Tenant({
-        tenantDomain
+        tenantDomain: params?.tenantDomain
       })
     },
     revalidate: 60,

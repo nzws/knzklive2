@@ -1,7 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: 'npm'
-    directory: '/'
+    directory: '/web'
+    schedule:
+      interval: 'weekly'
+  - package-ecosystem: 'npm'
+    directory: '/server'
     schedule:
       interval: 'weekly'
   - package-ecosystem: 'github-actions'
