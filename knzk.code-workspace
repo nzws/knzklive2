@@ -1,0 +1,26 @@
+{
+  "folders": [
+    {
+      "name": "Web",
+      "path": "web"
+    },
+    {
+      "name": "Server",
+      "path": "server"
+    },
+    {
+      "name": "Root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "cSpell.words": ["Knzk"]
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "Prisma.prisma"
+    ]
+  }
+}

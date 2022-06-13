@@ -8,8 +8,7 @@
   ],
   "parserOptions": {
     "project": [
-      "./packages/web/tsconfig.json",
-      "./packages/server/tsconfig.json"
+      "./tsconfig.json"
     ]
   }
 }
