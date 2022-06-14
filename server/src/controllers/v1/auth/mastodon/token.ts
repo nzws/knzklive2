@@ -1,6 +1,7 @@
+import { userCreate, userGet, userUpdate } from 'actions/user';
 import { JSONSchemaType } from 'ajv';
 import { AuthMastodon } from 'services/auth-providers/mastodon';
-import { prisma } from 'utils/prisma';
+import { UserToken } from 'services/token/user-token';
 import { APIRoute } from 'utils/types';
 import { validate } from 'utils/validate';
 
@@ -11,7 +12,7 @@ export type Params = {
 
 export type Response = {
   mastodonToken: string;
-  liveJwt: string;
+  liveToken: string;
 };
 
 const schema: JSONSchemaType<Params> = {
@@ -30,6 +31,8 @@ const schema: JSONSchemaType<Params> = {
   additionalProperties: false
 };
 
+const userToken = new UserToken();
+
 export const v1AuthMastodonToken: APIRoute<
   Params,
   never,
@@ -43,27 +46,26 @@ export const v1AuthMastodonToken: APIRoute<
   }
 
   const provider = new AuthMastodon(query.domain);
-  const token = await provider.getToken(query.code);
-  const authUser = await provider.getUser(token);
+  const mastodonToken = await provider.getToken(query.code);
+  const authUser = await provider.getUser(mastodonToken);
   if (!authUser.account) {
     ctx.throw(400, 'Failed to get user');
     return;
   }
 
-  const liveUser = await prisma.user.upsert({
-    where: {
-      account: authUser.account
-    },
-    update: {
-      account: authUser.account,
-      displayName: authUser.displayName,
-      avatarUrl: authUser.avatarUrl
-    },
-    create: {
-      account: authUser.account,
-      displayName: authUser.displayName,
-      avatarUrl: authUser.avatarUrl,
-      config: {}
-    }
+  const currentUser =
+    (await userGet(undefined, authUser.account)) ||
+    (await userCreate(authUser.account));
+
+  await userUpdate(currentUser, {
+    avatarUrl: authUser.avatarUrl,
+    displayName: authUser.displayName
   });
+
+  const liveToken = await userToken.getToken(currentUser);
+
+  ctx.body = {
+    mastodonToken,
+    liveToken
+  };
 };

@@ -139,7 +139,7 @@ export class AuthMastodon extends AuthProvider {
       body: JSON.stringify({
         client_name: 'KnzkLive Platform',
         website: GITHUB_URL,
-        redirect_uris: process.env.MASTODON_REDIRECT_URI,
+        redirect_uris: this.redirectUrl,
         scopes: ['read:follows', 'read:accounts', 'write:statuses']
       })
     });

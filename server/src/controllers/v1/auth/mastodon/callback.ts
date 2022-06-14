@@ -1,6 +1,5 @@
+import { tenantGet, tenantGetDomain } from 'actions/tenant';
 import { JSONSchemaType } from 'ajv';
-import { prisma } from 'utils/prisma';
-import { getTenantDomain } from 'utils/tenant';
 import { APIRoute } from 'utils/types';
 import { validate } from 'utils/validate';
 
@@ -34,20 +33,13 @@ export const v1AuthMastodonCallback: APIRoute<Params> = async ctx => {
     return;
   }
 
-  const tenant = await prisma.tenant.findUnique({
-    where: {
-      id: tenantId
-    }
-  });
+  const tenant = await tenantGet(tenantId);
   if (!tenant) {
     ctx.throw(400, 'Failed to get tenant');
     return;
   }
 
   ctx.redirect(
-    `://${getTenantDomain(
-      tenant.slug,
-      tenant.customDomain
-    )}/auth/callback?code=${query.code}`
+    `://${tenantGetDomain(tenant)}/auth/callback?code=${query.code}`
   );
 };
