@@ -1,7 +1,8 @@
 import type { AppProps } from 'next/app';
 import { NextUIProvider } from '@nextui-org/react';
 import { SWRConfig } from 'swr';
-import { fetcher } from 'utils/fetcher';
+import { APIProvider } from 'organisms/providers/api';
+import { fetcher } from 'utils/contexts/api';
 
 const swrConfig = {
   fetcher
@@ -10,7 +11,9 @@ const swrConfig = {
 const App = ({ Component, pageProps }: AppProps): JSX.Element => (
   <NextUIProvider>
     <SWRConfig value={swrConfig}>
-      <Component {...pageProps} />
+      <APIProvider>
+        <Component {...pageProps} />
+      </APIProvider>
     </SWRConfig>
   </NextUIProvider>
 );

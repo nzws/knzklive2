@@ -2,7 +2,10 @@ import { GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment } from 'react';
 import useSWR from 'swr';
-import { getV1Tenant, Response as TenantResponse } from 'utils/api/v1/tenant';
+import {
+  getV1TenantsOnce,
+  Response as TenantResponse
+} from 'utils/api/v1/tenants/get-once';
 
 type Props = {
   tenant?: TenantResponse;
@@ -17,7 +20,7 @@ const Page: NextPage<Props> = ({ tenant: tenantFallback }) => {
     {
       tenantDomain: location.host
     },
-    getV1Tenant,
+    getV1TenantsOnce,
     { fallbackData: tenantFallback }
   );
 
@@ -37,9 +40,7 @@ export const getStaticProps: GetStaticProps<Props, PathProps> = async ({
 }) => {
   return {
     props: {
-      tenant: await getV1Tenant({
-        tenantDomain: params?.tenantDomain
-      })
+      tenant: await getV1TenantsOnce(params?.tenantDomain || '')
     },
     revalidate: 60,
     fallback: 'blocking'

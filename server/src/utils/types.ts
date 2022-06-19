@@ -1,16 +1,35 @@
-import { DefaultContext, DefaultState, Middleware, Request } from 'koa';
+import { DefaultContext, DefaultState, Middleware } from 'koa';
+import { UserPayload } from 'services/token/user-token';
 
 export type APIRoute<
+  Params = never,
   GETParam = never,
   PostBody = never,
-  ResponseBody = unknown
+  ResponseBody = unknown,
+  State = DefaultState
 > = Middleware<
-  DefaultState,
+  State,
   DefaultContext & {
-    request: Request & {
+    params: Params extends string ? Record<Params, string> : never;
+    request: {
       body: PostBody;
       query: GETParam;
     };
   },
-  ResponseBody
+  ResponseBody | { errorCode?: string }
+>;
+
+export type APIRouteWithAuth<
+  Params = never,
+  GETParam = never,
+  PostBody = never,
+  ResponseBody = unknown
+> = APIRoute<
+  Params,
+  GETParam,
+  PostBody,
+  ResponseBody,
+  {
+    user: UserPayload;
+  }
 >;

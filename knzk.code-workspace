@@ -9,6 +9,10 @@
       "path": "server"
     },
     {
+      "name": "Streaming",
+      "path": "streaming"
+    },
+    {
       "name": "Root",
       "path": "."
     }

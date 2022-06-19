@@ -8,10 +8,6 @@ export type Params = {
   domain: string;
 };
 
-export type Response = {
-  url: string;
-};
-
 const schema: JSONSchemaType<Params> = {
   type: 'object',
   properties: {
@@ -30,20 +26,27 @@ const schema: JSONSchemaType<Params> = {
 };
 
 export const v1AuthMastodonLogin: APIRoute<
+  never,
   Params,
   never,
-  Response
+  never
 > = async ctx => {
   const query = ctx.request.query;
   const { valid } = validate<Params>(schema, query);
   if (!valid) {
-    ctx.throw(400, 'Invalid request');
+    ctx.code = 400;
+    ctx.body = {
+      errorCode: 'invalid_request'
+    };
     return;
   }
 
   const tenantId = parseInt(query.tenantId, 10);
   if (isNaN(tenantId) || !tenantId) {
-    ctx.throw(400, 'Invalid tenantId');
+    ctx.code = 400;
+    ctx.body = {
+      errorCode: 'invalid_request'
+    };
     return;
   }
 
@@ -51,12 +54,8 @@ export const v1AuthMastodonLogin: APIRoute<
   const url = await provider.getAuthUrl();
 
   ctx.cookies.set('tenantId', tenantId.toString(), {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict'
+    httpOnly: true
   });
 
-  ctx.body = {
-    url
-  };
+  ctx.redirect(url);
 };

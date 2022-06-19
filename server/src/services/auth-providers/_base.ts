@@ -4,13 +4,13 @@ export type ExternalUser = {
   avatarUrl?: string;
 };
 
-const endpoint = process.env.ENDPOINT || '';
+const endpoint = process.env.SERVER_ENDPOINT || '';
 
 export abstract class AuthProvider {
   protected readonly redirectUrl: string;
 
   constructor(type: string) {
-    this.redirectUrl = `${endpoint}v1/auth/${type}/callback`;
+    this.redirectUrl = `${endpoint}/v1/auth/${type}/callback`;
   }
 
   protected objToQueryString(obj: Record<string, string>): string {

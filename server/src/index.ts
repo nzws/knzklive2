@@ -3,4 +3,4 @@ dotenv.config();
 import 'utils/check-env';
 import { app } from './app';
 
-app();
+void app();

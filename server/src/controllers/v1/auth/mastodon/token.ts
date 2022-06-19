@@ -1,6 +1,7 @@
 import { userCreate, userGet, userUpdate } from 'actions/user';
 import { JSONSchemaType } from 'ajv';
 import { AuthMastodon } from 'services/auth-providers/mastodon';
+import { ExternalUser } from 'services/auth-providers/_base';
 import { UserToken } from 'services/token/user-token';
 import { APIRoute } from 'utils/types';
 import { validate } from 'utils/validate';
@@ -34,6 +35,7 @@ const schema: JSONSchemaType<Params> = {
 const userToken = new UserToken();
 
 export const v1AuthMastodonToken: APIRoute<
+  never,
   Params,
   never,
   Response
@@ -41,15 +43,35 @@ export const v1AuthMastodonToken: APIRoute<
   const query = ctx.request.query;
   const { valid } = validate<Params>(schema, query);
   if (!valid) {
-    ctx.throw(400, 'Invalid request');
+    ctx.code = 400;
+    ctx.body = {
+      errorCode: 'invalid_request'
+    };
     return;
   }
 
-  const provider = new AuthMastodon(query.domain);
-  const mastodonToken = await provider.getToken(query.code);
-  const authUser = await provider.getUser(mastodonToken);
-  if (!authUser.account) {
-    ctx.throw(400, 'Failed to get user');
+  let mastodonToken: string;
+  let authUser: ExternalUser;
+
+  try {
+    const provider = new AuthMastodon(query.domain);
+    mastodonToken = await provider.getToken(query.code);
+    authUser = await provider.getUser(mastodonToken);
+
+    if (!authUser.account) {
+      ctx.code = 500;
+      ctx.body = {
+        errorCode: 'internal_error'
+      };
+      return;
+    }
+  } catch (e) {
+    console.warn(e);
+
+    ctx.code = 400;
+    ctx.body = {
+      errorCode: 'invalid_response_from_provider'
+    };
     return;
   }
 
@@ -59,7 +81,8 @@ export const v1AuthMastodonToken: APIRoute<
 
   await userUpdate(currentUser, {
     avatarUrl: authUser.avatarUrl,
-    displayName: authUser.displayName
+    displayName: authUser.displayName,
+    lastSignedInAt: new Date()
   });
 
   const liveToken = await userToken.getToken(currentUser);

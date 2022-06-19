@@ -1,9 +1,9 @@
 import { AuthProviderType } from '@prisma/client';
+import { authProviderCreate, authProviderGet } from 'actions/auth-provider';
+import fetch from 'node-fetch';
 import { GITHUB_URL } from 'utils/constants';
-import { prisma } from 'utils/prisma';
+import { checkDomain } from 'utils/domain';
 import { AuthProvider, ExternalUser } from './_base';
-
-const domainRegex = /^[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+$/;
 
 type MastodonApiV1Apps = {
   // 200
@@ -32,13 +32,15 @@ type MastodonApiV1AccountsVerifyCredentials = {
   error?: string;
 };
 
+const scopes = ['read:follows', 'read:accounts', 'write:statuses'];
+
 // docs: https://docs.joinmastodon.org/methods/apps/oauth/
 export class AuthMastodon extends AuthProvider {
   private readonly domain: string;
 
   constructor(domain: string) {
     domain = domain.toLowerCase();
-    if (!domainRegex.test(domain)) {
+    if (!checkDomain(domain)) {
       throw new Error('Invalid domain');
     }
 
@@ -52,7 +54,8 @@ export class AuthMastodon extends AuthProvider {
     const query = this.objToQueryString({
       response_type: 'code',
       client_id: clientId,
-      redirect_uri: this.redirectUrl
+      redirect_uri: this.redirectUrl,
+      scope: scopes.join('+')
     });
 
     return `https://${this.domain}/oauth/authorize?${query}`;
@@ -71,6 +74,7 @@ export class AuthMastodon extends AuthProvider {
         client_id: clientId,
         client_secret: clientSecret,
         redirect_uri: this.redirectUrl,
+        scope: scopes.join(' '),
         code
       })
     });
@@ -108,14 +112,26 @@ export class AuthMastodon extends AuthProvider {
     };
   }
 
+  async revokeToken(token: string): Promise<void> {
+    const { clientId, clientSecret } = await this._getClient(false);
+
+    await fetch(`https://${this.domain}/oauth/revoke`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        token
+      })
+    });
+  }
+
   async _getClient(
     enableRegister: boolean
   ): Promise<{ clientId: string; clientSecret: string }> {
-    const client = await prisma.authProvider.findUnique({
-      where: {
-        domain: this.domain
-      }
-    });
+    const client = await authProviderGet(this.domain);
     if (client && client.type !== AuthProviderType.Mastodon) {
       throw new Error('Invalid auth provider');
     }
@@ -140,7 +156,7 @@ export class AuthMastodon extends AuthProvider {
         client_name: 'KnzkLive Platform',
         website: GITHUB_URL,
         redirect_uris: this.redirectUrl,
-        scopes: ['read:follows', 'read:accounts', 'write:statuses']
+        scopes: scopes.join(' ')
       })
     });
 
@@ -156,22 +172,7 @@ export class AuthMastodon extends AuthProvider {
 
     console.log(`Created client for ${this.domain}`);
 
-    await prisma.authProvider.upsert({
-      where: {
-        domain: this.domain
-      },
-      update: {
-        type: AuthProviderType.Mastodon,
-        clientId: body.client_id,
-        clientSecret: body.client_secret
-      },
-      create: {
-        domain: this.domain,
-        type: AuthProviderType.Mastodon,
-        clientId: body.client_id,
-        clientSecret: body.client_secret
-      }
-    });
+    await authProviderCreate(this.domain, body.client_id, body.client_secret);
 
     return { clientId: body.client_id, clientSecret: body.client_secret };
   }

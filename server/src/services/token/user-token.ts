@@ -1,6 +1,8 @@
 import { User } from '@prisma/client';
 import { Token } from './_base';
 
+// todo: 鍵を定期的に更新しないといけない気がする
+// Production だめ絶対
 const publicKey = Buffer.from(
   process.env.USER_TOKEN_PUBLIC_KEY || '',
   'base64'
@@ -33,7 +35,13 @@ export class UserToken extends Token {
     return super.sign(payload);
   }
 
-  async verifyToken(token: string): Promise<UserPayload> {
-    return (await super.verify(token)) as UserPayload;
+  async verifyToken(token: string): Promise<UserPayload | undefined> {
+    try {
+      return (await super.verify(token)) as UserPayload;
+    } catch (e) {
+      console.warn(e);
+
+      return undefined;
+    }
   }
 }

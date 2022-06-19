@@ -1,6 +1,6 @@
 import { User } from '@prisma/client';
-import isValidDomain from 'is-valid-domain';
 import { USERNAME_REGEX } from 'utils/constants';
+import { checkDomain } from 'utils/domain';
 import { prisma } from 'utils/prisma';
 
 type UserConfig = {
@@ -14,7 +14,7 @@ export const userCreate = async (account: string): Promise<User> => {
   if (!USERNAME_REGEX.test(username)) {
     throw new Error('Invalid username');
   }
-  if (!isValidDomain(domain)) {
+  if (!checkDomain(domain)) {
     throw new Error('Invalid domain');
   }
 

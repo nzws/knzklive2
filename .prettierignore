@@ -146,7 +146,7 @@ dist
 
 # Yarn v2
 .pnp.*
-.yarn/*
+.yarn
 
 # TypeScript definition
 # なんかめっちゃ重いので除外してるけど、適時フォーマットして

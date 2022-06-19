@@ -1,6 +1,6 @@
 import { Tenant, User } from '@prisma/client';
-import isValidDomain from 'is-valid-domain';
 import { USERNAME_REGEX } from 'utils/constants';
+import { checkDomain } from 'utils/domain';
 import { prisma } from 'utils/prisma';
 
 const DEFAULT_DOMAIN = process.env.DEFAULT_FRONT_DOMAIN || '';
@@ -40,6 +40,22 @@ export const tenantGetSlugOrCustomDomain = (domain: string) => {
   };
 };
 
+export type TenantPublic = {
+  id: number;
+  slug: string;
+  ownerId: number;
+  displayName?: string;
+  customDomain?: string;
+};
+
+export const tenantGetAsPublic = (tenant: Tenant): TenantPublic => ({
+  id: tenant.id,
+  slug: tenant.slug,
+  ownerId: tenant.ownerId,
+  displayName: tenant.displayName || undefined,
+  customDomain: tenant.customDomain || undefined
+});
+
 export const tenantCreate = async (
   slug: string,
   owner: User
@@ -63,11 +79,11 @@ export const tenantCreate = async (
   return tenant;
 };
 
-export const updateCustomDomain = async (
+export const tenantUpdateCustomDomain = async (
   tenant: Tenant,
   customDomain: string | null
 ): Promise<Tenant> => {
-  if (customDomain && !isValidDomain(customDomain)) {
+  if (customDomain && !checkDomain(customDomain)) {
     throw new Error('Invalid domain');
   }
 

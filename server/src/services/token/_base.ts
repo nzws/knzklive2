@@ -44,7 +44,8 @@ export class Token {
     }
 
     const publicKey = (await jose.importJWK(
-      JSON.parse(this.publicKeyStr) as jose.JWK
+      JSON.parse(this.publicKeyStr) as jose.JWK,
+      alg
     )) as KeyLike;
 
     this.publicKey = publicKey;
@@ -57,7 +58,8 @@ export class Token {
     }
 
     const privateKey = (await jose.importJWK(
-      JSON.parse(this.privateKeyStr) as jose.JWK
+      JSON.parse(this.privateKeyStr) as jose.JWK,
+      alg
     )) as KeyLike;
 
     this.privateKey = privateKey;

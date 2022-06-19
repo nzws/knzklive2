@@ -3,7 +3,7 @@ const requiredEnvs = [
   'USER_TOKEN_PUBLIC_KEY',
   'USER_TOKEN_PRIVATE_KEY',
   'DEFAULT_FRONT_DOMAIN',
-  'ENDPOINT'
+  'SERVER_ENDPOINT'
 ];
 
 const notFoundEnvs = requiredEnvs.filter(env => !process.env[env]);

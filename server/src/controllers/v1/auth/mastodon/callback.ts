@@ -19,27 +19,38 @@ const schema: JSONSchemaType<Params> = {
   additionalProperties: false
 };
 
-export const v1AuthMastodonCallback: APIRoute<Params> = async ctx => {
+const protocol = process.env.USE_HTTP ? 'http' : 'https';
+
+export const v1AuthMastodonCallback: APIRoute<never, Params> = async ctx => {
   const query = ctx.request.query;
   const { valid } = validate<Params>(schema, query);
   if (!valid) {
-    ctx.throw(400, 'Invalid request');
+    ctx.code = 400;
+    ctx.body = {
+      errorCode: 'invalid_request'
+    };
     return;
   }
 
   const tenantId = parseInt(ctx.cookies.get('tenantId') || '', 10);
   if (!tenantId || typeof tenantId !== 'number' || isNaN(tenantId)) {
-    ctx.throw(400, 'Failed to get cookie.tenantId');
+    ctx.code = 400;
+    ctx.body = {
+      errorCode: 'cookie_tenantId_not_found'
+    };
     return;
   }
 
   const tenant = await tenantGet(tenantId);
   if (!tenant) {
-    ctx.throw(400, 'Failed to get tenant');
+    ctx.code = 404;
+    ctx.body = {
+      errorCode: 'tenant_not_found'
+    };
     return;
   }
 
   ctx.redirect(
-    `://${tenantGetDomain(tenant)}/auth/callback?code=${query.code}`
+    `${protocol}://${tenantGetDomain(tenant)}/auth/callback?code=${query.code}`
   );
 };
