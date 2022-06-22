@@ -34,7 +34,7 @@
     "koa": "2.13.4",
     "koa-bodyparser": "4.3.0",
     "koa-logger": "3.2.1",
-    "node-fetch": "2",
+    "node-fetch": "3",
     "prisma": "3.15.1"
   },
   "devDependencies": {
