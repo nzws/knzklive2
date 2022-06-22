@@ -30,7 +30,7 @@
     "@next/eslint-plugin-next": "12.1.6",
     "@testing-library/jest-dom": "5.16.4",
     "@testing-library/react": "13.3.0",
-    "@testing-library/user-event": "14.2.0",
+    "@testing-library/user-event": "14.2.1",
     "@tsconfig/next": "1.0.2",
     "@types/node": "17.0.42",
     "@types/react": "18.0.12",
