@@ -1487,13 +1487,13 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@5.28.0":
-  version "5.28.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.28.0.tgz#6204ac33bdd05ab27c7f77960f1023951115d403"
+"@typescript-eslint/eslint-plugin@5.30.0":
+  version "5.30.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.30.0.tgz#524a11e15c09701733033c96943ecf33f55d9ca1"
   dependencies:
-    "@typescript-eslint/scope-manager" "5.28.0"
-    "@typescript-eslint/type-utils" "5.28.0"
-    "@typescript-eslint/utils" "5.28.0"
+    "@typescript-eslint/scope-manager" "5.30.0"
+    "@typescript-eslint/type-utils" "5.30.0"
+    "@typescript-eslint/utils" "5.30.0"
     debug "^4.3.4"
     functional-red-black-tree "^1.0.1"
     ignore "^5.2.0"
@@ -1517,17 +1517,28 @@
     "@typescript-eslint/types" "5.28.0"
     "@typescript-eslint/visitor-keys" "5.28.0"
 
-"@typescript-eslint/type-utils@5.28.0":
-  version "5.28.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/type-utils/-/type-utils-5.28.0.tgz#53ccc78fdcf0205ef544d843b84104c0e9c7ca8e"
+"@typescript-eslint/scope-manager@5.30.0":
+  version "5.30.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.30.0.tgz#bf585ee801ab4ad84db2f840174e171a6bb002c7"
   dependencies:
-    "@typescript-eslint/utils" "5.28.0"
+    "@typescript-eslint/types" "5.30.0"
+    "@typescript-eslint/visitor-keys" "5.30.0"
+
+"@typescript-eslint/type-utils@5.30.0":
+  version "5.30.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/type-utils/-/type-utils-5.30.0.tgz#98f3af926a5099153f092d4dad87148df21fbaae"
+  dependencies:
+    "@typescript-eslint/utils" "5.30.0"
     debug "^4.3.4"
     tsutils "^3.21.0"
 
 "@typescript-eslint/types@5.28.0":
   version "5.28.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.28.0.tgz#cffd9bcdce28db6daaa146e48a0be4387a6f4e9d"
+
+"@typescript-eslint/types@5.30.0":
+  version "5.30.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.30.0.tgz#db7d81d585a3da3801432a9c1d2fafbff125e110"
 
 "@typescript-eslint/typescript-estree@5.28.0":
   version "5.28.0"
@@ -1541,14 +1552,26 @@
     semver "^7.3.7"
     tsutils "^3.21.0"
 
-"@typescript-eslint/utils@5.28.0", "@typescript-eslint/utils@^5.13.0":
-  version "5.28.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.28.0.tgz#b27a136eac300a48160b36d2aad0da44a1341b99"
+"@typescript-eslint/typescript-estree@5.30.0":
+  version "5.30.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.30.0.tgz#4565ee8a6d2ac368996e20b2344ea0eab1a8f0bb"
+  dependencies:
+    "@typescript-eslint/types" "5.30.0"
+    "@typescript-eslint/visitor-keys" "5.30.0"
+    debug "^4.3.4"
+    globby "^11.1.0"
+    is-glob "^4.0.3"
+    semver "^7.3.7"
+    tsutils "^3.21.0"
+
+"@typescript-eslint/utils@5.30.0", "@typescript-eslint/utils@^5.13.0":
+  version "5.30.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.30.0.tgz#1dac771fead5eab40d31860716de219356f5f754"
   dependencies:
     "@types/json-schema" "^7.0.9"
-    "@typescript-eslint/scope-manager" "5.28.0"
-    "@typescript-eslint/types" "5.28.0"
-    "@typescript-eslint/typescript-estree" "5.28.0"
+    "@typescript-eslint/scope-manager" "5.30.0"
+    "@typescript-eslint/types" "5.30.0"
+    "@typescript-eslint/typescript-estree" "5.30.0"
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
 
@@ -1557,6 +1580,13 @@
   resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.28.0.tgz#982bb226b763c48fc1859a60de33fbf939d40a0f"
   dependencies:
     "@typescript-eslint/types" "5.28.0"
+    eslint-visitor-keys "^3.3.0"
+
+"@typescript-eslint/visitor-keys@5.30.0":
+  version "5.30.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.30.0.tgz#07721d23daca2ec4c2da7f1e660d41cd78bacac3"
+  dependencies:
+    "@typescript-eslint/types" "5.30.0"
     eslint-visitor-keys "^3.3.0"
 
 "@xobotyi/scrollbar-width@^1.9.5":
