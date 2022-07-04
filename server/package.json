@@ -25,7 +25,7 @@
     "@dotplants/cli": "0.2.3",
     "@koa/cors": "^3.3.0",
     "@koa/router": "10.1.1",
-    "@prisma/client": "3.15.1",
+    "@prisma/client": "4.0.0",
     "ajv": "8.11.0",
     "bullmq": "^1.86.2",
     "dotenv": "16.0.1",
