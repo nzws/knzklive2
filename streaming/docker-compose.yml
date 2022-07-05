@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - inner-bridge
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+
+  srs:
+    image: ossrs/srs:dev
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "1935:1935"
+      - "1985:1985"
+    expose:
+      - 8080
+    networks:
+      - inner-bridge
+    volumes:
+      - ./srs.conf:/usr/local/srs/knzk.conf
+    command: ./objs/srs -c ./knzk.conf
+
+  app:
+    image: ghcr.io/nzws/knzklive-agent:latest
+    # build: .
+    restart: unless-stopped
+    container_name: app
+    expose:
+      - 8080
+    networks:
+      - inner-bridge
+    environment:
+      TZ: Asia/Tokyo
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  caddy_data:
+    external: true
+  caddy_config:
+
+networks:
+  inner-bridge:
+    driver: bridge

@@ -1,0 +1,53 @@
+{
+  "name": "streaming",
+  "version": "0.0.0",
+  "license": "AGPL-3.0",
+  "private": true,
+  "packageManager": "yarn@3.2.1",
+  "scripts": {
+    "test": "jest",
+    "format:prettier": "prettier --write .",
+    "format": "npm-run-all -p 'format:*'",
+    "lint:format": "prettier --check .",
+    "lint:type": "tsc --noEmit",
+    "lint:js": "eslint --cache '**/*.{ts,tsx}'",
+    "lint": "npm-run-all -p 'lint:*'",
+    "dev": "ts-node-dev --respawn --transpile-only --exit-child -r tsconfig-paths/register src",
+    "build": "tsc --project tsconfig.build.json",
+    "start": "node dist"
+  },
+  "prettier": "@knzk/prettier-config",
+  "dependencies": {
+    "@koa/router": "11.0.1",
+    "@prisma/client": "4.0.0",
+    "ajv": "8.11.0",
+    "koa": "2.13.4",
+    "koa-bodyparser": "4.3.0",
+    "koa-logger": "3.2.1",
+    "node-fetch": "3.2.6"
+  },
+  "devDependencies": {
+    "@knzk/prettier-config": "^1.0.0",
+    "@tsconfig/node16": "1.0.3",
+    "@types/jest": "28.1.4",
+    "@types/koa": "2.13.4",
+    "@types/koa-bodyparser": "4.3.7",
+    "@types/koa-logger": "3.1.2",
+    "@types/koa__router": "8.0.11",
+    "@types/node": "18.0.1",
+    "@types/node-fetch": "^2.6.2",
+    "@typescript-eslint/eslint-plugin": "5.30.5",
+    "@typescript-eslint/parser": "5.30.5",
+    "eslint": "8.19.0",
+    "eslint-config-prettier": "8.5.0",
+    "husky": "8.0.1",
+    "jest": "28.1.2",
+    "npm-run-all": "4.1.5",
+    "prettier": "2.7.1",
+    "ts-jest": "28.0.5",
+    "ts-node": "10.8.2",
+    "ts-node-dev": "2.0.0",
+    "tsconfig-paths": "4.0.0",
+    "typescript": "4.7.4"
+  }
+}
