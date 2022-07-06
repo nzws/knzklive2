@@ -5,3 +5,6 @@
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+.mount/*
+!.mount/gitkeep

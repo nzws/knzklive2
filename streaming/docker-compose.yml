@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 services:
   caddy:
@@ -8,13 +8,13 @@ services:
       agent:
         condition: service_healthy
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     networks:
       - inner-bridge
     volumes:
-      - $PWD/Caddyfile:/etc/caddy/Caddyfile
-      - $PWD/site:/srv
+      - $PWD/.mount/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/.mount/site:/srv
       - caddy_data:/data
       - caddy_config:/config
 
@@ -25,14 +25,14 @@ services:
       agent:
         condition: service_healthy
     ports:
-      - "1935:1935"
-      - "1985:1985"
+      - '1935:1935'
+      - '1985:1985'
     expose:
       - 8080
     networks:
       - inner-bridge
     volumes:
-      - ./srs.conf:/usr/local/srs/knzk.conf
+      - $PWD/.mount/srs.conf:/usr/local/srs/knzk.conf
     command: ./objs/srs -c ./knzk.conf
 
   agent:
@@ -47,7 +47,7 @@ services:
     environment:
       TZ: Asia/Tokyo
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:8080 || exit 1']
       interval: 1s
       timeout: 5s
       retries: 30
