@@ -5,7 +5,7 @@ services:
     image: caddy:2
     restart: unless-stopped
     depends_on:
-      app:
+      agent:
         condition: service_healthy
     ports:
       - "80:80"
@@ -19,10 +19,10 @@ services:
       - caddy_config:/config
 
   srs:
-    image: ossrs/srs:dev
+    image: ossrs/srs:4
     restart: unless-stopped
     depends_on:
-      app:
+      agent:
         condition: service_healthy
     ports:
       - "1935:1935"
@@ -35,7 +35,7 @@ services:
       - ./srs.conf:/usr/local/srs/knzk.conf
     command: ./objs/srs -c ./knzk.conf
 
-  app:
+  agent:
     image: ghcr.io/nzws/knzklive-agent:latest
     # build: .
     restart: unless-stopped
