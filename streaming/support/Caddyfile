@@ -1,1 +1,6 @@
 {{domain}}
+
+reverse_proxy /api/external/* agent:8080
+
+root * /usr/share/caddy
+file_server

@@ -1,6 +1,26 @@
 version: '3'
 
 services:
+  agent:
+    # image: ghcr.io/nzws/knzklive-agent:latest
+    build: .
+    restart: unless-stopped
+    expose:
+      - 8080
+    ports:
+      - '8080:8080'
+    networks:
+      - inner-bridge
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - live_agent_shared:/usr/src/app/.mount
+    healthcheck:
+      test: ['CMD-SHELL', 'node ./dist/scripts/health.js']
+      interval: 1s
+      timeout: 5s
+      retries: 30
+
   caddy:
     image: caddy:2
     restart: unless-stopped
@@ -13,8 +33,8 @@ services:
     networks:
       - inner-bridge
     volumes:
-      - $PWD/.mount/Caddyfile:/etc/caddy/Caddyfile
-      - $PWD/.mount/site:/srv
+      - live_agent_shared:/etc/caddy
+      - live_static:/srv
       - caddy_data:/data
       - caddy_config:/config
 
@@ -32,30 +52,15 @@ services:
     networks:
       - inner-bridge
     volumes:
-      - $PWD/.mount/srs.conf:/usr/local/srs/knzk.conf
+      - live_agent_shared:/usr/local/srs
+      - live_static:/usr/local/srs/objs/nginx/html
     command: ./objs/srs -c ./knzk.conf
-
-  agent:
-    image: ghcr.io/nzws/knzklive-agent:latest
-    # build: .
-    restart: unless-stopped
-    container_name: app
-    expose:
-      - 8080
-    networks:
-      - inner-bridge
-    environment:
-      TZ: Asia/Tokyo
-    healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:8080 || exit 1']
-      interval: 1s
-      timeout: 5s
-      retries: 30
 
 volumes:
   caddy_data:
-    external: true
   caddy_config:
+  live_agent_shared:
+  live_static:
 
 networks:
   inner-bridge:

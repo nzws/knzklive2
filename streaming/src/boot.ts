@@ -1,4 +1,5 @@
 import { readFile, writeFile } from 'fs/promises';
+import path from 'path';
 
 const parse = (template: string, data: Record<string, string | number>) => {
   const regex = Object.entries(data).map(([key, value]) => ({
@@ -12,13 +13,15 @@ const parse = (template: string, data: Record<string, string | number>) => {
   );
 };
 
+const root = path.resolve(__dirname, '../');
+
 const generator = async (
   file: string,
   data: Record<string, string | number>
 ) => {
-  const template = await readFile(`./support/${file}`, 'utf8');
+  const template = await readFile(path.resolve(root, 'support', file), 'utf8');
   const result = parse(template, data);
-  await writeFile(`./.mount/${file}`, result, 'utf8');
+  await writeFile(path.resolve(root, '.mount', file), result, 'utf8');
 };
 
 export const generateConfig = async (): Promise<void> => {
