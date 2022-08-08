@@ -1,12 +1,7 @@
 export class NewWindow {
   currentWindow: Window | null = null;
 
-  constructor(
-    private readonly id: string,
-    private readonly url: string,
-    width = 800,
-    height = 600
-  ) {
+  constructor(id: string, url: string, width = 800, height = 600) {
     const left = (screen.width - width) / 2;
     const top = (screen.height - height) / 2;
 

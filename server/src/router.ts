@@ -7,8 +7,6 @@ import { v1AuthMastodonLogin } from 'controllers/v1/auth/mastodon/login';
 import { v1AuthMastodonToken } from 'controllers/v1/auth/mastodon/token';
 import { v1AuthMastodonRefresh } from 'controllers/v1/auth/mastodon/refresh';
 import { v1AuthMastodonRevoke } from 'controllers/v1/auth/mastodon/revoke';
-import { pushQueue } from 'queues';
-import { watchQueue } from 'queues/watch';
 
 export const router = (): Router => {
   const route = new Router();
@@ -38,12 +36,6 @@ export const router = (): Router => {
   route.post('/v1/live/:tenantId/:id/comments', middlewareAuthorizeUser);
 
   route.post('/internal/streaming');
-
-  route.get('/test', async ctx => {
-    await pushQueue.add('live', { tenantId: ctx.params.tenantId });
-    await watchQueue.add('house', { color: 'white' }, { delay: 5000 });
-    ctx.body = 'ok';
-  });
 
   return route;
 };
