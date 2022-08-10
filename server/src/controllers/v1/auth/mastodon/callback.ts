@@ -1,5 +1,6 @@
-import { tenantGet, tenantGetDomain } from 'actions/tenant';
 import { JSONSchemaType } from 'ajv';
+import { tenants } from 'models';
+import { getTenantPrimaryDomain } from 'utils/domain';
 import { APIRoute } from 'utils/types';
 import { validate } from 'utils/validate';
 
@@ -41,7 +42,7 @@ export const v1AuthMastodonCallback: APIRoute<never, Params> = async ctx => {
     return;
   }
 
-  const tenant = await tenantGet(tenantId);
+  const tenant = await tenants.get(tenantId);
   if (!tenant) {
     ctx.code = 404;
     ctx.body = {
@@ -50,7 +51,7 @@ export const v1AuthMastodonCallback: APIRoute<never, Params> = async ctx => {
     return;
   }
 
-  ctx.redirect(
-    `${protocol}://${tenantGetDomain(tenant)}/auth/callback?code=${query.code}`
-  );
+  const host = `${protocol}://${getTenantPrimaryDomain(tenant)}`;
+
+  ctx.redirect(`${host}/auth/callback?code=${query.code}`);
 };

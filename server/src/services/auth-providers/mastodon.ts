@@ -1,35 +1,29 @@
 import { AuthProviderType } from '@prisma/client';
-import { authProviderCreate, authProviderGet } from 'actions/auth-provider';
+import { authProviders } from 'models';
 import fetch from 'node-fetch';
 import { GITHUB_URL } from 'utils/constants';
 import { checkDomain } from 'utils/domain';
 import { AuthProvider, ExternalUser } from './_base';
 
+type MastodonApiError = {
+  error: string;
+};
+
 type MastodonApiV1Apps = {
-  // 200
   client_id?: string;
   client_secret?: string;
-  // 422
-  error?: string;
 };
 
 type MastodonOauthToken = {
-  // 200
   access_token?: string;
-  // 4xx
-  error?: string;
-  error_description?: string;
 };
 
 type MastodonApiV1AccountsVerifyCredentials = {
-  // 200
   id?: string;
   username?: string;
   acct?: string;
   display_name?: string;
   avatar?: string;
-  // 4xx
-  error?: string;
 };
 
 const scopes = ['read:follows', 'read:accounts', 'write:statuses'];
@@ -78,9 +72,11 @@ export class AuthMastodon extends AuthProvider {
         code
       })
     });
-    const body = (await response.json()) as MastodonOauthToken;
+    const body = (await response.json()) as
+      | MastodonOauthToken
+      | MastodonApiError;
 
-    if (!response.ok || !body.access_token) {
+    if (!response.ok || 'error' in body || !body.access_token) {
       console.warn(body);
       throw new Error('Failed to get token');
     }
@@ -100,7 +96,7 @@ export class AuthMastodon extends AuthProvider {
     );
     const body =
       (await response.json()) as MastodonApiV1AccountsVerifyCredentials;
-    if (!response.ok || body.error || !body.username) {
+    if (!response.ok || 'error' in body || !body.username) {
       console.warn(body);
       throw new Error('Failed to get user');
     }
@@ -131,7 +127,7 @@ export class AuthMastodon extends AuthProvider {
   async _getClient(
     enableRegister: boolean
   ): Promise<{ clientId: string; clientSecret: string }> {
-    const client = await authProviderGet(this.domain);
+    const client = await authProviders.get(this.domain);
     if (client && client.type !== AuthProviderType.Mastodon) {
       throw new Error('Invalid auth provider');
     }
@@ -160,8 +156,10 @@ export class AuthMastodon extends AuthProvider {
       })
     });
 
-    const body = (await response.json()) as MastodonApiV1Apps;
-    if (!response.ok || body.error) {
+    const body = (await response.json()) as
+      | MastodonApiV1Apps
+      | MastodonApiError;
+    if (!response.ok || 'error' in body) {
       console.warn(body);
       throw new Error('Failed to create client');
     }
@@ -172,7 +170,7 @@ export class AuthMastodon extends AuthProvider {
 
     console.log(`Created client for ${this.domain}`);
 
-    await authProviderCreate(this.domain, body.client_id, body.client_secret);
+    await authProviders.create(this.domain, body.client_id, body.client_secret);
 
     return { clientId: body.client_id, clientSecret: body.client_secret };
   }

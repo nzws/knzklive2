@@ -1,5 +1,5 @@
-import { userGet, userUpdate } from 'actions/user';
 import { JSONSchemaType } from 'ajv';
+import { users } from 'models';
 import { AuthMastodon } from 'services/auth-providers/mastodon';
 import { ExternalUser } from 'services/auth-providers/_base';
 import { UserToken } from 'services/token/user-token';
@@ -72,7 +72,7 @@ export const v1AuthMastodonRefresh: APIRoute<
     return;
   }
 
-  const currentUser = await userGet(undefined, authUser.account);
+  const currentUser = await users.get(undefined, authUser.account);
   if (!currentUser) {
     ctx.code = 403;
     ctx.body = {
@@ -81,7 +81,7 @@ export const v1AuthMastodonRefresh: APIRoute<
     return;
   }
 
-  await userUpdate(currentUser, {
+  await users.update(currentUser, {
     avatarUrl: authUser.avatarUrl,
     displayName: authUser.displayName,
     lastSignedInAt: new Date()

@@ -1,9 +1,5 @@
-import {
-  tenantGet,
-  tenantGetAsPublic,
-  tenantGetSlugOrCustomDomain
-} from 'actions/tenant';
-import { checkDomain } from 'utils/domain';
+import { tenants } from 'models';
+import { checkDomain, getSlugOrCustomDomain } from 'utils/domain';
 import { APIRoute } from 'utils/types';
 
 export type Response = {
@@ -23,8 +19,12 @@ export const getV1TenantsOnce: APIRoute<
   const { key } = ctx.params;
 
   if (checkDomain(key)) {
-    const domain = tenantGetSlugOrCustomDomain(key);
-    const tenant = await tenantGet(undefined, domain.slug, domain.customDomain);
+    const domain = getSlugOrCustomDomain(key);
+    const tenant = await tenants.get(
+      undefined,
+      domain.slug,
+      domain.customDomain
+    );
 
     if (!tenant) {
       ctx.status = 404;
@@ -34,7 +34,7 @@ export const getV1TenantsOnce: APIRoute<
       return;
     }
 
-    ctx.body = tenantGetAsPublic(tenant);
+    ctx.body = tenants.getPublic(tenant);
     return;
   }
 
@@ -47,7 +47,7 @@ export const getV1TenantsOnce: APIRoute<
     return;
   }
 
-  const tenant = await tenantGet(id);
+  const tenant = await tenants.get(id);
   if (!tenant) {
     ctx.status = 404;
     ctx.body = {
@@ -56,5 +56,5 @@ export const getV1TenantsOnce: APIRoute<
     return;
   }
 
-  ctx.body = tenantGetAsPublic(tenant);
+  ctx.body = tenants.getPublic(tenant);
 };

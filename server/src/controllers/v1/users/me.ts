@@ -1,5 +1,5 @@
 import { User } from '@prisma/client';
-import { userGet } from 'actions/user';
+import { users } from 'models';
 import { APIRouteWithAuth } from 'utils/types';
 
 export type Response = User;
@@ -12,7 +12,7 @@ export const getV1UsersMe: APIRouteWithAuth<
 > = async ctx => {
   const user = ctx.state.user;
 
-  const data = await userGet(user.id);
+  const data = await users.get(user.id);
 
   if (!data) {
     ctx.status = 404;

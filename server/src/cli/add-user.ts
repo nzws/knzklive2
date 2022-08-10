@@ -1,6 +1,5 @@
 import { Command } from '@dotplants/cli';
-import { tenantCreate } from 'actions/tenant';
-import { userCreate } from 'actions/user';
+import { tenants, users } from 'models';
 
 export const addUser: Command = {
   description: 'add user',
@@ -10,14 +9,14 @@ export const addUser: Command = {
       throw new Error('account (e.g. nzws@don.nzws.me) is required');
     }
 
-    const user = await userCreate(account);
+    const user = await users.create(account);
     console.log(`user ${user.account} (id=${user.id}) created`);
 
     if (!createTenant) {
       return;
     }
 
-    const tenant = await tenantCreate(user.account.split('@')[0], user);
+    const tenant = await tenants.create(user.account.split('@')[0], user);
     console.log(`tenant ${tenant.slug} (id=${tenant.id}) created`);
   },
   flags: {

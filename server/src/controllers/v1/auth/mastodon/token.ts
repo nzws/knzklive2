@@ -1,5 +1,5 @@
-import { userCreate, userGet, userUpdate } from 'actions/user';
 import { JSONSchemaType } from 'ajv';
+import { users } from 'models';
 import { AuthMastodon } from 'services/auth-providers/mastodon';
 import { ExternalUser } from 'services/auth-providers/_base';
 import { UserToken } from 'services/token/user-token';
@@ -76,10 +76,10 @@ export const v1AuthMastodonToken: APIRoute<
   }
 
   const currentUser =
-    (await userGet(undefined, authUser.account)) ||
-    (await userCreate(authUser.account));
+    (await users.get(undefined, authUser.account)) ||
+    (await users.create(authUser.account));
 
-  await userUpdate(currentUser, {
+  await users.update(currentUser, {
     avatarUrl: authUser.avatarUrl,
     displayName: authUser.displayName,
     lastSignedInAt: new Date()

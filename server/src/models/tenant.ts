@@ -1,4 +1,4 @@
-import { PrismaClient, Tenant } from '@prisma/client';
+import { PrismaClient, Tenant, User } from '@prisma/client';
 import { checkDomain } from 'utils/domain';
 
 export type TenantPublic = {
@@ -35,14 +35,14 @@ export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
       displayName: tenant.displayName || undefined,
       customDomain: tenant.customDomain || undefined
     }),
-    create: async (slug: string, ownerId?: number): Promise<Tenant> => {
+    create: async (slug: string, owner: User): Promise<Tenant> => {
       const tenant = await prismaTenant.create({
         data: {
           slug,
           config: {},
           owner: {
             connect: {
-              id: ownerId
+              id: owner.id
             }
           }
         }
