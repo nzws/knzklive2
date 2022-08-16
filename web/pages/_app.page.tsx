@@ -1,5 +1,5 @@
 import type { AppProps } from 'next/app';
-import { NextUIProvider } from '@nextui-org/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { SWRConfig } from 'swr';
 import { APIProvider } from 'organisms/providers/api';
 import { fetcher } from 'utils/contexts/api';
@@ -9,13 +9,13 @@ const swrConfig = {
 };
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => (
-  <NextUIProvider>
+  <ChakraProvider>
     <SWRConfig value={swrConfig}>
       <APIProvider>
         <Component {...pageProps} />
       </APIProvider>
     </SWRConfig>
-  </NextUIProvider>
+  </ChakraProvider>
 );
 
 export default App;

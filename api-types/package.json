@@ -1,0 +1,34 @@
+{
+  "name": "api-types",
+  "version": "0.0.0",
+  "license": "AGPL-3.0",
+  "private": true,
+  "packageManager": "yarn@3.2.1",
+  "scripts": {
+    "format:prettier": "prettier --write .",
+    "format": "npm-run-all -p 'format:*'",
+    "lint:format": "prettier --check .",
+    "lint:type": "tsc --noEmit",
+    "lint:js": "eslint --cache '**/*.{ts,tsx}'",
+    "lint": "npm-run-all -p 'lint:*'",
+    "build": "aspida"
+  },
+  "prettier": "@knzk/prettier-config",
+  "devDependencies": {
+    "@knzk/prettier-config": "^1.0.0",
+    "@tsconfig/node16": "1.0.3",
+    "@types/node": "18.0.1",
+    "@types/node-fetch": "^2.6.2",
+    "@typescript-eslint/eslint-plugin": "5.30.5",
+    "@typescript-eslint/parser": "5.30.5",
+    "eslint": "8.19.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-aspida": "^0.1.0",
+    "npm-run-all": "4.1.5",
+    "prettier": "2.7.1",
+    "typescript": "4.7.4"
+  },
+  "dependencies": {
+    "aspida": "^1.10.3"
+  }
+}
