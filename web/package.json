@@ -5,11 +5,8 @@
   "private": true,
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "format": "prettier --write .",
-    "lint:format": "prettier --check .",
-    "lint:next": "next lint",
-    "lint": "npm-run-all -p 'lint:*'",
-    "test": "jest",
+    "ws:lint": "next lint",
+    "ws:test": "jest",
     "dev": "next dev",
     "build": "next build",
     "analyze": "ANALYZE=true next build",

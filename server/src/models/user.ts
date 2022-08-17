@@ -6,6 +6,8 @@ export type UserConfig = {
   //
 };
 
+export type UserPrivate = User;
+
 export const Users = (prismaUser: PrismaClient['user']) =>
   Object.assign(prismaUser, {
     create: async (account: string) => {

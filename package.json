@@ -1,3 +1,28 @@
 {
-  "packageManager": "yarn@3.2.2"
+  "name": "knzklive2",
+  "version": "0.1.0",
+  "repository": "https://github.com/nzws/knzklive2",
+  "license": "AGPL-3.0",
+  "private": true,
+  "packageManager": "yarn@3.2.2",
+  "workspaces": {
+    "packages": [
+      "api-types",
+      "server",
+      "web",
+      "server"
+    ]
+  },
+  "scripts": {
+    "ws:lint": "prettier --ignore-path .gitignore --check .",
+    "lint": "yarn workspaces foreach run ws:lint",
+    "ws:format": "prettier --ignore-path .gitignore --write .",
+    "format": "yarn workspaces foreach run ws:format",
+    "test": "yarn workspaces foreach run ws:test",
+    "dev": "nf start -x 8080 app,web"
+  },
+  "devDependencies": {
+    "foreman": "3.0.1",
+    "prettier": "2.7.1"
+  }
 }
