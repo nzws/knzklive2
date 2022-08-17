@@ -1,5 +1,5 @@
 import { DefaultContext, DefaultState, Middleware } from 'koa';
-import { UserPayload } from 'services/token/user-token';
+import { UserPayload } from '~/services/token/user-token';
 
 export type APIRoute<
   Params = never,

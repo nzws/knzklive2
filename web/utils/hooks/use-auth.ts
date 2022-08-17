@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { APIContext, Returns as useAPIReturns } from 'utils/contexts/api';
+import { APIContext, Returns as useAPIReturns } from '~/utils/contexts/api';
 
 type Returns = Partial<Omit<useAPIReturns, 'fetcher'>>;
 

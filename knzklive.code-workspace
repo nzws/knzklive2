@@ -1,0 +1,30 @@
+{
+  "folders": [
+    {
+      "name": "web",
+      "path": "web"
+    },
+    {
+      "name": "server",
+      "path": "server"
+    },
+    {
+      "name": "api-types",
+      "path": "api-types"
+    },
+    {
+      "name": "Root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "cSpell.words": ["kanzaki", "Knzk"]
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "Prisma.prisma"
+    ]
+  }
+}

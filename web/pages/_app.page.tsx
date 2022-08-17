@@ -1,8 +1,8 @@
 import type { AppProps } from 'next/app';
 import { ChakraProvider } from '@chakra-ui/react';
 import { SWRConfig } from 'swr';
-import { APIProvider } from 'organisms/providers/api';
-import { fetcher } from 'utils/contexts/api';
+import { APIProvider } from '~/organisms/providers/api';
+import { fetcher } from '~/utils/contexts/api';
 
 const swrConfig = {
   fetcher

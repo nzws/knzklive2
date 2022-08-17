@@ -5,10 +5,10 @@ import useSWR from 'swr';
 import {
   getV1TenantsOnce,
   Response as TenantResponse
-} from 'utils/api/v1/tenants/get-once';
-import { getV1UsersMe } from 'utils/api/v1/users/me';
-import { fetcher, SignInType } from 'utils/contexts/api';
-import { useAuth } from 'utils/hooks/use-auth';
+} from '~/utils/api/v1/tenants/get-once';
+import { getV1UsersMe } from '~/utils/api/v1/users/me';
+import { fetcher, SignInType } from '~/utils/contexts/api';
+import { useAuth } from '~/utils/hooks/use-auth';
 
 type Props = {
   tenant?: TenantResponse;

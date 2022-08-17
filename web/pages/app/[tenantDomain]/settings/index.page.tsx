@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import {
   getV1TenantsOnce,
   Response as TenantResponse
-} from 'utils/api/v1/tenants/get-once';
+} from '~/utils/api/v1/tenants/get-once';
 
 type Props = {
   tenant?: TenantResponse;

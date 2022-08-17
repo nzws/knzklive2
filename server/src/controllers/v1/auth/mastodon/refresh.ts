@@ -1,10 +1,10 @@
 import { JSONSchemaType } from 'ajv';
-import { users } from 'models';
-import { AuthMastodon } from 'services/auth-providers/mastodon';
-import { ExternalUser } from 'services/auth-providers/_base';
-import { UserToken } from 'services/token/user-token';
-import { APIRoute } from 'utils/types';
-import { validate } from 'utils/validate';
+import { users } from '~/models';
+import { AuthMastodon } from '~/services/auth-providers/mastodon';
+import { ExternalUser } from '~/services/auth-providers/_base';
+import { UserToken } from '~/services/token/user-token';
+import { APIRoute } from '~/utils/types';
+import { validate } from '~/utils/validate';
 
 export type Params = {
   domain: string;
@@ -39,7 +39,7 @@ export const v1AuthMastodonRefresh: APIRoute<
   Params,
   Response
 > = async ctx => {
-  const query = ctx.request.body as Params;
+  const query = ctx.request.body;
   const { valid } = validate<Params>(schema, query);
   if (!valid) {
     ctx.code = 400;

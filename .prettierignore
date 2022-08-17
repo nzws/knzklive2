@@ -151,3 +151,5 @@ dist
 # TypeScript definition
 # なんかめっちゃ重いので除外してるけど、適時フォーマットして
 .d.ts
+
+.next

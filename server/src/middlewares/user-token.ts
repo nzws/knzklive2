@@ -1,5 +1,5 @@
 import { Middleware } from 'koa';
-import { UserToken } from 'services/token/user-token';
+import { UserToken } from '~/services/token/user-token';
 
 const userToken = new UserToken();
 

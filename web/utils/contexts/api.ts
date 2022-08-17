@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState, createContext } from 'react';
 import { useLocalStorage } from 'react-use';
-import { linkV1AuthMastodonLogin } from 'utils/api/v1/auth/mastodon/login';
-import { postV1AuthMastodonRefresh } from 'utils/api/v1/auth/mastodon/refresh';
-import { postV1AuthMastodonRevoke } from 'utils/api/v1/auth/mastodon/revoke';
-import { getV1AuthMastodonToken } from 'utils/api/v1/auth/mastodon/token';
-import { RequestAsAnonymous, RequestWithToken } from 'utils/api/v1/types';
-import { NewWindow } from 'utils/new-window';
+import { linkV1AuthMastodonLogin } from '~/utils/api/v1/auth/mastodon/login';
+import { postV1AuthMastodonRefresh } from '~/utils/api/v1/auth/mastodon/refresh';
+import { postV1AuthMastodonRevoke } from '~/utils/api/v1/auth/mastodon/revoke';
+import { getV1AuthMastodonToken } from '~/utils/api/v1/auth/mastodon/token';
+import { RequestAsAnonymous, RequestWithToken } from '~/utils/api/v1/types';
+import { NewWindow } from '~/utils/new-window';
 
 const endpoint = process.env.NEXT_PUBLIC_SERVER_ENDPOINT || '';
 

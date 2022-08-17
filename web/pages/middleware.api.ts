@@ -13,6 +13,7 @@ export const middleware = (req: NextRequest) => {
     });
   }
 
+  console.log(pathname);
   if (pathname.startsWith('/app')) {
     return new Response(null, {
       status: 404

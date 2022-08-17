@@ -1,8 +1,8 @@
 import { JSONSchemaType } from 'ajv';
-import { tenants } from 'models';
-import { getTenantPrimaryDomain } from 'utils/domain';
-import { APIRoute } from 'utils/types';
-import { validate } from 'utils/validate';
+import { tenants } from '~/models';
+import { getTenantPrimaryDomain } from '~/utils/domain';
+import { APIRoute } from '~/utils/types';
+import { validate } from '~/utils/validate';
 
 export type Params = {
   code: string;

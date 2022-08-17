@@ -5,7 +5,9 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@server/*": ["../server/src/*"]
+      "@web/*": ["../web/*"],
+      "@server/*": ["../server/src/*"],
+      "~/*": ["./*"]
     }
   },
   "include": ["**/*.ts"],

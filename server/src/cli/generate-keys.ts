@@ -1,5 +1,5 @@
 import { Command } from '@dotplants/cli';
-import { createKeyPair } from 'services/token/key';
+import { createKeyPair } from '~/services/token/key';
 
 export const generateKeys: Command = {
   description: 'generate keys',

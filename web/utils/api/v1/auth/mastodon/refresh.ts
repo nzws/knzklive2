@@ -2,7 +2,7 @@ import type {
   Params,
   Response
 } from '@server/controllers/v1/auth/mastodon/refresh';
-import { ParamsAsAnonymous, RequestAsAnonymous } from 'utils/api/v1/types';
+import { ParamsAsAnonymous, RequestAsAnonymous } from '~/utils/api/v1/types';
 
 export type { Params, Response };
 

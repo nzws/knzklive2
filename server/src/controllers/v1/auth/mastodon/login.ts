@@ -1,7 +1,7 @@
 import { JSONSchemaType } from 'ajv';
-import { AuthMastodon } from 'services/auth-providers/mastodon';
-import { APIRoute } from 'utils/types';
-import { validate } from 'utils/validate';
+import { AuthMastodon } from '~/services/auth-providers/mastodon';
+import { APIRoute } from '~/utils/types';
+import { validate } from '~/utils/validate';
 
 export type Params = {
   tenantId: string;

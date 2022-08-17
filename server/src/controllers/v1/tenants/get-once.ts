@@ -1,6 +1,6 @@
-import { tenants } from 'models';
-import { checkDomain, getSlugOrCustomDomain } from 'utils/domain';
-import { APIRoute } from 'utils/types';
+import { tenants } from '~/models';
+import { checkDomain, getSlugOrCustomDomain } from '~/utils/domain';
+import { APIRoute } from '~/utils/types';
 
 export type Response = {
   id: number;

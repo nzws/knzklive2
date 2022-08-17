@@ -1,5 +1,5 @@
 import type { Params } from '@server/controllers/v1/auth/mastodon/login';
-import { getLink, withQuery } from 'utils/contexts/api';
+import { getLink, withQuery } from '~/utils/contexts/api';
 
 export type { Params };
 

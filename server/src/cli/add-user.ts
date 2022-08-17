@@ -1,5 +1,5 @@
 import { Command } from '@dotplants/cli';
-import { tenants, users } from 'models';
+import { tenants, users } from '~/models';
 
 export const addUser: Command = {
   description: 'add user',

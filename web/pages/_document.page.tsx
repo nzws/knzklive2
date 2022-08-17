@@ -5,7 +5,7 @@ import Document, {
   NextScript,
   DocumentContext
 } from 'next/document';
-import { CssBaseline } from '@nextui-org/react';
+import { ColorModeScript } from '@chakra-ui/react';
 import { Children } from 'react';
 
 class MyDocument extends Document {
@@ -20,8 +20,9 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head>{CssBaseline.flush()}</Head>
+        <Head />
         <body>
+          <ColorModeScript />
           <Main />
           <NextScript />
         </body>
