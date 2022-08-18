@@ -77,7 +77,9 @@ export const getStaticProps: GetStaticProps<Props, PathProps> = async ({
 }) => {
   const tenantDomain = params?.tenantDomain || '';
 
-  const tenant = await client.v1.tenants._tenantDomain(tenantDomain).get();
+  const { body: tenant } = await client.v1.tenants
+    ._tenantDomain(tenantDomain)
+    .get();
   if (!tenant || 'errorCode' in tenant) {
     return {
       notFound: true
