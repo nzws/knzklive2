@@ -148,6 +148,9 @@ dist
 .pnp.*
 .yarn
 
+# Aspida
+api-types/api/$api.ts
+
 # TypeScript definition
 # なんかめっちゃ重いので除外してるけど、適時フォーマットして
 .d.ts

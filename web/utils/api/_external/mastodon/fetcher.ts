@@ -1,4 +1,4 @@
-import { withQuery } from '~/utils/hooks/use-auth';
+import { withQuery } from '~/utils/contexts/api';
 
 export const mastodonFetcher = async <R>(
   domain: string,

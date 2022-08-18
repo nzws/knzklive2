@@ -22,6 +22,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aspida/fetch@npm:^1.11.0":
+  version: 1.11.0
+  resolution: "@aspida/fetch@npm:1.11.0"
+  dependencies:
+    aspida: ^1.7.1
+  checksum: 4ca1d8a8a760290f1379c9601f214198472b4ad14fb3c5293ecb0f2755c9ad3e9431c52bef492d918f740c7754961b7d1b9afef6336897a92cdebdf75f1c5fe9
+  languageName: node
+  linkType: hard
+
+"@aspida/swr@npm:^1.11.0":
+  version: 1.11.0
+  resolution: "@aspida/swr@npm:1.11.0"
+  dependencies:
+    aspida: ^1.7.1
+  checksum: 08f28c87e6774d2bca4feca9f0b52693b897e8e474272586d0ef30676468904dd4898672188a254ff610328810e2d7a4f6c0e1a2f44a60a10de34fa87b38cba8
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/code-frame@npm:7.18.6"
@@ -3588,7 +3606,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aspida@npm:^1.10.3":
+"aspida@npm:^1.10.3, aspida@npm:^1.7.1":
   version: 1.11.0
   resolution: "aspida@npm:1.11.0"
   dependencies:
@@ -10316,6 +10334,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "web@workspace:web"
   dependencies:
+    "@aspida/fetch": ^1.11.0
+    "@aspida/swr": ^1.11.0
     "@chakra-ui/react": ^2.2.8
     "@emotion/react": ^11.10.0
     "@emotion/styled": ^11.10.0

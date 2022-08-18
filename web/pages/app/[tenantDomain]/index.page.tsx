@@ -1,17 +1,14 @@
+import useAspidaSWR from '@aspida/swr';
+import { TenantPublic } from '@server/models/tenant';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment, useCallback } from 'react';
-import useSWR from 'swr';
-import {
-  getV1TenantsOnce,
-  Response as TenantResponse
-} from '~/utils/api/v1/tenants/get-once';
-import { getV1UsersMe } from '~/utils/api/v1/users/me';
-import { fetcher, SignInType } from '~/utils/contexts/api';
+import { client } from '~/utils/api/client';
+import { SignInType } from '~/utils/contexts/auth';
 import { useAuth } from '~/utils/hooks/use-auth';
 
 type Props = {
-  tenant?: TenantResponse;
+  tenant?: TenantPublic;
   tenantDomain: string;
 };
 
@@ -20,12 +17,21 @@ type PathProps = {
 };
 
 const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
-  const { signIn } = useAuth();
-  const { data: tenant } = useSWR(getV1TenantsOnce([tenantDomain]), {
-    fallbackData: tenantFallback
-  });
+  const { signIn, token } = useAuth();
+  const { data: tenant } = useAspidaSWR(
+    client.v1.tenants._tenantDomain(tenantDomain),
+    'get',
+    {
+      fallbackData: tenantFallback
+    }
+  );
 
-  const { data: user, mutate } = useSWR('me', getV1UsersMe);
+  // todo: token ないときの処理
+  const { data: user, mutate } = useAspidaSWR(client.v1.users.me, {
+    headers: {
+      Authorization: `Bearer ${token || ''}`
+    }
+  });
 
   const handleLogin = useCallback(() => {
     void (async () => {
@@ -71,7 +77,7 @@ export const getStaticProps: GetStaticProps<Props, PathProps> = async ({
 }) => {
   const tenantDomain = params?.tenantDomain || '';
 
-  const tenant = await fetcher(getV1TenantsOnce([tenantDomain]));
+  const tenant = await client.v1.tenants._tenantDomain(tenantDomain).get();
   if (!tenant || 'errorCode' in tenant) {
     return {
       notFound: true

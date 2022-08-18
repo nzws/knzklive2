@@ -6,6 +6,6 @@ export type Methods = {
       limit: number;
     };
 
-    resBody: TenantPublic[];
+    resBody: TenantPublic;
   };
 };

@@ -1,7 +1,9 @@
 import { UserPrivate } from '@server/models/user';
+import { AuthorizationHeader } from '~/common/types';
 
 export type Methods = {
   get: {
-    resBody: UserPrivate
+    reqHeaders: AuthorizationHeader;
+    resBody: UserPrivate;
   };
 };
