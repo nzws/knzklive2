@@ -2,11 +2,9 @@ import { JSONSchemaType } from 'ajv';
 import { AuthMastodon } from '~/services/auth-providers/mastodon';
 import { APIRoute } from '~/utils/types';
 import { validate } from '~/utils/validate';
+import { Methods } from '@api-types/api/v1/auth/mastodon/login';
 
-export type Params = {
-  tenantId: string;
-  domain: string;
-};
+type Params = Methods['get']['query'];
 
 const schema: JSONSchemaType<Params> = {
   type: 'object',
@@ -16,7 +14,7 @@ const schema: JSONSchemaType<Params> = {
       minLength: 1
     },
     tenantId: {
-      type: 'string',
+      type: 'number',
       minLength: 1,
       maxLength: 10
     }
@@ -41,7 +39,7 @@ export const v1AuthMastodonLogin: APIRoute<
     return;
   }
 
-  const tenantId = parseInt(query.tenantId, 10);
+  const tenantId = query.tenantId;
   if (isNaN(tenantId) || !tenantId) {
     ctx.code = 400;
     ctx.body = {

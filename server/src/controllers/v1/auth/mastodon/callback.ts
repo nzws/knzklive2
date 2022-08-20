@@ -3,10 +3,9 @@ import { tenants } from '~/models';
 import { getTenantPrimaryDomain } from '~/utils/domain';
 import { APIRoute } from '~/utils/types';
 import { validate } from '~/utils/validate';
+import { Methods } from '@api-types/api/v1/auth/mastodon/callback';
 
-export type Params = {
-  code: string;
-};
+type Params = Methods['post']['reqBody'];
 
 const schema: JSONSchemaType<Params> = {
   type: 'object',

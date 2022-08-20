@@ -4,16 +4,11 @@ import { AuthMastodon } from '~/services/auth-providers/mastodon';
 import { ExternalUser } from '~/services/auth-providers/_base';
 import { UserToken } from '~/services/token/user-token';
 import { APIRoute } from '~/utils/types';
-import { validate } from '~/utils/validate';
+import { validateWithType } from '~/utils/validate';
+import { Methods } from '@api-types/api/v1/auth/mastodon/refresh';
 
-export type Params = {
-  domain: string;
-  token: string;
-};
-
-export type Response = {
-  liveToken: string;
-};
+type Params = Methods['post']['reqBody'];
+type Response = Methods['post']['resBody'];
 
 const schema: JSONSchemaType<Params> = {
   type: 'object',
@@ -39,9 +34,8 @@ export const v1AuthMastodonRefresh: APIRoute<
   Params,
   Response
 > = async ctx => {
-  const query = ctx.request.body;
-  const { valid } = validate<Params>(schema, query);
-  if (!valid) {
+  const query = ctx.request.body as unknown;
+  if (!validateWithType(schema, query)) {
     ctx.code = 400;
     ctx.body = {
       errorCode: 'invalid_request'

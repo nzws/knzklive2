@@ -8,7 +8,7 @@
       "@web/*": ["../web/*"],
       "@server/*": ["../server/src/*"],
       "@api-types/*": ["../api-types/*"],
-      "~/*": ["./*"]
+      "~/*": ["./src/*"]
     }
   },
   "ts-node": {
