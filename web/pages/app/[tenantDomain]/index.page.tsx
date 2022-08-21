@@ -3,9 +3,9 @@ import { TenantPublic } from '@server/models/tenant';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment, useCallback } from 'react';
-import { client } from '~/utils/api/client';
-import { SignInType } from '~/utils/contexts/auth';
-import { useAuth } from '~/utils/hooks/use-auth';
+import { client } from '@web/utils/api/client';
+import { SignInType } from '@web/utils/contexts/auth';
+import { useAuth } from '@web/utils/hooks/use-auth';
 
 type Props = {
   tenant?: TenantPublic;

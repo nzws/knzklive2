@@ -1,8 +1,8 @@
-import { JSONSchemaType } from 'ajv';
-import { AuthMastodon } from '~/services/auth-providers/mastodon';
-import { APIRoute } from '~/utils/types';
-import { validate } from '~/utils/validate';
-import { Methods } from '@api-types/api/v1/auth/mastodon/login';
+import type { JSONSchemaType } from 'ajv';
+import { AuthMastodon } from '@server/services/auth-providers/mastodon';
+import type { APIRoute } from '@server/utils/types';
+import { validateWithType } from '@server/utils/validate';
+import type { Methods } from '@api-types/api/v1/auth/mastodon/login';
 
 type Params = Methods['get']['query'];
 
@@ -30,8 +30,7 @@ export const v1AuthMastodonLogin: APIRoute<
   never
 > = async ctx => {
   const query = ctx.request.query;
-  const { valid } = validate<Params>(schema, query);
-  if (!valid) {
+  if (!validateWithType(schema, query)) {
     ctx.code = 400;
     ctx.body = {
       errorCode: 'invalid_request'

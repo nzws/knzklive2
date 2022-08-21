@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useAuth } from '~/utils/hooks/use-auth';
+import { useAuth } from '@web/utils/hooks/use-auth';
 
 const Page: NextPage = () => {
   const { signInCallback } = useAuth();

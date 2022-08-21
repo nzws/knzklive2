@@ -1,5 +1,5 @@
-import { Middleware } from 'koa';
-import { UserToken } from '~/services/token/user-token';
+import type { Middleware } from 'koa';
+import { UserToken } from '@server/services/token/user-token';
 
 const userToken = new UserToken();
 
@@ -23,7 +23,7 @@ export const middlewareAuthorizeUser: Middleware = async (ctx, next) => {
     return;
   }
 
-  const payload = await userToken.verifyToken(jwt);
+  const payload = await userToken.verifyToken(jwt || '');
   if (!payload) {
     ctx.code = 401;
     ctx.body = {

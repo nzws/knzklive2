@@ -1,20 +1,14 @@
-import { JSONSchemaType } from 'ajv';
-import { users } from '~/models';
-import { AuthMastodon } from '~/services/auth-providers/mastodon';
-import { ExternalUser } from '~/services/auth-providers/_base';
-import { UserToken } from '~/services/token/user-token';
-import { APIRoute } from '~/utils/types';
-import { validate } from '~/utils/validate';
+import type { JSONSchemaType } from 'ajv';
+import { users } from '@server/models';
+import { AuthMastodon } from '@server/services/auth-providers/mastodon';
+import type { ExternalUser } from '@server/services/auth-providers/_base';
+import { UserToken } from '@server/services/token/user-token';
+import type { APIRoute } from '@server/utils/types';
+import { validateWithType } from '@server/utils/validate';
+import type { Methods } from '@api-types/api/v1/auth/mastodon/token';
 
-export type Params = {
-  domain: string;
-  code: string;
-};
-
-export type Response = {
-  mastodonToken: string;
-  liveToken: string;
-};
+type Params = Methods['post']['reqBody'];
+type Response = Methods['post']['resBody'];
 
 const schema: JSONSchemaType<Params> = {
   type: 'object',
@@ -40,9 +34,8 @@ export const v1AuthMastodonToken: APIRoute<
   never,
   Response
 > = async ctx => {
-  const query = ctx.request.query;
-  const { valid } = validate<Params>(schema, query);
-  if (!valid) {
+  const query = ctx.request.body as unknown;
+  if (!validateWithType(schema, query)) {
     ctx.code = 400;
     ctx.body = {
       errorCode: 'invalid_request'

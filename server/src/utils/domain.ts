@@ -1,11 +1,11 @@
-import { Tenant } from '@prisma/client';
+import type { Tenant } from '@prisma/client';
 import isValidDomain from 'is-valid-domain';
 import { DEFAULT_DOMAIN } from './constants';
 
 export const checkDomain = (domain: string): boolean => {
   if (process.env.NODE_ENV === 'development') {
     // ポート
-    domain = domain.split(':')[0];
+    domain = domain.split(':')[0] as string;
 
     if (domain === 'localhost') {
       return true;

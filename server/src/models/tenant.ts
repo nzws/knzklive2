@@ -1,5 +1,5 @@
-import { PrismaClient, Tenant, User } from '@prisma/client';
-import { checkDomain } from '~/utils/domain';
+import type { PrismaClient, Tenant, User } from '@prisma/client';
+import { checkDomain } from '@server/utils/domain';
 
 export type TenantPublic = {
   id: number;

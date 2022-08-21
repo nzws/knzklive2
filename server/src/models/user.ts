@@ -1,6 +1,6 @@
-import { PrismaClient, User } from '@prisma/client';
-import { USERNAME_REGEX } from '~/utils/constants';
-import { checkDomain } from '~/utils/domain';
+import type { PrismaClient, User } from '@prisma/client';
+import { USERNAME_REGEX } from '@server/utils/constants';
+import { checkDomain } from '@server/utils/domain';
 
 export type UserConfig = {
   //
@@ -14,10 +14,10 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       const acct = account.toLowerCase();
 
       const [username, domain] = acct.split('@');
-      if (!USERNAME_REGEX.test(username)) {
+      if (!USERNAME_REGEX.test(username || '')) {
         throw new Error('Invalid username');
       }
-      if (!checkDomain(domain)) {
+      if (!checkDomain(domain || '')) {
         throw new Error('Invalid domain');
       }
 

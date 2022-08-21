@@ -4,11 +4,12 @@
     "strict": true,
     "noEmit": true,
     "baseUrl": ".",
+    "noPropertyAccessFromIndexSignature": false,
+    "exactOptionalPropertyTypes": false,
     "paths": {
       "@web/*": ["../web/*"],
       "@server/*": ["../server/src/*"],
-      "@api-types/*": ["../api-types/*"],
-      "~/*": ["./src/*"]
+      "@api-types/*": ["../api-types/*"]
     }
   },
   "ts-node": {

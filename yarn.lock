@@ -2935,6 +2935,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/experimental-utils@npm:^5.33.1":
+  version: 5.33.1
+  resolution: "@typescript-eslint/experimental-utils@npm:5.33.1"
+  dependencies:
+    "@typescript-eslint/utils": 5.33.1
+  peerDependencies:
+    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
+  checksum: 49e81b5977adc2d5c2c1a39eea25b79ec6d88ff3a7757373eb2da1a865658e23b382158c389fa47b9882603414a758894596aab9f5f79aaec046b9e3c2a9fa47
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/parser@npm:5.33.1, @typescript-eslint/parser@npm:^5.21.0":
   version: 5.33.1
   resolution: "@typescript-eslint/parser@npm:5.33.1"
@@ -3246,6 +3257,7 @@ __metadata:
     "@types/node": 18.7.6
     "@types/node-fetch": ^2.6.2
     "@typescript-eslint/eslint-plugin": 5.33.1
+    "@typescript-eslint/experimental-utils": ^5.33.1
     "@typescript-eslint/parser": 5.33.1
     aspida: ^1.11.0
     eslint: 8.22.0

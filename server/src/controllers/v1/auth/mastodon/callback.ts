@@ -1,9 +1,9 @@
-import { JSONSchemaType } from 'ajv';
-import { tenants } from '~/models';
-import { getTenantPrimaryDomain } from '~/utils/domain';
-import { APIRoute } from '~/utils/types';
-import { validate } from '~/utils/validate';
-import { Methods } from '@api-types/api/v1/auth/mastodon/callback';
+import type { JSONSchemaType } from 'ajv';
+import { tenants } from '@server/models';
+import { getTenantPrimaryDomain } from '@server/utils/domain';
+import type { APIRoute } from '@server/utils/types';
+import { validateWithType } from '@server/utils/validate';
+import type { Methods } from '@api-types/api/v1/auth/mastodon/callback';
 
 type Params = Methods['post']['reqBody'];
 
@@ -23,8 +23,7 @@ const protocol = process.env.USE_HTTP ? 'http' : 'https';
 
 export const v1AuthMastodonCallback: APIRoute<never, Params> = async ctx => {
   const query = ctx.request.query;
-  const { valid } = validate<Params>(schema, query);
-  if (!valid) {
+  if (!validateWithType(schema, query)) {
     ctx.code = 400;
     ctx.body = {
       errorCode: 'invalid_request'

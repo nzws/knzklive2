@@ -1,5 +1,8 @@
 import { useContext } from 'react';
-import { AuthContext, Returns as useAPIReturns } from '~/utils/contexts/auth';
+import {
+  AuthContext,
+  Returns as useAPIReturns
+} from '@web/utils/contexts/auth';
 
 type Returns = Partial<Omit<useAPIReturns, 'fetcher'>>;
 

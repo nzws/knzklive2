@@ -1,4 +1,4 @@
-import { ConfigTypes } from '@dotplants/cli';
+import type { ConfigTypes } from '@dotplants/cli';
 import { addUser } from './add-user';
 import { generateKeys } from './generate-keys';
 

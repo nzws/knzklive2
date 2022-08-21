@@ -1,5 +1,5 @@
-import { Command } from '@dotplants/cli';
-import { tenants, users } from '~/models';
+import type { Command } from '@dotplants/cli';
+import { tenants, users } from '@server/models';
 
 export const addUser: Command = {
   description: 'add user',
@@ -16,7 +16,12 @@ export const addUser: Command = {
       return;
     }
 
-    const tenant = await tenants.create(user.account.split('@')[0], user);
+    const slug = user.account.split('@')[0];
+    if (!slug) {
+      throw new Error('Invalid account');
+    }
+
+    const tenant = await tenants.create(slug, user);
     console.log(`tenant ${tenant.slug} (id=${tenant.id}) created`);
   },
   flags: {

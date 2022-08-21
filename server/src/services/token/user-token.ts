@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { Token } from './_base';
 
 // todo: 鍵を定期的に更新しないといけない気がする

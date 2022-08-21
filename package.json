@@ -19,7 +19,7 @@
     "ws:format": "prettier --ignore-path .gitignore --write .",
     "format": "yarn workspaces foreach run ws:format",
     "test": "yarn workspaces foreach run ws:test",
-    "dev": "nf start -x 8080 app,web"
+    "dev": "nf start -x 8080,3000 app,web"
   },
   "devDependencies": {
     "foreman": "3.0.1",

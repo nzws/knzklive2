@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, createContext } from 'react';
 import { useLocalStorage } from 'react-use';
-import { NewWindow } from '~/utils/new-window';
+import { NewWindow } from '@web/utils/new-window';
 import { client } from '../api/client';
 
 export enum SignInType {
