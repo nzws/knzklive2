@@ -4,6 +4,7 @@
   "license": "AGPL-3.0",
   "private": true,
   "packageManager": "yarn@3.2.1",
+  "type": "module",
   "scripts": {
     "ws:test": "jest",
     "ws:format": "prisma format",
@@ -36,7 +37,7 @@
   },
   "devDependencies": {
     "@knzk/prettier-config": "^1.0.0",
-    "@tsconfig/node16": "1.0.3",
+    "@tsconfig/node18-strictest-esm": "^1.0.0",
     "@types/jest": "28.1.7",
     "@types/koa": "2.13.5",
     "@types/koa-bodyparser": "4.3.7",

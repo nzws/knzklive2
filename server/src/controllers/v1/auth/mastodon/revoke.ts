@@ -1,7 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { AuthMastodon } from '~/services/auth-providers/mastodon';
 import { APIRoute } from '~/utils/types';
-import { validate, validateWithType } from '~/utils/validate';
+import { validateWithType } from '~/utils/validate';
 
 export type Params = {
   domain: string;

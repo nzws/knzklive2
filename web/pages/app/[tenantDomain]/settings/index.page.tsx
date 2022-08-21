@@ -1,27 +1,25 @@
+import useAspidaSWR from '@aspida/swr';
+import { TenantPublic } from '@server/models/tenant';
 import { GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment } from 'react';
-import useSWR from 'swr';
-import {
-  getV1TenantsOnce,
-  Response as TenantResponse
-} from '~/utils/api/v1/tenants/get-once';
+import { client } from '~/utils/api/client';
 
 type Props = {
-  tenant?: TenantResponse;
+  tenant?: TenantPublic;
+  tenantDomain: string;
 };
 
 type PathProps = {
   tenantDomain: string;
 };
 
-const Page: NextPage<Props> = ({ tenant: tenantFallback }) => {
-  const { data: tenant } = useSWR(
+const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
+  const { data: tenant } = useAspidaSWR(
+    client.v1.tenants._tenantDomain(tenantDomain),
     {
-      tenantDomain: location.host
-    },
-    getV1TenantsOnce,
-    { fallbackData: tenantFallback }
+      fallbackData: tenantFallback
+    }
   );
 
   return (
@@ -38,9 +36,20 @@ const Page: NextPage<Props> = ({ tenant: tenantFallback }) => {
 export const getStaticProps: GetStaticProps<Props, PathProps> = async ({
   params
 }) => {
+  const tenantDomain = params?.tenantDomain || '';
+  const { body: tenant } = await client.v1.tenants
+    ._tenantDomain(tenantDomain)
+    .get();
+  if (!tenant || 'errorCode' in tenant) {
+    return {
+      notFound: true
+    };
+  }
+
   return {
     props: {
-      tenant: await getV1TenantsOnce(params?.tenantDomain || '')
+      tenant,
+      tenantDomain
     },
     revalidate: 60,
     fallback: 'blocking'
