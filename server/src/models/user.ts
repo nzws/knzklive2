@@ -1,6 +1,6 @@
 import type { PrismaClient, User } from '@prisma/client';
-import { USERNAME_REGEX } from '@server/utils/constants';
-import { checkDomain } from '@server/utils/domain';
+import { USERNAME_REGEX } from '../utils/constants';
+import { checkDomain } from '../utils/domain';
 
 export type UserConfig = {
   //

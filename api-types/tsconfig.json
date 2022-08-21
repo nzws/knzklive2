@@ -2,13 +2,7 @@
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
     "strict": true,
-    "noEmit": true,
-    "baseUrl": ".",
-    "paths": {
-      "@web/*": ["../web/*"],
-      "@server/*": ["../server/src/*"],
-      "@api-types/*": ["../api-types/*"]
-    }
+    "noEmit": true
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]

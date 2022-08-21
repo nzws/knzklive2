@@ -1,9 +1,9 @@
 import useAspidaSWR from '@aspida/swr';
-import { TenantPublic } from '@server/models/tenant';
+import { TenantPublic } from 'server/src/models/tenant';
 import { GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment } from 'react';
-import { client } from '@web/utils/api/client';
+import { client } from '../../../../utils/api/client';
 
 type Props = {
   tenant?: TenantPublic;

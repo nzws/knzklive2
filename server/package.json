@@ -4,14 +4,13 @@
   "license": "AGPL-3.0",
   "private": true,
   "packageManager": "yarn@3.2.1",
-  "type": "module",
   "scripts": {
     "ws:test": "jest",
     "ws:format": "prisma format",
     "lint:type": "tsc --noEmit",
     "lint:js": "eslint --cache '**/*.{ts,tsx}'",
     "ws:lint": "npm-run-all -p 'lint:*'",
-    "dev": "ts-node-dev --respawn --transpile-only --exit-child -r tsconfig-paths/register src",
+    "dev": "ts-node-dev --respawn --transpile-only --exit-child src",
     "build": "tsc --project tsconfig.build.json",
     "start": "node dist",
     "kanzaki": "ts-node src/cli"
@@ -25,6 +24,7 @@
     "@koa/router": "12.0.0",
     "@prisma/client": "4.2.1",
     "ajv": "8.11.0",
+    "api-types": "*",
     "bullmq": "^1.89.0",
     "dotenv": "16.0.1",
     "is-valid-domain": "0.1.6",
@@ -32,12 +32,12 @@
     "koa": "2.13.4",
     "koa-bodyparser": "4.3.0",
     "koa-logger": "3.2.1",
-    "node-fetch": "3.2.10",
+    "node-fetch": "2",
     "prisma": "4.2.1"
   },
   "devDependencies": {
     "@knzk/prettier-config": "^1.0.0",
-    "@tsconfig/node18-strictest-esm": "^1.0.0",
+    "@tsconfig/node18": "^1.0.1",
     "@types/jest": "28.1.7",
     "@types/koa": "2.13.5",
     "@types/koa-bodyparser": "4.3.7",
@@ -57,7 +57,6 @@
     "ts-jest": "28.0.8",
     "ts-node": "10.9.1",
     "ts-node-dev": "2.0.0",
-    "tsconfig-paths": "4.1.0",
     "typescript": "4.7.4"
   }
 }

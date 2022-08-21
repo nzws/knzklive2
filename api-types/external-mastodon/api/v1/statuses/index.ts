@@ -1,4 +1,4 @@
-import { AuthorizationHeader } from '@api-types/common/types';
+import { AuthorizationHeader } from '../../../../common/types';
 
 // https://docs.joinmastodon.org/methods/statuses/
 

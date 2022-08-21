@@ -1,8 +1,8 @@
 import type { JSONSchemaType } from 'ajv';
-import { AuthMastodon } from '@server/services/auth-providers/mastodon';
-import type { APIRoute } from '@server/utils/types';
-import { validateWithType } from '@server/utils/validate';
-import type { Methods } from '@api-types/api/v1/auth/mastodon/login';
+import type { Methods } from 'api-types/api/v1/auth/mastodon/login';
+import { AuthMastodon } from '../../../../services/auth-providers/mastodon';
+import type { APIRoute } from '../../../../utils/types';
+import { validateWithType } from '../../../../utils/validate';
 
 type Params = Methods['get']['query'];
 

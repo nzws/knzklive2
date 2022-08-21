@@ -1,9 +1,9 @@
 import type { JSONSchemaType } from 'ajv';
-import { tenants } from '@server/models';
-import { getTenantPrimaryDomain } from '@server/utils/domain';
-import type { APIRoute } from '@server/utils/types';
-import { validateWithType } from '@server/utils/validate';
-import type { Methods } from '@api-types/api/v1/auth/mastodon/callback';
+import type { Methods } from 'api-types/api/v1/auth/mastodon/callback';
+import { tenants } from '../../../../models';
+import { getTenantPrimaryDomain } from '../../../../utils/domain';
+import type { APIRoute } from '../../../../utils/types';
+import { validateWithType } from '../../../../utils/validate';
 
 type Params = Methods['post']['reqBody'];
 

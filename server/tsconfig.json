@@ -1,19 +1,8 @@
 {
-  "extends": "@tsconfig/node18-strictest-esm/tsconfig.json",
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
     "strict": true,
-    "noEmit": true,
-    "baseUrl": ".",
-    "noPropertyAccessFromIndexSignature": false,
-    "exactOptionalPropertyTypes": false,
-    "paths": {
-      "@web/*": ["../web/*"],
-      "@server/*": ["../server/src/*"],
-      "@api-types/*": ["../api-types/*"]
-    }
-  },
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
+    "noEmit": true
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]

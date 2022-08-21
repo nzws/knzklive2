@@ -1,4 +1,4 @@
-import { TenantPublic } from '@server/models/tenant';
+import { TenantPublic } from 'server/src/models/tenant';
 
 export type Methods = {
   get: {

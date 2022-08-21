@@ -1,8 +1,8 @@
 import { AuthProviderType } from '@prisma/client';
-import { authProviders } from '@server/models';
 import fetch from 'node-fetch';
-import { GITHUB_URL } from '@server/utils/constants';
-import { checkDomain } from '@server/utils/domain';
+import { authProviders } from '../../models';
+import { GITHUB_URL } from '../../utils/constants';
+import { checkDomain } from '../../utils/domain';
 import { AuthProvider, ExternalUser } from './_base';
 
 type MastodonApiError = {

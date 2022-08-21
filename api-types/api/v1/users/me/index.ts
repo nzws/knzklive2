@@ -1,5 +1,5 @@
-import { UserPrivate } from '@server/models/user';
-import { AuthorizationHeader } from '@api-types/common/types';
+import { UserPrivate } from 'server/src/models/user';
+import { AuthorizationHeader } from '../../../../common/types';
 
 export type Methods = {
   get: {

@@ -1,6 +1,6 @@
 import type { User } from '@prisma/client';
-import { users } from '@server/models';
-import type { APIRouteWithAuth } from '@server/utils/types';
+import { users } from '../../../models';
+import type { APIRouteWithAuth } from '../../../utils/types';
 
 export type Response = User;
 

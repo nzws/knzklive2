@@ -2,14 +2,14 @@
   "extends": "@tsconfig/next/tsconfig.json",
   "compilerOptions": {
     "strict": true,
-    "isolatedModules": true,
-    "baseUrl": ".",
-    "paths": {
-      "@web/*": ["../web/*"],
-      "@server/*": ["../server/src/*"],
-      "@api-types/*": ["../api-types/*"]
-    }
+    "isolatedModules": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", ".next"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
 }
