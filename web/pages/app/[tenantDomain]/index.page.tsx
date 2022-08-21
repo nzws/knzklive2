@@ -20,17 +20,16 @@ const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
   const { signIn, token } = useAuth();
   const { data: tenant } = useAspidaSWR(
     client.v1.tenants._tenantDomain(tenantDomain),
-    'get',
     {
       fallbackData: tenantFallback
     }
   );
 
-  // todo: token ないときの処理
   const { data: user, mutate } = useAspidaSWR(client.v1.users.me, {
     headers: {
       Authorization: `Bearer ${token || ''}`
-    }
+    },
+    key: token ? undefined : null
   });
 
   const handleLogin = useCallback(() => {

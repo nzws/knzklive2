@@ -1,7 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { AuthMastodon } from '~/services/auth-providers/mastodon';
 import { APIRoute } from '~/utils/types';
-import { validate } from '~/utils/validate';
+import { validate, validateWithType } from '~/utils/validate';
 
 export type Params = {
   domain: string;
@@ -34,9 +34,8 @@ export const v1AuthMastodonRevoke: APIRoute<
   Params,
   Response
 > = async ctx => {
-  const query = ctx.request.body;
-  const { valid } = validate<Params>(schema, query);
-  if (!valid) {
+  const query = ctx.request.body as unknown;
+  if (!validateWithType(schema, query)) {
     ctx.code = 400;
     ctx.body = {
       errorCode: 'invalid_request'
