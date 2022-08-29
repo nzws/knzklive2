@@ -9,8 +9,7 @@
     "packages": [
       "api-types",
       "server",
-      "web",
-      "server"
+      "web"
     ]
   },
   "scripts": {
