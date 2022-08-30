@@ -52,22 +52,22 @@ enum AuthProviderType {
 }
 
 model Live {
-  id                Int         @id @default(autoincrement())
-  idInTenant        Int
-  userId            Int
-  tenantId          Int
-  createdAt         DateTime    @default(now())
-  startedAt         DateTime?
-  endedAt           DateTime?
-  displayName       String      @db.VarChar(200)
-  description       String?     @db.Text
-  status            LiveStatus
-  privacy           LivePrivacy
-  streamingServerId Int
+  id          Int         @id @default(autoincrement())
+  idInTenant  Int
+  userId      Int
+  tenantId    Int
+  createdAt   DateTime    @default(now())
+  startedAt   DateTime?
+  endedAt     DateTime?
+  displayName String      @db.VarChar(200)
+  description String?     @db.Text
+  status      LiveStatus
+  privacy     LivePrivacy
+  streamId    Int
 
-  user            User            @relation(fields: [userId], references: [id])
-  tenant          Tenant          @relation(fields: [tenantId], references: [id])
-  streamingServer StreamingServer @relation(fields: [streamingServerId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  stream Stream @relation(fields: [streamId], references: [id])
 
   comments Comment[]
 
@@ -86,27 +86,33 @@ enum LivePrivacy {
   Private
 }
 
-model StreamingServer {
-  id         Int                   @id @default(autoincrement())
-  domain     String                @unique @db.VarChar(100)
-  status     StreamingServerStatus
-  originalIp String                @unique @db.VarChar(100)
-  dnsId      String                @unique @db.VarChar(100)
-  vmId       String                @unique @db.VarChar(100)
-
-  createdAt DateTime  @default(now())
-  retiedAt  DateTime?
+model Stream {
+  id             Int            @id @default(autoincrement())
+  provider       StreamProvider
+  status         StreamStatus
+  serverUrl      String         @db.VarChar(200)
+  streamKey      String         @db.VarChar(200)
+  firstStartedAt DateTime?
+  lastStartedAt  DateTime?
+  lastEndedAt    DateTime?
+  // todo: 視聴用 url の扱いなど
 
   lives Live[]
 
   @@index([status])
 }
 
-enum StreamingServerStatus {
+enum StreamProvider {
+  Mux
+  Knzk
+}
+
+enum StreamStatus {
   Provisioning
   Ready
-  Using
-  Retied
+  Live
+  Paused
+  Ended
 }
 
 model Comment {
