@@ -34,14 +34,14 @@ export const v1AuthMastodonRevoke: APIRoute<
   Params,
   Response
 > = async ctx => {
-  const query = ctx.request.body as unknown;
-  if (!validateWithType(schema, query)) {
+  if (!validateWithType(schema, ctx.request.body)) {
     ctx.code = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
     return;
   }
+  const query = ctx.request.body;
 
   try {
     const provider = new AuthMastodon(query.domain);

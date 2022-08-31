@@ -7,7 +7,7 @@
   "scripts": {
     "lint:type": "tsc --noEmit",
     "lint:js": "eslint --cache '**/*.{ts,tsx}'",
-    "ws:lint": "npm-run-all -p 'lint:*'",
+    "lint": "npm-run-all -p 'lint:*'",
     "build": "aspida"
   },
   "prettier": "@knzk/prettier-config",

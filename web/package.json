@@ -5,8 +5,8 @@
   "private": true,
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "ws:lint": "next lint",
-    "ws:test": "jest",
+    "lint": "next lint",
+    "test": "jest",
     "dev": "next dev",
     "build": "next build",
     "analyze": "ANALYZE=true next build",

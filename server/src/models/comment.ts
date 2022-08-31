@@ -1,4 +1,5 @@
-import type { Comment, PrismaClient } from '@prisma/client';
+import type { Comment, Live, PrismaClient, User } from '@prisma/client';
+import { users } from '.';
 
 export type CommentPublic = {
   id: number;
@@ -24,5 +25,35 @@ export const Comments = (client: PrismaClient['comment']) =>
         content: comment.content,
         sourceUrl: comment.sourceUrl || undefined
       };
+    },
+    createViaLocal: async (
+      userOrAccount: User,
+      live: Live,
+      content: string
+    ) => {
+      return client.create({
+        data: {
+          liveId: live.id,
+          userId: userOrAccount.id,
+          content
+        }
+      });
+    },
+    createViaRemote: async (
+      account: string,
+      live: Live,
+      content: string,
+      sourceUrl: string
+    ) => {
+      const user = await users.getOrCreateForRemote(account);
+
+      return client.create({
+        data: {
+          liveId: live.id,
+          userId: user.id,
+          content,
+          sourceUrl
+        }
+      });
     }
   });

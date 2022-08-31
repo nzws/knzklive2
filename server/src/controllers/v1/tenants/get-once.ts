@@ -1,14 +1,9 @@
+import { Methods } from 'api-types/api/v1/tenants/_tenantDomain';
 import { tenants } from '../../../models';
 import { checkDomain, getSlugOrCustomDomain } from '../../../utils/domain';
 import type { APIRoute } from '../../../utils/types';
 
-export type Response = {
-  id: number;
-  slug: string;
-  ownerId: number;
-  displayName?: string;
-  customDomain?: string;
-};
+type Response = Methods['get']['resBody'];
 
 export const getV1TenantsOnce: APIRoute<
   'key',

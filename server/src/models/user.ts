@@ -71,5 +71,27 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       });
 
       return updatedUser;
+    },
+    getOrCreateForRemote: async (account: string) => {
+      account = account.toLowerCase();
+
+      const user = await prismaUser.findUnique({
+        where: {
+          account
+        }
+      });
+
+      if (user) {
+        return user;
+      }
+
+      const newUser = await prismaUser.create({
+        data: {
+          account,
+          config: {}
+        }
+      });
+
+      return newUser;
     }
   });

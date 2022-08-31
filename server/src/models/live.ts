@@ -3,7 +3,8 @@ import type {
   LiveStatus,
   LivePrivacy,
   StreamStatus,
-  PrismaClient
+  PrismaClient,
+  Tenant
 } from '@prisma/client';
 
 export { LiveStatus, LivePrivacy, StreamStatus };
@@ -32,5 +33,26 @@ export const Lives = (client: PrismaClient['live']) =>
       displayName: live.displayName,
       description: live.description || undefined,
       status: live.status
-    })
+    }),
+    get: async (id: number) => {
+      const live = await client.findUnique({
+        where: {
+          id
+        }
+      });
+
+      return live || undefined;
+    },
+    getByTenantLiveId: async (tenant: Tenant, liveIdInTenant: number) => {
+      const live = await client.findUnique({
+        where: {
+          idInTenant_tenantId: {
+            tenantId: tenant.id,
+            idInTenant: liveIdInTenant
+          }
+        }
+      });
+
+      return live || undefined;
+    }
   });

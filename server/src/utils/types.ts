@@ -10,7 +10,7 @@ export type APIRoute<
 > = Middleware<
   State,
   DefaultContext & {
-    params: Params extends string ? Record<Params, string> : never;
+    params: Record<Extract<Params, string>, string>;
     request: {
       body: PostBody;
       query: GETParam;
