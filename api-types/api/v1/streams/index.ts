@@ -1,28 +1,20 @@
-export enum Privacy {
-  Public = 'public',
-  Private = 'private'
-}
+import { LivePrivacy, LivePublic } from 'server/src/models/live';
+import { AuthorizationHeader } from '../../../common/types';
 
 export type LiveSetting = {
-  title?: string;
+  title: string;
   description?: string;
-  privacy?: Privacy;
-  sensitive?: boolean;
+  privacy: LivePrivacy;
+  sensitive: boolean;
   hashtag?: string;
 };
 
-export type Live = unknown;
-
 export type Methods = {
   post: {
+    reqHeaders: AuthorizationHeader;
+
     reqBody: LiveSetting;
 
-    resBody: Live;
-  };
-
-  patch: {
-    reqBody: LiveSetting;
-
-    resBody: Live;
+    resBody: LivePublic;
   };
 };

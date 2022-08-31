@@ -8,8 +8,21 @@ export type UserConfig = {
 
 export type UserPrivate = User;
 
+export type UserPublic = {
+  id: number;
+  account: string;
+  displayName?: string;
+  avatarUrl?: string;
+};
+
 export const Users = (prismaUser: PrismaClient['user']) =>
   Object.assign(prismaUser, {
+    getPublic: (user: User): UserPublic => ({
+      id: user.id,
+      account: user.account,
+      displayName: user.displayName || undefined,
+      avatarUrl: user.avatarUrl || undefined
+    }),
     create: async (account: string) => {
       const acct = account.toLowerCase();
 
