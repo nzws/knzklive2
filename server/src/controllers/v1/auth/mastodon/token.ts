@@ -2,10 +2,10 @@ import type { JSONSchemaType } from 'ajv';
 import { users } from '../../../../models';
 import { AuthMastodon } from '../../../../services/auth-providers/mastodon';
 import type { ExternalUser } from '../../../../services/auth-providers/_base';
-import { UserToken } from '../../../../services/token/user-token';
 import type { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
 import type { Methods } from 'api-types/api/v1/auth/mastodon/token';
+import { UserToken } from '../../../../redis/user-token';
 
 type Params = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
@@ -78,7 +78,7 @@ export const v1AuthMastodonToken: APIRoute<
     lastSignedInAt: new Date()
   });
 
-  const liveToken = await userToken.getToken(currentUser);
+  const liveToken = await userToken.create(currentUser.id);
 
   ctx.body = {
     mastodonToken,

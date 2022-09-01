@@ -7,6 +7,10 @@ import { v1AuthMastodonLogin } from './controllers/v1/auth/mastodon/login';
 import { v1AuthMastodonToken } from './controllers/v1/auth/mastodon/token';
 import { v1AuthMastodonRefresh } from './controllers/v1/auth/mastodon/refresh';
 import { v1AuthMastodonRevoke } from './controllers/v1/auth/mastodon/revoke';
+import { middlewareLive } from './middlewares/live';
+import { middlewareTenant } from './middlewares/tenant';
+import { getV1LivesExplore } from './controllers/v1/lives/explore';
+import { getV1UsersOnce } from './controllers/v1/users/get';
 
 export const router = (): Router => {
   const route = new Router();
@@ -23,18 +27,22 @@ export const router = (): Router => {
   route.patch('/v1/tenants/:id', middlewareAuthorizeUser);
 
   route.get('/v1/users/me', middlewareAuthorizeUser, getV1UsersMe);
-  route.get('/v1/users/:id');
+  route.get('/v1/users/:userId', getV1UsersOnce);
 
-  route.get('/v1/lives/:tenantId/:liveIdInTenant');
-  route.get('/v1/lives/explore');
+  route.get('/v1/lives/:tenantId/:liveIdInTenant', middlewareTenant);
+  route.get('/v1/lives/explore', getV1LivesExplore);
+
+  // route.get('/v1/comments/:liveId', middlewareAuthorizeUser, middlewareLive);
+  route.post('/v1/comments/:liveId', middlewareAuthorizeUser, middlewareLive);
 
   route.post('/v1/streams', middlewareAuthorizeUser);
-  route.get('/v1/streams/:liveId', middlewareAuthorizeUser);
-  route.patch('/v1/streams/:liveId', middlewareAuthorizeUser);
-  route.post('/v1/streams/:liveId/action', middlewareAuthorizeUser);
-
-  route.get('/v1/comments/:liveId', middlewareAuthorizeUser);
-  route.post('/v1/comments/:liveId', middlewareAuthorizeUser);
+  route.get('/v1/streams/:liveId', middlewareAuthorizeUser, middlewareLive);
+  route.patch('/v1/streams/:liveId', middlewareAuthorizeUser, middlewareLive);
+  route.post(
+    '/v1/streams/:liveId/action',
+    middlewareAuthorizeUser,
+    middlewareLive
+  );
 
   return route;
 };

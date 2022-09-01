@@ -1,4 +1,5 @@
 import type { DefaultContext, DefaultState, Middleware } from 'koa';
+import { LivePublic } from '../models/live';
 import { TenantPublic } from '../models/tenant';
 import { UserPrivate } from '../models/user';
 
@@ -26,4 +27,8 @@ export type UserState = {
 
 export type TenantState = {
   tenant: TenantPublic;
+};
+
+export type LiveState = {
+  live: LivePublic;
 };

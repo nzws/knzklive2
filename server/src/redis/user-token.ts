@@ -8,6 +8,8 @@ export class UserToken {
     const token = crypto.randomBytes(48).toString('hex');
 
     await redis.set(token, userId, 'EX', tokenExpire);
+
+    return token;
   }
 
   async get(token: string) {

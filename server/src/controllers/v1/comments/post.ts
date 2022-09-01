@@ -1,7 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/comments/_liveId@number/index';
-import { comments, lives } from '../../../models';
-import { APIRoute, UserState } from '../../../utils/types';
+import { comments } from '../../../models';
+import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
 type Request = Methods['post']['reqBody'];
@@ -25,9 +25,8 @@ export const postV1Comment: APIRoute<
   never,
   Request,
   Response,
-  UserState
+  UserState & LiveState
 > = async ctx => {
-  const { liveId } = ctx.params;
   if (!validateWithType(reqBodySchema, ctx.request.body)) {
     ctx.code = 400;
     ctx.body = {
@@ -45,18 +44,9 @@ export const postV1Comment: APIRoute<
     return;
   }
 
-  const live = await lives.get(parseInt(liveId, 10));
-  if (!live) {
-    ctx.code = 404;
-    ctx.body = {
-      errorCode: 'not_found'
-    };
-    return;
-  }
-
   const comment = await comments.createViaLocal(
     ctx.state.user.id,
-    live.id,
+    ctx.state.live.id,
     content
   );
   const result = comments.getPublic(comment);
