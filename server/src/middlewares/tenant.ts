@@ -23,7 +23,7 @@ export const middlewareTenant: Middleware = async (ctx, next) => {
     return;
   }
 
-  ctx.state.tenant = tenants.getPublic(data);
+  ctx.state.tenant = data;
 
   await next();
 };

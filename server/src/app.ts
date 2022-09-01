@@ -3,8 +3,11 @@ import bodyParser from 'koa-bodyparser';
 import logger from 'koa-logger';
 import cors from '@koa/cors';
 import { router } from './router';
+import { Streaming } from './streaming';
 
 export const app = async (): Promise<void> => {
+  await Promise.resolve();
+
   const app = new Koa();
   app.use(bodyParser());
   app.use(logger());
@@ -15,7 +18,8 @@ export const app = async (): Promise<void> => {
 
   const port = process.env.PORT || 8080;
 
-  app.listen(port);
+  const server = app.listen(port);
   console.log(`Listening on port ${port}`);
-  await Promise.resolve();
+
+  new Streaming(server);
 };

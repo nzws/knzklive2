@@ -29,7 +29,8 @@
     "koa-bodyparser": "4.3.0",
     "koa-logger": "3.2.1",
     "node-fetch": "2",
-    "prisma": "4.2.1"
+    "prisma": "4.2.1",
+    "ws": "^8.8.1"
   },
   "devDependencies": {
     "@knzk/prettier-config": "^1.0.0",
@@ -42,6 +43,7 @@
     "@types/koa__router": "8.0.11",
     "@types/node": "18.7.6",
     "@types/node-fetch": "^2.6.2",
+    "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "5.33.1",
     "@typescript-eslint/parser": "5.33.1",
     "eslint": "8.22.0",

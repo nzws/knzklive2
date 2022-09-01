@@ -23,7 +23,7 @@ export const middlewareLive: Middleware = async (ctx, next) => {
     return;
   }
 
-  ctx.state.live = lives.getPublic(data);
+  ctx.state.live = data;
 
   await next();
 };

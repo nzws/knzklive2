@@ -1,6 +1,5 @@
+import { Live, Tenant } from '@prisma/client';
 import type { DefaultContext, DefaultState, Middleware } from 'koa';
-import { LivePublic } from '../models/live';
-import { TenantPublic } from '../models/tenant';
 import { UserPrivate } from '../models/user';
 
 export type APIRoute<
@@ -26,9 +25,9 @@ export type UserState = {
 };
 
 export type TenantState = {
-  tenant: TenantPublic;
+  tenant: Tenant;
 };
 
 export type LiveState = {
-  live: LivePublic;
+  live: Live;
 };

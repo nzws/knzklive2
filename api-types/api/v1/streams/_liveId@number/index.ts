@@ -21,8 +21,8 @@ export type Methods = {
 
       push: {
         status: StreamStatus;
-        url: string;
-        key: string;
+        url?: string;
+        key?: string;
       };
     };
   };
