@@ -1,10 +1,9 @@
-import type {
+import {
   Live,
   LiveStatus,
   LivePrivacy,
   StreamStatus,
-  PrismaClient,
-  Tenant
+  PrismaClient
 } from '@prisma/client';
 
 export { LiveStatus, LivePrivacy, StreamStatus };
@@ -43,16 +42,29 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return live || undefined;
     },
-    getByTenantLiveId: async (tenant: Tenant, liveIdInTenant: number) => {
+    getByTenantLiveId: async (tenantId: number, liveIdInTenant: number) => {
       const live = await client.findUnique({
         where: {
           idInTenant_tenantId: {
-            tenantId: tenant.id,
+            tenantId,
             idInTenant: liveIdInTenant
           }
         }
       });
 
       return live || undefined;
+    },
+    getPublicAndAlive: async () => {
+      const lives = await client.findMany({
+        where: {
+          status: LiveStatus.Live,
+          endedAt: null,
+          startedAt: {
+            not: null
+          }
+        }
+      });
+
+      return lives;
     }
   });

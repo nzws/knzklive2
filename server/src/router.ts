@@ -25,17 +25,16 @@ export const router = (): Router => {
   route.get('/v1/users/me', middlewareAuthorizeUser, getV1UsersMe);
   route.get('/v1/users/:id');
 
-  route.get('/v1/live/:tenantId');
-  route.post('/v1/live/:tenantId', middlewareAuthorizeUser);
-  route.get('/v1/live/:tenantId/:id');
-  route.get('/v1/live/:tenantId/:id/owner', middlewareAuthorizeUser);
-  route.patch('/v1/live/:tenantId/:id', middlewareAuthorizeUser);
-  route.post('/v1/live/:tenantId/:id/action', middlewareAuthorizeUser);
+  route.get('/v1/lives/:tenantId/:liveIdInTenant');
+  route.get('/v1/lives/explore');
 
-  route.get('/v1/live/:tenantId/:id/comments', middlewareAuthorizeUser);
-  route.post('/v1/live/:tenantId/:id/comments', middlewareAuthorizeUser);
+  route.post('/v1/streams', middlewareAuthorizeUser);
+  route.get('/v1/streams/:liveId', middlewareAuthorizeUser);
+  route.patch('/v1/streams/:liveId', middlewareAuthorizeUser);
+  route.post('/v1/streams/:liveId/action', middlewareAuthorizeUser);
 
-  route.post('/internal/streaming');
+  route.get('/v1/comments/:liveId', middlewareAuthorizeUser);
+  route.post('/v1/comments/:liveId', middlewareAuthorizeUser);
 
   return route;
 };

@@ -1,30 +1,11 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/comments/_liveId@number/index';
-import { comments, lives, tenants } from '../../../models';
+import { comments, lives } from '../../../models';
 import { APIRouteWithAuth } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
 type Request = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
-
-const paramsSchema: JSONSchemaType<{
-  liveIdInTenant: number;
-  tenantId: number;
-}> = {
-  type: 'object',
-  properties: {
-    tenantId: {
-      type: 'number',
-      minLength: 1
-    },
-    liveIdInTenant: {
-      type: 'number',
-      minLength: 1
-    }
-  },
-  required: ['tenantId', 'liveIdInTenant'],
-  additionalProperties: false
-};
 
 const reqBodySchema: JSONSchemaType<Request> = {
   type: 'object',
@@ -40,18 +21,12 @@ const reqBodySchema: JSONSchemaType<Request> = {
 };
 
 export const postV1Comment: APIRouteWithAuth<
-  'tenantId' | 'liveIdInTenant',
+  'liveId',
   never,
   Request,
   Response
 > = async ctx => {
-  if (!validateWithType(paramsSchema, ctx.params)) {
-    ctx.code = 400;
-    ctx.body = {
-      errorCode: 'invalid_request'
-    };
-    return;
-  }
+  const { liveId } = ctx.params;
   if (!validateWithType(reqBodySchema, ctx.request.body)) {
     ctx.code = 400;
     ctx.body = {
@@ -60,7 +35,6 @@ export const postV1Comment: APIRouteWithAuth<
     return;
   }
   const content = ctx.request.body.content;
-  const { liveIdInTenant, tenantId } = ctx.params;
 
   if (content.trim().length <= 0) {
     ctx.code = 400;
@@ -70,16 +44,7 @@ export const postV1Comment: APIRouteWithAuth<
     return;
   }
 
-  const tenant = await tenants.get(tenantId);
-  if (!tenant) {
-    ctx.code = 404;
-    ctx.body = {
-      errorCode: 'tenant_not_found'
-    };
-    return;
-  }
-
-  const live = await lives.getByTenantLiveId(tenant, liveIdInTenant);
+  const live = await lives.get(parseInt(liveId, 10));
   if (!live) {
     ctx.code = 404;
     ctx.body = {
@@ -88,7 +53,11 @@ export const postV1Comment: APIRouteWithAuth<
     return;
   }
 
-  const comment = await comments.createViaLocal(ctx.state.user, live, content);
+  const comment = await comments.createViaLocal(
+    ctx.state.user.id,
+    live.id,
+    content
+  );
   const result = comments.getPublic(comment);
   if (!result) {
     ctx.code = 500;

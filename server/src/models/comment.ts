@@ -26,15 +26,11 @@ export const Comments = (client: PrismaClient['comment']) =>
         sourceUrl: comment.sourceUrl || undefined
       };
     },
-    createViaLocal: async (
-      userOrAccount: User,
-      live: Live,
-      content: string
-    ) => {
+    createViaLocal: async (userId: number, liveId: number, content: string) => {
       return client.create({
         data: {
-          liveId: live.id,
-          userId: userOrAccount.id,
+          liveId,
+          userId,
           content
         }
       });

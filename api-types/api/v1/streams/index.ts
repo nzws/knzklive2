@@ -13,7 +13,9 @@ export type Methods = {
   post: {
     reqHeaders: AuthorizationHeader;
 
-    reqBody: LiveSetting;
+    reqBody: LiveSetting & {
+      tenantId: number;
+    };
 
     resBody: LivePublic;
   };

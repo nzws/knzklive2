@@ -7,9 +7,7 @@
   "scripts": {
     "test": "jest",
     "format": "prisma format",
-    "lint:type": "tsc --noEmit",
-    "lint:js": "eslint --cache '**/*.{ts,tsx}'",
-    "lint": "npm-run-all -p 'lint:*'",
+    "lint": "tsc --noEmit && eslint --cache '**/*.{ts,tsx}'",
     "dev": "ts-node-dev --respawn --transpile-only --exit-child src",
     "build": "tsc --project tsconfig.build.json",
     "start": "node dist",
