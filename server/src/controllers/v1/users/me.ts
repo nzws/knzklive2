@@ -1,26 +1,14 @@
 import type { User } from '@prisma/client';
-import { users } from '../../../models';
-import type { APIRouteWithAuth } from '../../../utils/types';
+import type { APIRoute, UserState } from '../../../utils/types';
 
 export type Response = User;
 
-export const getV1UsersMe: APIRouteWithAuth<
+export const getV1UsersMe: APIRoute<
   never,
   never,
   never,
-  Response
-> = async ctx => {
-  const user = ctx.state.user;
-
-  const data = await users.get(user.id);
-
-  if (!data) {
-    ctx.status = 404;
-    ctx.body = {
-      errorCode: 'user_not_found'
-    };
-    return;
-  }
-
-  ctx.body = data;
+  Response,
+  UserState
+> = ctx => {
+  ctx.body = ctx.state.user;
 };

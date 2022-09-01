@@ -1,11 +1,12 @@
 import type { Middleware } from 'koa';
-import { UserToken } from '../services/token/user-token';
+import { users } from '../models';
+import { UserToken } from '../redis/user-token';
 
 const userToken = new UserToken();
 
 export const middlewareAuthorizeUser: Middleware = async (ctx, next) => {
-  const token = ctx.headers.authorization;
-  if (!token || typeof token !== 'string') {
+  const header = ctx.headers.authorization;
+  if (!header || typeof header !== 'string') {
     ctx.code = 401;
     ctx.body = {
       errorCode: 'unauthorized'
@@ -14,7 +15,7 @@ export const middlewareAuthorizeUser: Middleware = async (ctx, next) => {
     return;
   }
 
-  const [type, jwt] = token.split(' ');
+  const [type, token] = header.split(' ');
   if (type !== 'Bearer') {
     ctx.code = 401;
     ctx.body = {
@@ -23,8 +24,8 @@ export const middlewareAuthorizeUser: Middleware = async (ctx, next) => {
     return;
   }
 
-  const payload = await userToken.verifyToken(jwt || '');
-  if (!payload) {
+  const id = await userToken.get(token);
+  if (!id) {
     ctx.code = 401;
     ctx.body = {
       errorCode: 'unauthorized'
@@ -32,7 +33,16 @@ export const middlewareAuthorizeUser: Middleware = async (ctx, next) => {
     return;
   }
 
-  ctx.state.user = payload;
+  const user = await users.get(id);
+  if (!user) {
+    ctx.code = 401;
+    ctx.body = {
+      errorCode: 'user_not_found'
+    };
+    return;
+  }
+
+  ctx.state.user = user;
 
   await next();
 };

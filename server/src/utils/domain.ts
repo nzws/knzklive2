@@ -5,7 +5,7 @@ import { DEFAULT_DOMAIN } from './constants';
 export const checkDomain = (domain: string): boolean => {
   if (process.env.NODE_ENV === 'development') {
     // ポート
-    domain = domain.split(':')[0] as string;
+    domain = domain.split(':')[0];
 
     if (domain === 'localhost') {
       return true;

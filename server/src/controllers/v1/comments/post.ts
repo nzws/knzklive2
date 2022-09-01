@@ -1,7 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/comments/_liveId@number/index';
 import { comments, lives } from '../../../models';
-import { APIRouteWithAuth } from '../../../utils/types';
+import { APIRoute, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
 type Request = Methods['post']['reqBody'];
@@ -20,11 +20,12 @@ const reqBodySchema: JSONSchemaType<Request> = {
   additionalProperties: false
 };
 
-export const postV1Comment: APIRouteWithAuth<
+export const postV1Comment: APIRoute<
   'liveId',
   never,
   Request,
-  Response
+  Response,
+  UserState
 > = async ctx => {
   const { liveId } = ctx.params;
   if (!validateWithType(reqBodySchema, ctx.request.body)) {
