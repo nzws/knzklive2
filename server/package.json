@@ -15,6 +15,8 @@
   },
   "prettier": "@knzk/prettier-config",
   "dependencies": {
+    "@bull-board/api": "^4.2.2",
+    "@bull-board/koa": "^4.2.2",
     "@dotplants/cli": "0.2.3",
     "@koa/cors": "3.4.0",
     "@koa/router": "12.0.0",
@@ -23,6 +25,7 @@
     "ajv": "8.11.0",
     "api-types": "workspace:^",
     "bullmq": "^1.90.1",
+    "cloudflare": "^2.9.1",
     "dotenv": "16.0.1",
     "ioredis": "^5.2.3",
     "is-valid-domain": "0.1.6",
@@ -36,6 +39,7 @@
   "devDependencies": {
     "@knzk/prettier-config": "^1.0.0",
     "@tsconfig/node18": "^1.0.1",
+    "@types/cloudflare": "^2.7.9",
     "@types/jest": "28.1.7",
     "@types/koa": "2.13.5",
     "@types/koa-bodyparser": "4.3.7",
