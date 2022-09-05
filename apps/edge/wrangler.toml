@@ -6,3 +6,7 @@ compatibility_date = "2022-09-05"
 bindings = [
   { name = "STREAMING_DURABLE_OBJECT", class_name = "StreamingDurableObject" },
 ]
+
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_classes = ["StreamingDurableObject"]

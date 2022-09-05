@@ -7,8 +7,7 @@
   "scripts": {
     "test": "jest",
     "lint": "tsc --noEmit && eslint --cache '**/*.{ts,tsx}'",
-    "start": "wrangler dev",
-    "deploy": "wrangler publish"
+    "start": "wrangler dev"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.16.0",

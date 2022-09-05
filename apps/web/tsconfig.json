@@ -4,12 +4,6 @@
     "strict": true,
     "isolatedModules": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    ".next"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", ".next"]
 }

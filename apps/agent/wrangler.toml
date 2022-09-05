@@ -1,8 +1,0 @@
-name = "edge"
-main = "src/index.ts"
-compatibility_date = "2022-09-05"
-
-[durable_objects]
-bindings = [
-  { name = "STREAMING_DURABLE_OBJECT", class_name = "StreamingDurableObject" },
-]

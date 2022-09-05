@@ -12,15 +12,17 @@
     ]
   },
   "scripts": {
-    "ws:lint": "prettier --ignore-path .gitignore --check .",
-    "ws:format": "prettier --ignore-path .gitignore --write .",
+    "prettier:lint": "prettier --check .",
+    "prettier:format": "prettier --write .",
     "dev": "nf start -x 8080,3000 app,web",
-    "lint": "yarn workspaces foreach --verbose --parallel --exclude knzklive2 run lint",
-    "format": "yarn workspaces foreach --verbose --parallel --exclude knzklive2 run format",
+    "lint": "yarn prettier:lint && yarn workspaces foreach --verbose --parallel --exclude knzklive2 run lint",
+    "format": "yarn prettier:format && yarn workspaces foreach --verbose --parallel --exclude knzklive2 run format",
     "test": "yarn workspaces foreach --verbose --parallel --exclude knzklive2 run test"
   },
   "devDependencies": {
+    "@knzk/prettier-config": "^1.0.0",
     "foreman": "3.0.1",
     "prettier": "2.7.1"
-  }
+  },
+  "prettier": "@knzk/prettier-config"
 }

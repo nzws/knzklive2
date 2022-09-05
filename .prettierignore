@@ -153,3 +153,4 @@ dist
 .d.ts
 
 .next
+.yarn/**
