@@ -146,7 +146,10 @@ export default {
         const newUrl = new URL(request.url);
         newUrl.pathname = `/${action}`;
 
-        if (payload.type !== action) {
+        if (
+          payload.type !== action ||
+          payload.liveId !== parseInt(liveId, 10)
+        ) {
           return new Response('invalid request', { status: 403 });
         }
 
