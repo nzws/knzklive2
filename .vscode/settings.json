@@ -1,4 +1,7 @@
 {
   "cSpell.words": ["aspida", "kanzaki", "Knzk"],
-  "eslint.workingDirectories": [{ "pattern": "./*/" }]
+  "eslint.workingDirectories": [
+    { "pattern": "./apps/*/" },
+    { "pattern": "./packages/*/" }
+  ]
 }
