@@ -1,6 +1,10 @@
 name = "edge"
 main = "src/index.ts"
 compatibility_date = "2022-09-05"
+routes = [
+  # todo: env
+	{ pattern = "edge.knzk.live", custom_domain = true }
+]
 
 [durable_objects]
 bindings = [

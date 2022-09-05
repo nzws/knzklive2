@@ -14,6 +14,7 @@ import { getV1UsersOnce } from './controllers/v1/users/get';
 import { getV1Lives } from './controllers/v1/lives/get';
 import { postV1Comment } from './controllers/v1/comments/post';
 import { middlewareMyStream } from './middlewares/stream';
+import { getV1InternalsEdgeJwt } from './controllers/v1/internals/edge/jwt';
 
 export const router = (): Router => {
   const route = new Router();
@@ -65,6 +66,8 @@ export const router = (): Router => {
     middlewareLive,
     middlewareMyStream
   );
+
+  route.get('/v1/internals/edge/jwt', getV1InternalsEdgeJwt);
 
   return route;
 };
