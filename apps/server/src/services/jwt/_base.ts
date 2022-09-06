@@ -8,10 +8,7 @@ export class JWT {
   private publicKey?: KeyLike;
   private privateKey?: KeyLike;
 
-  constructor(
-    private readonly subject: string,
-    private readonly expirationTime: string
-  ) {}
+  constructor(private readonly subject: string) {}
 
   async generateKeyPair() {
     const { publicKey, privateKey } = await jose.generateKeyPair(alg);
@@ -28,7 +25,10 @@ export class JWT {
     return jose.exportJWK(this.publicKey);
   }
 
-  protected async sign(payload: jose.JWTPayload): Promise<string> {
+  protected async sign(
+    payload: jose.JWTPayload,
+    expirationTime: string
+  ): Promise<string> {
     if (!this.privateKey) {
       throw new Error('privateKey is not initialized');
     }
@@ -37,7 +37,7 @@ export class JWT {
       .setIssuedAt()
       .setIssuer(ISSUER)
       .setSubject(this.subject)
-      .setExpirationTime(this.expirationTime)
+      .setExpirationTime(expirationTime)
       .sign(this.privateKey);
 
     return jwt;

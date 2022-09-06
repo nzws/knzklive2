@@ -1,0 +1,12 @@
+name: Build images - production
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build.yml
+    with:
+      tag: latest

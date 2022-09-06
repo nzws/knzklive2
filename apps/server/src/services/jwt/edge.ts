@@ -2,16 +2,26 @@ import { JWT } from './_base';
 
 export class JWTEdge extends JWT {
   constructor() {
-    super('edge', '10m');
+    super('edge');
   }
 
-  async generateToken(
-    type: 'stream' | 'push',
-    liveId: number
-  ): Promise<string> {
-    return this.sign({
-      type,
-      liveId
-    });
+  async generateTokenAsPush(liveId: number): Promise<string> {
+    return this.sign(
+      {
+        type: 'push',
+        liveId
+      },
+      '1d'
+    );
+  }
+
+  async generateTokenAsStream(liveId: number): Promise<string> {
+    return this.sign(
+      {
+        type: 'stream',
+        liveId
+      },
+      '1d'
+    );
   }
 }

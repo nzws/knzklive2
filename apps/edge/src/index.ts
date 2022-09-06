@@ -23,7 +23,7 @@ export class StreamingDurableObject {
     const url = new URL(request.url);
 
     if (request.headers.get('Upgrade') !== 'websocket') {
-      return new Response('expected websocket', { status: 400 });
+      return new Response('Upgrade required', { status: 426 });
     }
     const [client, server] = Object.values(new WebSocketPair());
 
@@ -54,16 +54,16 @@ export class StreamingDurableObject {
       this.headPackets = [];
 
       let headRecorded = false;
+
       server.addEventListener('message', event => {
         if (event.data instanceof ArrayBuffer) {
+          // todo: get flv header
           if (!headRecorded) {
             this.headPackets.push(event.data);
 
             if (this.hasHeadPackets()) {
               headRecorded = true;
               this.headPackets.forEach(packet => this.broadcast(packet));
-            } else {
-              return;
             }
           }
 
@@ -85,7 +85,7 @@ export class StreamingDurableObject {
     this.sessions = this.sessions.filter(s => s !== session);
   }
 
-  broadcast(message: ArrayBuffer) {
+  private broadcast(message: ArrayBuffer) {
     if (!this.hasHeadPackets()) {
       return;
     }
@@ -105,7 +105,7 @@ export class StreamingDurableObject {
     });
   }
 
-  closeAll() {
+  private closeAll() {
     this.sessions.forEach(session => session.socket.close());
     this.sessions = [];
   }

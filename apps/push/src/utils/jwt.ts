@@ -5,6 +5,7 @@ const ISSUER = 'github.com/nzws/knzklive2';
 
 export class Jwt {
   timestamp?: number;
+  cache?: JWK;
 
   constructor(private readonly url: string, private readonly subject: string) {}
 
@@ -27,7 +28,7 @@ export class Jwt {
   }
 
   async getKey(): Promise<JWK> {
-    const key = await this.getCache();
+    const key = this.getCache();
     if (key) {
       return key;
     }
@@ -35,33 +36,23 @@ export class Jwt {
     return this.getOrigin();
   }
 
-  private async getCache(): Promise<JWK | undefined> {
-    const cache = await caches.open('jwt');
-    const cached = await cache.match(this.url);
-
-    if (cached) {
-      const fetchedAt = cached.headers.get('X-FetchedAt');
-      if (!fetchedAt || parseInt(fetchedAt, 10) + expire < Date.now()) {
+  private getCache(): JWK | undefined {
+    if (this.cache) {
+      if (!this.timestamp || this.timestamp + expire < Date.now()) {
         return;
       }
 
-      const json = await cached.json();
-
-      return json as JWK;
+      return this.cache;
     }
   }
 
   private async getOrigin(): Promise<JWK> {
     const response = await fetch(this.url);
-    const json = await response.json();
+    const json = (await response.json()) as JWK;
 
-    const copy = response.clone();
-    const headers = new Headers(copy.headers);
-    headers.append('X-FetchedAt', Date.now().toString());
+    this.cache = json;
+    this.timestamp = Date.now();
 
-    const cache = await caches.open('jwt');
-    await cache.put(this.url, new Response(JSON.stringify(json), { headers }));
-
-    return json as JWK;
+    return json;
   }
 }

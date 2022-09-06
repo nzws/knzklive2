@@ -1,0 +1,38 @@
+name: Build images
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+
+jobs:
+  check:
+    uses: ./.github/workflows/_lint.yml
+
+  build-server:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v3
+        env:
+          DOCKER_BUILDKIT: 1
+        with:
+          context: ./apps/server
+          push: true
+          platforms: linux/amd64
+          tags: ghcr.io/nzws/knzklive2:${{ inputs.tag }}
+          cache-from: type=registry,ref=ghcr.io/nzws/knzklive2:${{ inputs.tag }}
+          cache-to: type=inline

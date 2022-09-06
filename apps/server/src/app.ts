@@ -18,9 +18,9 @@ export const app = async (): Promise<void> => {
   const route = router();
   app.use(route.routes()).use(route.allowedMethods());
 
-  const board = new Router();
-  createBoard(board);
-  app.use(board.routes()).use(board.allowedMethods());
+  // const board = new Router();
+  // createBoard(board);
+  // app.use(board.routes()).use(board.allowedMethods());
 
   const port = process.env.PORT || 8080;
 

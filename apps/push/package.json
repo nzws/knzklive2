@@ -1,15 +1,15 @@
 {
-  "name": "agent",
+  "name": "push",
   "version": "0.0.0",
   "license": "AGPL-3.0",
   "private": true,
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "lint": "tsc --noEmit && eslint --cache '**/*.{ts,tsx}'",
-    "start": "ts-node src/index.ts"
+    "lint": "tsc && eslint --cache '**/*.{ts,tsx}'",
+    "start": "ts-node src/index.ts",
+    "build": "tsc --project tsconfig.build.json"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^3.16.0",
     "@tsconfig/node18": "^1.0.1",
     "@types/node": "^18.7.15",
     "@types/node-media-server": "^2.3.1",
@@ -23,6 +23,7 @@
     "typescript": "4.7.4"
   },
   "dependencies": {
+    "jose": "^4.9.2",
     "node-media-server": "^2.4.7",
     "ws": "^8.8.1"
   }
