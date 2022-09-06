@@ -1,20 +1,12 @@
-import crypto from 'crypto';
-import { StreamStatus, PrismaClient, StreamProvider } from '@prisma/client';
-
-// todo
-const serverUrl = 'rtmp://push.knzk.live/';
+import { StreamStatus, PrismaClient, Stream } from '@prisma/client';
 
 export const Streams = (client: PrismaClient['stream']) =>
   Object.assign(client, {
-    createAsKnzk: async () => {
-      const streamKey = crypto.randomBytes(48).toString('hex');
-
+    create: async () => {
       const data = await client.create({
         data: {
-          provider: StreamProvider.Knzk,
-          status: StreamStatus.Provisioning,
-          serverUrl,
-          streamKey
+          // status: StreamStatus.Provisioning
+          status: StreamStatus.Ready
         }
       });
 
@@ -28,5 +20,59 @@ export const Streams = (client: PrismaClient['stream']) =>
       });
 
       return data || undefined;
+    },
+    startStream: async (stream: Stream) => {
+      if (
+        stream.status === StreamStatus.Provisioning ||
+        stream.status === StreamStatus.Ended
+      ) {
+        throw new Error('Stream is not ready');
+      }
+
+      const data = await client.update({
+        where: {
+          id: stream.id
+        },
+        data: {
+          status: StreamStatus.Live,
+          firstStartedAt: stream.firstStartedAt || new Date(),
+          lastStartedAt: new Date(),
+          lastEndedAt: null
+        }
+      });
+
+      return data;
+    },
+    stopStream: async (stream: Stream) => {
+      if (
+        stream.status === StreamStatus.Provisioning ||
+        stream.status === StreamStatus.Ended
+      ) {
+        throw new Error('Stream is not live');
+      }
+
+      const data = await client.update({
+        where: {
+          id: stream.id
+        },
+        data: {
+          status: StreamStatus.Paused,
+          lastEndedAt: new Date()
+        }
+      });
+
+      return data;
+    },
+    endStream: async (stream: Stream) => {
+      const data = await client.update({
+        where: {
+          id: stream.id
+        },
+        data: {
+          status: StreamStatus.Ended
+        }
+      });
+
+      return data;
     }
   });

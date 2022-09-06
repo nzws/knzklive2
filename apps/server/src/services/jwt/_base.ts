@@ -43,7 +43,7 @@ export class JWT {
     return jwt;
   }
 
-  protected async verify(jwt: string): Promise<jose.JWTPayload> {
+  async verify(jwt: string): Promise<jose.JWTPayload> {
     if (!this.publicKey) {
       throw new Error('publicKey is not initialized');
     }

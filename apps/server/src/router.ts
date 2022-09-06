@@ -68,6 +68,7 @@ export const router = (): Router => {
   );
 
   route.get('/v1/internals/edge/jwt', getV1InternalsEdgeJwt);
+  route.post('/v1/internals/edge/status');
 
   return route;
 };

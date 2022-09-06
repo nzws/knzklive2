@@ -99,6 +99,8 @@ const checkSession = async (
 const onConnect = (sessionId: string, liveId: number, token: string) => {
   console.log('onConnect');
 
+  closeSocket(liveId);
+
   const session: Session = { liveId };
   const edge = new WebSocket(
     `${EDGE_WS}/streaming/${liveId}/push?token=${token}`
