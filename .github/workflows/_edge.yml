@@ -11,11 +11,7 @@ on:
         required: true
 
 jobs:
-  check:
-    uses: ./.github/workflows/_lint.yml
-
   deploy:
-    needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

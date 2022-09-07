@@ -1,4 +1,4 @@
-import { Methods } from 'api-types/api/v1/lives/_tenantId@number/_idInTenant@number';
+import { Methods } from 'api-types/api/v1/lives/find/_tenantId@number/_idInTenant@number';
 import { lives } from '../../../models';
 import { APIRoute, TenantState } from '../../../utils/types';
 
@@ -27,7 +27,7 @@ export const getV1Lives: APIRoute<
     ctx.state.tenant.id,
     liveIdInTenant
   );
-  if (!live) {
+  if (!live || !live.startedAt) {
     ctx.status = 404;
     ctx.body = {
       errorCode: 'live_not_found'

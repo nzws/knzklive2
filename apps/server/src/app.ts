@@ -4,8 +4,6 @@ import logger from 'koa-logger';
 import cors from '@koa/cors';
 import { router } from './router';
 import { Streaming } from './streaming';
-import Router from '@koa/router';
-import { createBoard } from './workers/board';
 
 export const app = async (): Promise<void> => {
   await Promise.resolve();

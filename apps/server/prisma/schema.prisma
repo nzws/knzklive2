@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -59,11 +60,13 @@ model Live {
   createdAt   DateTime    @default(now())
   startedAt   DateTime?
   endedAt     DateTime?
-  displayName String      @db.VarChar(200)
+  title       String      @db.VarChar(200)
   description String?     @db.Text
   status      LiveStatus
   privacy     LivePrivacy
   streamId    Int         @unique
+  hashtag     String?     @db.VarChar(100)
+  sensitive   Boolean     @default(false)
 
   user   User   @relation(fields: [userId], references: [id])
   tenant Tenant @relation(fields: [tenantId], references: [id])

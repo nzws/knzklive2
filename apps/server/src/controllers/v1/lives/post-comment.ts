@@ -1,5 +1,5 @@
 import { JSONSchemaType } from 'ajv';
-import { Methods } from 'api-types/api/v1/comments/_liveId@number/index';
+import { Methods } from 'api-types/api/v1/lives/_liveId@number/comments';
 import { comments } from '../../../models';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
@@ -20,8 +20,8 @@ const reqBodySchema: JSONSchemaType<Request> = {
   additionalProperties: false
 };
 
-export const postV1Comment: APIRoute<
-  'liveId',
+export const postV1LivesComment: APIRoute<
+  never,
   never,
   Request,
   Response,

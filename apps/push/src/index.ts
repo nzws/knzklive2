@@ -3,8 +3,8 @@ import WebSocket from 'ws';
 import { Jwt } from './utils/jwt';
 
 const httpPort = parseInt(process.env.PORT || '8000', 10);
-const LIVE_API = 'https://api.knzk.live';
-const EDGE_WS = 'wss://edge.knzk.live';
+const LIVE_API = process.env.SERVER_ENDPOINT || '';
+const EDGE_WS = process.env.EDGE_ENDPOINT || '';
 
 const nms = new NodeMediaServer({
   rtmp: {

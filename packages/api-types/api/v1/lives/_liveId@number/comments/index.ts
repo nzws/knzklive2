@@ -1,5 +1,5 @@
 import { CommentPublic } from 'server/src/models/comment';
-import { AuthorizationHeader } from '../../../../common/types';
+import { AuthorizationHeader } from '../../../../../common/types';
 
 // todo: get は websocket だけかも
 

@@ -21,7 +21,7 @@ export const getTenantPrimaryDomain = (tenant: Tenant): string =>
 export const getSlugOrCustomDomain = (domain: string) => {
   domain = domain.toLowerCase();
 
-  if (domain.endsWith(DEFAULT_DOMAIN)) {
+  if (domain.endsWith(`.${DEFAULT_DOMAIN}`)) {
     return {
       slug: domain.split('.')[0]
     };
@@ -31,3 +31,12 @@ export const getSlugOrCustomDomain = (domain: string) => {
     customDomain: domain
   };
 };
+
+export const getStreamUrl = (liveId: number, token: string) =>
+  `${
+    process.env.EDGE_ENDPOINT || ''
+  }/streaming/${liveId}/stream?token=${token}`;
+
+export const getPushUrl = () => `rtmp://${process.env.PUSH_DOMAIN || ''}/live`;
+export const getPushStreamKey = (liveId: number, token: string) =>
+  `${liveId}?token=${token}`;

@@ -5,6 +5,7 @@ import {
   StreamStatus,
   PrismaClient
 } from '@prisma/client';
+import { prisma } from './_client';
 
 export { LiveStatus, LivePrivacy, StreamStatus };
 
@@ -15,7 +16,7 @@ export type LivePublic = {
   tenantId: number;
   startedAt?: Date;
   endedAt?: Date;
-  displayName: string;
+  title: string;
   description?: string;
   status: LiveStatus;
 };
@@ -29,7 +30,7 @@ export const Lives = (client: PrismaClient['live']) =>
       tenantId: live.tenantId,
       startedAt: live.startedAt || undefined,
       endedAt: live.endedAt || undefined,
-      displayName: live.displayName,
+      title: live.title,
       description: live.description || undefined,
       status: live.status
     }),
@@ -66,5 +67,46 @@ export const Lives = (client: PrismaClient['live']) =>
       });
 
       return lives;
+    },
+    createLive: async (
+      tenantId: number,
+      userId: number,
+      title: string,
+      privacy: LivePrivacy,
+      description?: string,
+      hashtag?: string
+    ) => {
+      const live = await prisma.$transaction(async prisma => {
+        const stream = await prisma.stream.create({
+          data: {
+            status: StreamStatus.Provisioning
+          }
+        });
+
+        const lastLive = await prisma.live.findFirst({
+          where: {
+            tenantId
+          },
+          orderBy: {
+            idInTenant: 'desc'
+          }
+        });
+
+        return await prisma.live.create({
+          data: {
+            idInTenant: lastLive ? lastLive.idInTenant + 1 : 1,
+            streamId: stream.id,
+            tenantId,
+            userId,
+            title,
+            description,
+            privacy,
+            hashtag,
+            status: LiveStatus.Provisioning
+          }
+        });
+      });
+
+      return live;
     }
   });

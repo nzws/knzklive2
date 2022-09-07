@@ -17,6 +17,8 @@ export type Methods = {
       tenantId: number;
     };
 
-    resBody: LivePublic;
+    resBody: {
+      live: LivePublic;
+    };
   };
 };

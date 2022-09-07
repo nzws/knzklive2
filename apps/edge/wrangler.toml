@@ -1,10 +1,5 @@
-name = "edge"
 main = "src/index.ts"
 compatibility_date = "2022-09-05"
-routes = [
-  # todo: env
-	{ pattern = "edge.knzk.live", custom_domain = true }
-]
 
 [durable_objects]
 bindings = [
@@ -14,3 +9,27 @@ bindings = [
 [[migrations]]
 tag = "v1" # Should be unique for each entry
 new_classes = ["StreamingDurableObject"]
+
+[env.production]
+name = "knzklive-edge-production"
+routes = [
+	{ pattern = "edge.knzk.live", custom_domain = true }
+]
+
+[env.production.vars]
+SERVER_ENDPOINT = "https://api.knzk.live"
+
+[env.staging]
+name = "knzklive-edge-staging"
+routes = [
+	{ pattern = "stg-edge.knzk.live", custom_domain = true }
+]
+
+[env.staging.vars]
+SERVER_ENDPOINT = "https://stg-api.knzk.live"
+
+[env.development]
+name = "knzklive-edge-development"
+
+[env.development.vars]
+SERVER_ENDPOINT = "http://localhost:8080"

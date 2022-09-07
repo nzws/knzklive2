@@ -2,6 +2,7 @@ import { Jwt } from './utils/jwt';
 
 export interface Env {
   STREAMING_DURABLE_OBJECT: DurableObjectNamespace;
+  SERVER_ENDPOINT: string;
 }
 
 interface Session {
@@ -116,10 +117,9 @@ export class StreamingDurableObject {
   }
 }
 
-const jwk = new Jwt('https://api.knzk.live/v1/internals/edge/jwt', 'edge');
-
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const jwk = new Jwt(`${env.SERVER_ENDPOINT}/v1/internals/edge/jwt`, 'edge');
     const url = new URL(request.url);
     const paths = url.pathname.split('/').filter(p => p);
 

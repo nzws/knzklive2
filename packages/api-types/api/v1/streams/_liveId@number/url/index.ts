@@ -1,15 +1,14 @@
 import { AuthorizationHeader } from '../../../../../common/types';
 
 export type Methods = {
-  post: {
+  get: {
     reqHeaders: AuthorizationHeader;
 
-    reqBody: {
-      command: 'publish' | 'end';
-    };
-
     resBody: {
-      success: boolean;
+      rtmp: {
+        url: string;
+        streamKey: string;
+      };
     };
   };
 };

@@ -17,9 +17,7 @@ export const getV1Streams: APIRoute<
   ctx.body = {
     live: lives.getPublic(ctx.state.live),
     push: {
-      status: push?.status || LiveStatus.Provisioning,
-      url: push?.serverUrl,
-      key: push?.streamKey
+      status: push?.status || LiveStatus.Provisioning
     }
   };
 };

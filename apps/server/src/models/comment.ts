@@ -1,4 +1,4 @@
-import type { Comment, Live, PrismaClient, User } from '@prisma/client';
+import type { Comment, Live, PrismaClient } from '@prisma/client';
 import { users } from '.';
 
 export type CommentPublic = {
