@@ -3382,6 +3382,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/whatwg-fetch@npm:^0.0.33":
+  version: 0.0.33
+  resolution: "@types/whatwg-fetch@npm:0.0.33"
+  dependencies:
+    "@types/whatwg-streams": "*"
+  checksum: 59dae90e3e22cd783c61ad57f107e36de7d4c30bde7276d3c83a3bc2f4b219c533f5f54bf8a310734ff3a71aed81d48b91c7efaf375cefdedf8879f12dd867df
+  languageName: node
+  linkType: hard
+
+"@types/whatwg-streams@npm:*":
+  version: 0.0.7
+  resolution: "@types/whatwg-streams@npm:0.0.7"
+  checksum: 324b535e0d45fc2e47c5b5132f3d10249db893f702e27c2496c927e85055ab95cd267205d01a6dfb638f1c3c46eb76a8ccace2fc7bbd099a7e4009549933f0c7
+  languageName: node
+  linkType: hard
+
 "@types/ws@npm:^8.5.3":
   version: 8.5.3
   resolution: "@types/ws@npm:8.5.3"
@@ -9950,6 +9966,7 @@ __metadata:
     "@tsconfig/node18": ^1.0.1
     "@types/node": ^18.7.15
     "@types/node-media-server": ^2.3.1
+    "@types/whatwg-fetch": ^0.0.33
     "@types/ws": ^8.5.3
     "@typescript-eslint/eslint-plugin": 5.33.1
     "@typescript-eslint/parser": 5.33.1

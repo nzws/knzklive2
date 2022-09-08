@@ -9,7 +9,7 @@
     "format": "prisma format",
     "lint": "tsc --noEmit && eslint --cache '**/*.{ts,tsx}'",
     "dev": "ts-node-dev --respawn --transpile-only --exit-child src",
-    "build": "tsc --project tsconfig.build.json",
+    "build": "prisma generate && tsc --project tsconfig.build.json",
     "start": "node dist",
     "kanzaki": "ts-node src/cli"
   },
