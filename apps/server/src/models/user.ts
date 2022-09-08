@@ -23,7 +23,7 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       displayName: user.displayName || undefined,
       avatarUrl: user.avatarUrl || undefined
     }),
-    create: async (account: string) => {
+    createAccount: async (account: string) => {
       const acct = account.toLowerCase();
 
       const [username, domain] = acct.split('@');
@@ -57,7 +57,7 @@ export const Users = (prismaUser: PrismaClient['user']) =>
 
       return user || undefined;
     },
-    update: async (
+    updateUser: async (
       user: User,
       data: Partial<
         Pick<User, 'avatarUrl' | 'displayName' | 'lastSignedInAt'> & {

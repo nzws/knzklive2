@@ -21,6 +21,8 @@ import { getV1Streams } from './controllers/v1/streams/get';
 import { postV1Streams } from './controllers/v1/streams/create';
 import { patchV1Streams } from './controllers/v1/streams/patch';
 import { postV1StreamsAction } from './controllers/v1/streams/action';
+import { getV1LivesComment } from './controllers/v1/lives/get-comment';
+import { deleteV1LivesComment } from './controllers/v1/lives/delete-comment';
 
 export const router = (): Router => {
   const route = new Router();
@@ -49,11 +51,18 @@ export const router = (): Router => {
   );
   route.get('/v1/lives/explore', getV1LivesExplore);
   route.get('/v1/lives/:liveId/url', middlewareLive, getV1LivesUrl);
+  route.get('/v1/lives/:liveId/comment', middlewareLive, getV1LivesComment);
   route.post(
     '/v1/lives/:liveId/comment',
     middlewareAuthorizeUser,
     middlewareLive,
     postV1LivesComment
+  );
+  route.delete(
+    '/v1/lives/:liveId/comment',
+    middlewareAuthorizeUser,
+    middlewareLive,
+    deleteV1LivesComment
   );
 
   route.post('/v1/streams', middlewareAuthorizeUser, postV1Streams);

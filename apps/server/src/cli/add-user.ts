@@ -9,7 +9,7 @@ export const addUser: Command = {
       throw new Error('account (e.g. nzws@don.nzws.me) is required');
     }
 
-    const user = await users.create(account);
+    const user = await users.createAccount(account);
     console.log(`user ${user.account} (id=${user.id}) created`);
 
     if (!createTenant) {
@@ -21,7 +21,7 @@ export const addUser: Command = {
       throw new Error('Invalid account');
     }
 
-    const tenant = await tenants.create(slug, user);
+    const tenant = await tenants.createTenant(slug, user);
     console.log(`tenant ${tenant.slug} (id=${tenant.id}) created`);
   },
   flags: {

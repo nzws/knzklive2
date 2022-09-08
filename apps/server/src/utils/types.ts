@@ -17,7 +17,7 @@ export type APIRoute<
       query: GETParam;
     };
   },
-  ResponseBody | { errorCode?: string }
+  ResponseBody
 >;
 
 export type UserState = {

@@ -7,9 +7,9 @@ export const middlewareLive: Middleware = async (ctx, next) => {
     10
   );
   if (!liveId || isNaN(liveId) || liveId <= 0) {
-    ctx.status = 400;
+    ctx.status = 404;
     ctx.body = {
-      errorCode: 'invalid_live_id'
+      errorCode: 'live_not_found'
     };
     return;
   }

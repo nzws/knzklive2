@@ -1,11 +1,13 @@
-import { AuthorizationHeader } from '../../../../../common/types';
+import { APIError, AuthorizationHeader } from '../../../../../common/types';
 
 export type Methods = {
   get: {
     reqHeaders?: AuthorizationHeader;
 
-    resBody: {
-      wsFlv: string;
-    };
+    resBody:
+      | {
+          wsFlv: string;
+        }
+      | APIError;
   };
 };

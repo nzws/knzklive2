@@ -7,9 +7,9 @@ export const middlewareTenant: Middleware = async (ctx, next) => {
     10
   );
   if (!tenantId || isNaN(tenantId) || tenantId <= 0) {
-    ctx.status = 400;
+    ctx.status = 404;
     ctx.body = {
-      errorCode: 'invalid_tenant_id'
+      errorCode: 'tenant_not_found'
     };
     return;
   }

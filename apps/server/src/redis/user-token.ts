@@ -22,6 +22,10 @@ export class UserToken {
     return parseInt(userId, 10);
   }
 
+  async revoke(token: string) {
+    await redis.del(this.getKey(token));
+  }
+
   private getKey(token: string) {
     return `userToken:${token}`;
   }

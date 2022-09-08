@@ -15,11 +15,11 @@ export const middleware = (req: NextRequest) => {
 
   if (pathname.startsWith('/app')) {
     return new Response(null, {
-      status: 404
+      status: 400
     });
   }
 
-  if (pathname.startsWith('/api')) {
+  if (pathname.startsWith('/api') || pathname.startsWith('/_next')) {
     return NextResponse.next();
   }
 

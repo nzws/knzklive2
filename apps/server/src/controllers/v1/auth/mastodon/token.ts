@@ -54,7 +54,7 @@ export const v1AuthMastodonToken: APIRoute<
     if (!authUser.account) {
       ctx.code = 500;
       ctx.body = {
-        errorCode: 'internal_error'
+        errorCode: 'internal_server_error'
       };
       return;
     }
@@ -70,9 +70,9 @@ export const v1AuthMastodonToken: APIRoute<
 
   const currentUser =
     (await users.get(undefined, authUser.account)) ||
-    (await users.create(authUser.account));
+    (await users.createAccount(authUser.account));
 
-  await users.update(currentUser, {
+  await users.updateUser(currentUser, {
     avatarUrl: authUser.avatarUrl,
     displayName: authUser.displayName,
     lastSignedInAt: new Date()

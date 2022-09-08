@@ -170,7 +170,11 @@ export class AuthMastodon extends AuthProvider {
 
     console.log(`Created client for ${this.domain}`);
 
-    await authProviders.create(this.domain, body.client_id, body.client_secret);
+    await authProviders.createClient(
+      this.domain,
+      body.client_id,
+      body.client_secret
+    );
 
     return { clientId: body.client_id, clientSecret: body.client_secret };
   }

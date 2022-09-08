@@ -35,7 +35,7 @@ export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
       displayName: tenant.displayName || undefined,
       customDomain: tenant.customDomain || undefined
     }),
-    create: async (slug: string, owner: User): Promise<Tenant> => {
+    createTenant: async (slug: string, owner: User): Promise<Tenant> => {
       const tenant = await prismaTenant.create({
         data: {
           slug,

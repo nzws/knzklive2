@@ -1,30 +1,34 @@
 import type { JSONSchemaType } from 'ajv';
+import { Methods } from 'api-types/api/v1/auth/mastodon/revoke';
+import { UserToken } from '../../../../redis/user-token';
 import { AuthMastodon } from '../../../../services/auth-providers/mastodon';
 import type { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
 
-export type Params = {
-  domain: string;
-  token: string;
-};
+export type Params = Methods['post']['reqBody'];
+export type Response = Methods['post']['resBody'];
 
-export type Response = {
-  success: boolean;
-};
+const userToken = new UserToken();
 
 const schema: JSONSchemaType<Params> = {
   type: 'object',
   properties: {
     domain: {
       type: 'string',
-      minLength: 1
+      minLength: 1,
+      nullable: true
     },
-    token: {
+    mastodonToken: {
       type: 'string',
-      minLength: 1
+      minLength: 1,
+      nullable: true
+    },
+    liveToken: {
+      type: 'string',
+      minLength: 1,
+      nullable: true
     }
   },
-  required: ['domain', 'token'],
   additionalProperties: false
 };
 
@@ -43,11 +47,21 @@ export const v1AuthMastodonRevoke: APIRoute<
   }
   const query = ctx.request.body;
 
-  try {
-    const provider = new AuthMastodon(query.domain);
-    await provider.revokeToken(query.token);
-  } catch (e) {
-    console.warn(e);
+  if (query.domain && query.mastodonToken) {
+    try {
+      const provider = new AuthMastodon(query.domain);
+      await provider.revokeToken(query.mastodonToken);
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  if (query.liveToken) {
+    try {
+      await userToken.revoke(query.liveToken);
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   ctx.body = {

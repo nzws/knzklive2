@@ -51,5 +51,15 @@ export const Comments = (client: PrismaClient['comment']) =>
           sourceUrl
         }
       });
+    },
+    markAsDelete: async (commentId: number) => {
+      return client.update({
+        data: {
+          isDeleted: true
+        },
+        where: {
+          id: commentId
+        }
+      });
     }
   });

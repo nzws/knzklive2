@@ -1,3 +1,5 @@
+import { APIError } from '../../../../../common/types';
+
 export type Methods = {
   post: {
     reqBody: {
@@ -5,9 +7,11 @@ export type Methods = {
       code: string;
     };
 
-    resBody: {
-      mastodonToken: string;
-      liveToken: string;
-    };
+    resBody:
+      | {
+          mastodonToken: string;
+          liveToken: string;
+        }
+      | APIError;
   };
 };

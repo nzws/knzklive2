@@ -16,9 +16,9 @@ export const getV1Lives: APIRoute<
     10
   );
   if (!liveIdInTenant || isNaN(liveIdInTenant) || liveIdInTenant <= 0) {
-    ctx.status = 400;
+    ctx.status = 404;
     ctx.body = {
-      errorCode: 'invalid_live_id'
+      errorCode: 'live_not_found'
     };
     return;
   }

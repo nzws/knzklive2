@@ -1,4 +1,4 @@
-import { AuthorizationHeader } from '../../../../../common/types';
+import { APIError, AuthorizationHeader } from '../../../../../common/types';
 
 export type Methods = {
   post: {
@@ -8,8 +8,10 @@ export type Methods = {
       command: 'publish' | 'end';
     };
 
-    resBody: {
-      success: boolean;
-    };
+    resBody:
+      | {
+          success: boolean;
+        }
+      | APIError;
   };
 };

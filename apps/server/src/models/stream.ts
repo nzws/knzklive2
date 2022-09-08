@@ -2,16 +2,6 @@ import { StreamStatus, PrismaClient, Stream } from '@prisma/client';
 
 export const Streams = (client: PrismaClient['stream']) =>
   Object.assign(client, {
-    create: async () => {
-      const data = await client.create({
-        data: {
-          // status: StreamStatus.Provisioning
-          status: StreamStatus.Ready
-        }
-      });
-
-      return data;
-    },
     get: async (id: number) => {
       const data = await client.findUnique({
         where: {

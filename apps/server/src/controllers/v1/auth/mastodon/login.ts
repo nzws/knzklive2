@@ -5,6 +5,7 @@ import type { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
 
 type Params = Methods['get']['query'];
+type Response = Methods['get']['resBody'];
 
 const schema: JSONSchemaType<Params> = {
   type: 'object',
@@ -27,7 +28,7 @@ export const v1AuthMastodonLogin: APIRoute<
   never,
   Params,
   never,
-  never
+  Response
 > = async ctx => {
   const query = ctx.request.query;
   if (!validateWithType(schema, query)) {

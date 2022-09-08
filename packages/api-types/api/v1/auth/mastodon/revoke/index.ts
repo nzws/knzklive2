@@ -1,10 +1,13 @@
+import { APIError } from '../../../../../common/types';
+
 export type Methods = {
   post: {
     reqBody: {
-      domain: string;
-      token: string;
+      domain?: string;
+      mastodonToken?: string;
+      liveToken?: string;
     };
 
-    resBody: { success: boolean };
+    resBody: { success: boolean } | APIError;
   };
 };

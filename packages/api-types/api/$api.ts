@@ -53,13 +53,13 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                 PATH0,
                 POST,
                 option
-              ).text(),
+              ).json(),
             $post: (option: {
               body: Methods0['post']['reqBody'];
               config?: T | undefined;
             }) =>
               fetch<Methods0['post']['resBody']>(prefix, PATH0, POST, option)
-                .text()
+                .json()
                 .then(r => r.body),
             $path: () => `${prefix}${PATH0}`
           },

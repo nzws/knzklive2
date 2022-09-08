@@ -1,3 +1,4 @@
+import useAspidaSWR from '@aspida/swr';
 import { useCallback, useEffect, useState, createContext } from 'react';
 import { useLocalStorage } from 'react-use';
 import { NewWindow } from '../../utils/new-window';
@@ -23,11 +24,28 @@ const MASTODON_DOMAIN_LS = 'knzklive-mastodon-domain';
 
 export const useAuthInProvider = (tenantId?: number): Returns => {
   const [token, setToken, removeToken] = useLocalStorage<string | undefined>(
-    TOKEN_LS
+    TOKEN_LS,
+    undefined,
+    {
+      raw: true
+    }
   );
   const [mastodonToken, setMastodonToken, removeMastodonToken] =
-    useLocalStorage<string | undefined>(MASTODON_LS);
+    useLocalStorage<string | undefined>(MASTODON_LS, undefined, {
+      raw: true
+    });
   const [requiredRefresh, setRequiredRefresh] = useState(false);
+  const { data: user } = useAspidaSWR(client.v1.users.me, {
+    headers: {
+      Authorization: `Bearer ${token || ''}`
+    },
+    key: token ? `${token}/users/me` : null
+  });
+
+  const handleForceUpdateToken = useCallback(() => {
+    setToken(localStorage.getItem(TOKEN_LS) || undefined);
+    setMastodonToken(localStorage.getItem(MASTODON_LS) || undefined);
+  }, [setToken, setMastodonToken]);
 
   const signIn = useCallback(
     async (type: SignInType, domain?: string) => {
@@ -52,11 +70,12 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
 
         const signInWindow = new NewWindow('sign-in-window', url);
         await signInWindow.waitForClose();
+        handleForceUpdateToken();
       } else {
         throw new Error('type is invalid');
       }
     },
-    [tenantId]
+    [tenantId, handleForceUpdateToken]
   );
 
   const signInCallback = useCallback(
@@ -104,7 +123,8 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
         await client.v1.auth.mastodon.revoke.$post({
           body: {
             domain,
-            token: mastodonToken
+            mastodonToken,
+            liveToken: token
           }
         });
       }
@@ -114,9 +134,10 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
 
     removeToken();
     removeMastodonToken();
-  }, [removeToken, removeMastodonToken, mastodonToken]);
+  }, [removeToken, removeMastodonToken, mastodonToken, token]);
 
   const refresh = useCallback(async () => {
+    setToken(undefined);
     try {
       if (mastodonToken) {
         const domain = localStorage.getItem(MASTODON_DOMAIN_LS);
@@ -136,6 +157,7 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
 
         setToken(data.liveToken);
         setRequiredRefresh(false);
+        handleForceUpdateToken();
         return;
       }
     } catch (e) {
@@ -143,13 +165,19 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
     }
 
     await signOut();
-  }, [signOut, mastodonToken, setToken]);
+  }, [signOut, mastodonToken, setToken, handleForceUpdateToken]);
 
   useEffect(() => {
     if (requiredRefresh) {
       void refresh();
     }
   }, [requiredRefresh, refresh]);
+
+  useEffect(() => {
+    if (user?.errorCode === 'unauthorized') {
+      setRequiredRefresh(true);
+    }
+  }, [user]);
 
   return {
     token,

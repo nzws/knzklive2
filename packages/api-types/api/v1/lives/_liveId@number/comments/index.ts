@@ -1,11 +1,9 @@
 import { CommentPublic } from 'server/src/models/comment';
-import { AuthorizationHeader } from '../../../../../common/types';
-
-// todo: get は websocket だけかも
+import { APIError, AuthorizationHeader } from '../../../../../common/types';
 
 export type Methods = {
   get: {
-    resBody: CommentPublic[];
+    resBody: CommentPublic[] | APIError;
   };
 
   post: {
@@ -15,7 +13,7 @@ export type Methods = {
       content: string;
     };
 
-    resBody: CommentPublic;
+    resBody: CommentPublic | APIError;
   };
 
   delete: {
@@ -25,8 +23,10 @@ export type Methods = {
       id: number;
     };
 
-    resBody: {
-      success: boolean;
-    };
+    resBody:
+      | {
+          success: boolean;
+        }
+      | APIError;
   };
 };

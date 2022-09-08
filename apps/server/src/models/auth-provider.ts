@@ -4,7 +4,11 @@ export const AuthProviders = (
   prismaAuthProvider: PrismaClient['authProvider']
 ) =>
   Object.assign(prismaAuthProvider, {
-    create: async (domain: string, clientId: string, clientSecret: string) => {
+    createClient: async (
+      domain: string,
+      clientId: string,
+      clientSecret: string
+    ) => {
       await prismaAuthProvider.create({
         data: {
           domain,

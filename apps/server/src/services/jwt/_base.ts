@@ -10,45 +10,46 @@ export class JWT {
 
   constructor(private readonly subject: string) {}
 
-  async generateKeyPair() {
-    const { publicKey, privateKey } = await jose.generateKeyPair(alg);
+  async getKey(): Promise<{ publicKey: KeyLike; privateKey: KeyLike }> {
+    if (!this.publicKey || !this.privateKey) {
+      const { publicKey, privateKey } = await jose.generateKeyPair(alg);
 
-    this.publicKey = publicKey;
-    this.privateKey = privateKey;
-  }
+      this.publicKey = publicKey;
+      this.privateKey = privateKey;
 
-  exportPublicKey(): Promise<jose.JWK> {
-    if (!this.publicKey) {
-      throw new Error('publicKey is not initialized');
+      return { publicKey, privateKey };
     }
 
-    return jose.exportJWK(this.publicKey);
+    return { publicKey: this.publicKey, privateKey: this.privateKey };
+  }
+
+  async exportPublicKey(): Promise<jose.JWK> {
+    const { publicKey } = await this.getKey();
+
+    return jose.exportJWK(publicKey);
   }
 
   protected async sign(
     payload: jose.JWTPayload,
     expirationTime: string
   ): Promise<string> {
-    if (!this.privateKey) {
-      throw new Error('privateKey is not initialized');
-    }
+    const { privateKey } = await this.getKey();
+
     const jwt = await new jose.SignJWT(payload)
       .setProtectedHeader({ alg })
       .setIssuedAt()
       .setIssuer(ISSUER)
       .setSubject(this.subject)
       .setExpirationTime(expirationTime)
-      .sign(this.privateKey);
+      .sign(privateKey);
 
     return jwt;
   }
 
   async verify(jwt: string): Promise<jose.JWTPayload> {
-    if (!this.publicKey) {
-      throw new Error('publicKey is not initialized');
-    }
+    const { publicKey } = await this.getKey();
 
-    const { payload } = await jose.jwtVerify(jwt, this.publicKey, {
+    const { payload } = await jose.jwtVerify(jwt, publicKey, {
       issuer: ISSUER,
       subject: this.subject
     });

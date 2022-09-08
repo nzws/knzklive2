@@ -1,9 +1,11 @@
+import { APIError } from '../../../../../common/types';
+
 export type Methods = {
   post: {
     reqBody: {
       code: string;
     };
 
-    resBody: string;
+    resBody: undefined | APIError;
   };
 };

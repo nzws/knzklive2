@@ -1,5 +1,5 @@
 import { LivePublic, StreamStatus } from 'server/src/models/live';
-import { AuthorizationHeader } from '../../../../common/types';
+import { APIError, AuthorizationHeader } from '../../../../common/types';
 import { LiveSetting } from '../index';
 
 export type Methods = {
@@ -8,20 +8,24 @@ export type Methods = {
 
     reqBody: Partial<LiveSetting>;
 
-    resBody: {
-      success: boolean;
-    };
+    resBody:
+      | {
+          success: boolean;
+        }
+      | APIError;
   };
 
   get: {
     reqHeaders: AuthorizationHeader;
 
-    resBody: {
-      live: LivePublic;
+    resBody:
+      | {
+          live: LivePublic;
 
-      push: {
-        status: StreamStatus;
-      };
-    };
+          push: {
+            status: StreamStatus;
+          };
+        }
+      | APIError;
   };
 };
