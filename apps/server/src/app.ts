@@ -4,11 +4,13 @@ import logger from 'koa-logger';
 import cors from '@koa/cors';
 import { router } from './router';
 import { Streaming } from './streaming';
+import { middlewareCatch } from './middlewares/catch';
 
 export const app = async (): Promise<void> => {
   await Promise.resolve();
 
   const app = new Koa();
+  app.use(middlewareCatch);
   app.use(bodyParser());
   app.use(logger());
   app.use(cors());
