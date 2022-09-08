@@ -4,11 +4,16 @@ export const middlewareCatch: Middleware = async (ctx, next) => {
   try {
     await next();
   } catch (err) {
-    console.error(err);
+    const e = err as Record<string, unknown>;
+    const code = e?.statusCode || e?.status || 500;
 
-    ctx.status = 500;
-    ctx.body = {
-      errorCode: 'internal_server_error'
-    };
+    if (code === 500) {
+      console.error(err);
+
+      ctx.status = 500;
+      ctx.body = {
+        errorCode: 'internal_server_error'
+      };
+    }
   }
 };
