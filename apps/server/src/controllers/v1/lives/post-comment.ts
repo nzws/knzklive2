@@ -1,6 +1,8 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/lives/_liveId@number/comments';
 import { comments } from '../../../models';
+import { pubsub } from '../../../redis/pubsub/client';
+import { getCommentKey } from '../../../redis/pubsub/keys';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
@@ -49,7 +51,13 @@ export const postV1LivesComment: APIRoute<
     ctx.state.live.id,
     content
   );
+
   const result = comments.getPublic(comment);
+  await pubsub.publish(
+    getCommentKey(ctx.state.live.id),
+    JSON.stringify(result)
+  );
+
   if (!result) {
     ctx.code = 500;
     ctx.body = {

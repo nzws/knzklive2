@@ -1,6 +1,8 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams/_liveId@number/action';
 import { lives } from '../../../models';
+import { pubsub } from '../../../redis/pubsub/client';
+import { getPushKey } from '../../../redis/pubsub/keys';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
@@ -53,7 +55,12 @@ export const postV1StreamsAction: APIRoute<
         endedAt: new Date()
       }
     });
-    // todo: stop stream
+    await pubsub.publish(
+      getPushKey(ctx.state.live.id),
+      JSON.stringify({
+        action: 'end'
+      })
+    );
   }
 
   ctx.body = {
