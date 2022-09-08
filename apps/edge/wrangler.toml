@@ -1,7 +1,13 @@
 main = "src/index.ts"
 compatibility_date = "2022-09-05"
 
-[durable_objects]
+[env.production]
+name = "knzklive-edge-production"
+routes = [
+	{ pattern = "edge.knzk.live", custom_domain = true }
+]
+
+[env.production.durable_objects]
 bindings = [
   { name = "STREAMING_DURABLE_OBJECT", class_name = "StreamingDurableObject" },
 ]
@@ -10,11 +16,6 @@ bindings = [
 tag = "v1" # Should be unique for each entry
 new_classes = ["StreamingDurableObject"]
 
-[env.production]
-name = "knzklive-edge-production"
-routes = [
-	{ pattern = "edge.knzk.live", custom_domain = true }
-]
 
 [env.production.vars]
 SERVER_ENDPOINT = "https://api.knzk.live"
@@ -25,11 +26,30 @@ routes = [
 	{ pattern = "stg-edge.knzk.live", custom_domain = true }
 ]
 
+[env.staging.durable_objects]
+bindings = [
+  { name = "STREAMING_DURABLE_OBJECT", class_name = "StreamingDurableObject" },
+]
+
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_classes = ["StreamingDurableObject"]
+
+
 [env.staging.vars]
 SERVER_ENDPOINT = "https://stg-api.knzk.live"
 
 [env.development]
 name = "knzklive-edge-development"
+
+[env.development.durable_objects]
+bindings = [
+  { name = "STREAMING_DURABLE_OBJECT", class_name = "StreamingDurableObject" },
+]
+
+[[migrations]]
+tag = "v1" # Should be unique for each entry
+new_classes = ["StreamingDurableObject"]
 
 [env.development.vars]
 SERVER_ENDPOINT = "http://localhost:8080"

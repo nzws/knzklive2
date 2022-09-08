@@ -1,3 +1,5 @@
 web: yarn workspace web dev
 app: yarn workspace server dev
-db: docker-compose up
+push: yarn workspace push dev
+edge: yarn workspace edge dev
+studio: yarn workspace server prisma studio

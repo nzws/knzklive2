@@ -25,6 +25,10 @@ import { postV1StreamsAction } from './controllers/v1/streams/action';
 export const router = (): Router => {
   const route = new Router();
 
+  route.get('/', ctx => {
+    ctx.redirect('https://www.youtube.com/watch?v=8C7s7BiRxdA');
+  });
+
   route.get('/v1/auth/mastodon/login', v1AuthMastodonLogin);
   route.get('/v1/auth/mastodon/callback', v1AuthMastodonCallback);
   route.post('/v1/auth/mastodon/token', v1AuthMastodonToken);

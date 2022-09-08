@@ -10,10 +10,10 @@ const injectRule = rule => {
     return;
   }
 
-  const injectPath = path.resolve(__dirname, '../api-types');
+  const injectPath = path.resolve(__dirname, '../../packages/api-types');
   if (!rule.include.includes(injectPath)) {
     rule.include.push(injectPath);
-    console.log('rule detected', rule);
+    //console.log('rule detected', rule);
   }
 };
 

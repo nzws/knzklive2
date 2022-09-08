@@ -14,7 +14,7 @@
   "scripts": {
     "prettier:lint": "prettier --check .",
     "prettier:format": "prettier --write .",
-    "dev": "nf start -x 8080,3000 app,web",
+    "dev": "docker-compose up -d && nf start -x 8080,3000,8787,8000 app,web,edge,push,studio",
     "lint": "yarn prettier:lint && yarn workspaces foreach --verbose --parallel --exclude knzklive2 run lint",
     "format": "yarn prettier:format && yarn workspaces foreach --verbose --parallel --exclude knzklive2 run format",
     "test": "yarn workspaces foreach --verbose --parallel --exclude knzklive2 run test"
