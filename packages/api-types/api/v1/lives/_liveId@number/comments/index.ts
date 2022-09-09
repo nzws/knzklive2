@@ -1,9 +1,9 @@
 import { CommentPublic } from 'server/src/models/comment';
-import { APIError, AuthorizationHeader } from '../../../../../common/types';
+import { AuthorizationHeader } from '../../../../../common/types';
 
 export type Methods = {
   get: {
-    resBody: CommentPublic[] | APIError;
+    resBody: CommentPublic[];
   };
 
   post: {
@@ -13,7 +13,7 @@ export type Methods = {
       content: string;
     };
 
-    resBody: CommentPublic | APIError;
+    resBody: CommentPublic;
   };
 
   delete: {
@@ -23,10 +23,8 @@ export type Methods = {
       id: number;
     };
 
-    resBody:
-      | {
-          success: boolean;
-        }
-      | APIError;
+    resBody: {
+      success: boolean;
+    };
   };
 };

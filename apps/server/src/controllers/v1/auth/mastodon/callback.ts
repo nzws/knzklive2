@@ -24,7 +24,7 @@ const protocol = process.env.USE_HTTP ? 'http' : 'https';
 export const v1AuthMastodonCallback: APIRoute<never, Params> = async ctx => {
   const query = ctx.request.query;
   if (!validateWithType(schema, query)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
@@ -33,7 +33,7 @@ export const v1AuthMastodonCallback: APIRoute<never, Params> = async ctx => {
 
   const tenantId = parseInt(ctx.cookies.get('tenantId') || '', 10);
   if (!tenantId || typeof tenantId !== 'number' || isNaN(tenantId)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'cookie_tenantId_not_found'
     };
@@ -42,7 +42,7 @@ export const v1AuthMastodonCallback: APIRoute<never, Params> = async ctx => {
 
   const tenant = await tenants.get(tenantId);
   if (!tenant) {
-    ctx.code = 404;
+    ctx.status = 404;
     ctx.body = {
       errorCode: 'tenant_not_found'
     };

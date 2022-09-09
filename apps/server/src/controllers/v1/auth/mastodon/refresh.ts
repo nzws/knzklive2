@@ -35,7 +35,7 @@ export const v1AuthMastodonRefresh: APIRoute<
   Response
 > = async ctx => {
   if (!validateWithType(schema, ctx.request.body)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
@@ -50,7 +50,7 @@ export const v1AuthMastodonRefresh: APIRoute<
     authUser = await provider.getUser(query.token);
 
     if (!authUser.account) {
-      ctx.code = 500;
+      ctx.status = 500;
       ctx.body = {
         errorCode: 'internal_server_error'
       };
@@ -59,7 +59,7 @@ export const v1AuthMastodonRefresh: APIRoute<
   } catch (e) {
     console.warn(e);
 
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_response_from_provider'
     };
@@ -68,7 +68,7 @@ export const v1AuthMastodonRefresh: APIRoute<
 
   const currentUser = await users.get(undefined, authUser.account);
   if (!currentUser) {
-    ctx.code = 403;
+    ctx.status = 403;
     ctx.body = {
       errorCode: 'user_not_found'
     };

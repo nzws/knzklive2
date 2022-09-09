@@ -1,5 +1,3 @@
-import { APIError } from '../../../../../common/types';
-
 export type Methods = {
   get: {
     query: {
@@ -7,6 +5,6 @@ export type Methods = {
       domain: string;
     };
 
-    resBody: undefined | APIError;
+    resBody: undefined;
   };
 };

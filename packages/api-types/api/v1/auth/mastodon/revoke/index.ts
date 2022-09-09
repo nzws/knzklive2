@@ -1,5 +1,3 @@
-import { APIError } from '../../../../../common/types';
-
 export type Methods = {
   post: {
     reqBody: {
@@ -8,6 +6,6 @@ export type Methods = {
       liveToken?: string;
     };
 
-    resBody: { success: boolean } | APIError;
+    resBody: { success: boolean };
   };
 };

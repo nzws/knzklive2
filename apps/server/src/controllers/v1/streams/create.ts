@@ -50,7 +50,7 @@ export const postV1Streams: APIRoute<
   UserState
 > = async ctx => {
   if (!validateWithType(reqBodySchema, ctx.request.body)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
@@ -59,7 +59,7 @@ export const postV1Streams: APIRoute<
   const body = ctx.request.body;
   const tenant = await tenants.get(body.tenantId);
   if (!tenant || tenant.ownerId !== ctx.state.user.id) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'tenant_invalid'
     };

@@ -30,7 +30,7 @@ export const postV1LivesComment: APIRoute<
   UserState & LiveState
 > = async ctx => {
   if (!validateWithType(reqBodySchema, ctx.request.body)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
@@ -39,7 +39,7 @@ export const postV1LivesComment: APIRoute<
   const content = ctx.request.body.content;
 
   if (content.trim().length <= 0) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
@@ -59,7 +59,7 @@ export const postV1LivesComment: APIRoute<
   );
 
   if (!result) {
-    ctx.code = 500;
+    ctx.status = 500;
     ctx.body = {
       errorCode: 'internal_server_error'
     };

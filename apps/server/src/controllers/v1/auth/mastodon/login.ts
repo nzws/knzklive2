@@ -32,7 +32,7 @@ export const v1AuthMastodonLogin: APIRoute<
 > = async ctx => {
   const query = ctx.request.query;
   if (!validateWithType(schema, query)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
@@ -41,7 +41,7 @@ export const v1AuthMastodonLogin: APIRoute<
 
   const tenantId = query.tenantId;
   if (isNaN(tenantId) || !tenantId) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };

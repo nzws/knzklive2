@@ -1,4 +1,5 @@
 import { Live, Tenant } from '@prisma/client';
+import { APIError } from 'api-types/common/types';
 import type { DefaultContext, DefaultState, Middleware } from 'koa';
 import { UserPrivate } from '../models/user';
 
@@ -17,7 +18,7 @@ export type APIRoute<
       query: GETParam;
     };
   },
-  ResponseBody
+  ResponseBody | APIError
 >;
 
 export type UserState = {

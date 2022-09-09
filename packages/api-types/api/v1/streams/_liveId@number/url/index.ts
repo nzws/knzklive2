@@ -1,16 +1,14 @@
-import { APIError, AuthorizationHeader } from '../../../../../common/types';
+import { AuthorizationHeader } from '../../../../../common/types';
 
 export type Methods = {
   get: {
     reqHeaders: AuthorizationHeader;
 
-    resBody:
-      | {
-          rtmp: {
-            url: string;
-            streamKey: string;
-          };
-        }
-      | APIError;
+    resBody: {
+      rtmp: {
+        url: string;
+        streamKey: string;
+      };
+    };
   };
 };

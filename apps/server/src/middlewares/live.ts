@@ -16,7 +16,7 @@ export const middlewareLive: Middleware = async (ctx, next) => {
 
   const data = await lives.get(liveId);
   if (!data) {
-    ctx.code = 404;
+    ctx.status = 404;
     ctx.body = {
       errorCode: 'live_not_found'
     };

@@ -16,7 +16,7 @@ export const middlewareTenant: Middleware = async (ctx, next) => {
 
   const data = await tenants.get(tenantId);
   if (!data) {
-    ctx.code = 404;
+    ctx.status = 404;
     ctx.body = {
       errorCode: 'tenant_not_found'
     };

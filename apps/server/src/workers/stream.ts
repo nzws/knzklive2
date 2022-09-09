@@ -7,6 +7,7 @@ export class StreamWorker extends BaseWorker {
   }
 
   async handle(job: Job) {
-    //
+    console.log(job);
+    await Promise.reject();
   }
 }

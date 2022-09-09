@@ -29,7 +29,7 @@ export const postV1StreamsAction: APIRoute<
   UserState & LiveState
 > = async ctx => {
   if (!validateWithType(reqBodySchema, ctx.request.body)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };

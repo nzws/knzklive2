@@ -67,6 +67,12 @@ export class Streaming {
       }
     };
 
+    socket.on('message', message => {
+      if (message.toString() === 'ping') {
+        socket.send('pong');
+      }
+    });
+
     socket.once('close', () => {
       console.log('websocket closed');
       pubsub.off(handle);

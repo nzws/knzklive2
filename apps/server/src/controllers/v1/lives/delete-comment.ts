@@ -27,7 +27,7 @@ export const deleteV1LivesComment: APIRoute<
   UserState & LiveState
 > = async ctx => {
   if (!validateWithType(reqBodySchema, ctx.request.body)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
@@ -40,7 +40,7 @@ export const deleteV1LivesComment: APIRoute<
     }
   });
   if (!comment || comment.liveId !== ctx.state.live.id) {
-    ctx.code = 404;
+    ctx.status = 404;
     ctx.body = {
       errorCode: 'not_found'
     };
@@ -51,7 +51,7 @@ export const deleteV1LivesComment: APIRoute<
     ctx.state.user.id !== ctx.state.live.userId &&
     comment.userId !== ctx.state.user.id
   ) {
-    ctx.code = 403;
+    ctx.status = 403;
     ctx.body = {
       errorCode: 'forbidden'
     };

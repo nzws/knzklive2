@@ -16,7 +16,7 @@ export const getV1LivesUrl: APIRoute<
 
   const live = ctx.state.live;
   if (!live.startedAt) {
-    ctx.code = 404;
+    ctx.status = 404;
     ctx.body = {
       errorCode: 'live_not_found'
     };

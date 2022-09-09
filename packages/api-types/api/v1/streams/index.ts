@@ -1,5 +1,5 @@
 import { LivePrivacy, LivePublic } from 'server/src/models/live';
-import { APIError, AuthorizationHeader } from '../../../common/types';
+import { AuthorizationHeader } from '../../../common/types';
 
 export type LiveSetting = {
   title: string;
@@ -17,10 +17,8 @@ export type Methods = {
       tenantId: number;
     };
 
-    resBody:
-      | {
-          live: LivePublic;
-        }
-      | APIError;
+    resBody: {
+      live: LivePublic;
+    };
   };
 };

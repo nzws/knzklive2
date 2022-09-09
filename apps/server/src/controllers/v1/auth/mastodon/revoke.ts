@@ -39,7 +39,7 @@ export const v1AuthMastodonRevoke: APIRoute<
   Response
 > = async ctx => {
   if (!validateWithType(schema, ctx.request.body)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };

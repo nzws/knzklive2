@@ -36,7 +36,7 @@ export const v1AuthMastodonToken: APIRoute<
 > = async ctx => {
   const query = ctx.request.body as unknown;
   if (!validateWithType(schema, query)) {
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
@@ -52,7 +52,7 @@ export const v1AuthMastodonToken: APIRoute<
     authUser = await provider.getUser(mastodonToken);
 
     if (!authUser.account) {
-      ctx.code = 500;
+      ctx.status = 500;
       ctx.body = {
         errorCode: 'internal_server_error'
       };
@@ -61,7 +61,7 @@ export const v1AuthMastodonToken: APIRoute<
   } catch (e) {
     console.warn(e);
 
-    ctx.code = 400;
+    ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_response_from_provider'
     };
