@@ -32,6 +32,7 @@
   "page.about.default-domain": "デフォルトドメイン: {domain}",
   "page.about.contact": "連絡先: {contact}",
   "page.about.license": "KnzkLive は AGPL-3.0 でライセンスされたオープンソースソフトウェアです。",
+  "page.index.live-not-found": "現在、公開中の配信はありません",
   "page.live.not-supported-in-ios.title": "このデバイスでは視聴できません",
   "page.live.not-supported-in-ios.description": "Apple 社が iOS でのみ Media Source Extensions API の使用を許可していないため、iOS で視聴することはできません 😥"
 }

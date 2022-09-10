@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { Fragment } from 'react';
+import { useRouter } from 'next/router';
+import { Fragment, useEffect } from 'react';
 import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
 import { PageProps } from '~/utils/data-fetching/get-all-static-props';
 import {
@@ -9,16 +10,24 @@ import {
   defaultStaticProps
 } from '~/utils/data-fetching/default-static-props';
 import { Navbar } from '~/organisms/navbar';
-import { useUsersMe } from '~/utils/hooks/api/use-users-me';
 import { useTenant } from '~/utils/hooks/api/use-tenant';
 import { Footer } from '~/organisms/footer';
+import { useLiveTop } from '~/utils/hooks/api/use-live-top';
+import { LiveNotFound } from '~/organisms/index/live-not-found';
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback },
   pathProps: { tenantDomain }
 }) => {
+  const router = useRouter();
   const [tenant] = useTenant(tenantDomain, tenantFallback);
-  const [me] = useUsersMe();
+  const [live] = useLiveTop();
+
+  useEffect(() => {
+    if (live) {
+      void router.push(`/watch/${live.idInTenant}`);
+    }
+  }, [router, live]);
 
   return (
     <Fragment>
@@ -28,9 +37,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
         <title>{tenant?.displayName || tenant?.domain}</title>
       </Head>
 
-      <pre>{JSON.stringify(tenant, null, 2)}</pre>
-
-      <pre>{JSON.stringify(me, null, 2)}</pre>
+      {!live && <LiveNotFound />}
 
       <Footer />
     </Fragment>

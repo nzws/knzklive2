@@ -32,5 +32,6 @@
   "page.about.description.2": "Information about the server hosting this website ({domain}) is listed below.",
   "page.about.default-domain": "Default domain: {domain}",
   "page.about.contact": "Contact: {contact}",
-  "page.about.license": "KnzkLive is open source software licensed under AGPL-3.0."
+  "page.about.license": "KnzkLive is open source software licensed under AGPL-3.0.",
+  "page.index.live-not-found": "There are currently no lives available to the public"
 }

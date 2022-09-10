@@ -12,7 +12,7 @@ import { FormattedMessage } from 'react-intl';
 
 export const Footer: FC = () => (
   <Box marginTop="auto">
-    <Container as={Stack} maxW={'7xl'} py={8}>
+    <Container as={Stack} maxW="container.xl" py={8}>
       <Divider />
 
       <Stack as={Stack} direction={{ base: 'column', md: 'row' }} spacing={6}>

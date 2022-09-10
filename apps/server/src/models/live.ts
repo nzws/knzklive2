@@ -55,15 +55,20 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return live || undefined;
     },
-    getPublicAndAlive: async () => {
+    getPublicAndAlive: async (tenantId?: number) => {
       const lives = await client.findMany({
         where: {
           status: LiveStatus.Live,
           endedAt: null,
           startedAt: {
             not: null
-          }
-        }
+          },
+          tenantId: tenantId || undefined
+        },
+        orderBy: {
+          startedAt: 'desc'
+        },
+        take: 10
       });
 
       return lives;

@@ -25,6 +25,7 @@ import { getV1LivesComment } from './controllers/v1/lives/get-comment';
 import { deleteV1LivesComment } from './controllers/v1/lives/delete-comment';
 import { getV1TenantsMe } from './controllers/v1/tenants/get-me';
 import { getV1About } from './controllers/v1/about';
+import { getV1LivesTop } from './controllers/v1/lives/get-top';
 
 export const router = (): Router => {
   const route = new Router();
@@ -49,11 +50,8 @@ export const router = (): Router => {
   route.get('/v1/users/me', middlewareAuthorizeUser, getV1UsersMe);
   route.get('/v1/users/:userId', getV1UsersOnce);
 
-  route.get(
-    '/v1/lives/find/:tenantId/:liveIdInTenant',
-    middlewareTenant,
-    getV1Lives
-  );
+  route.get('/v1/lives/find/:tenantDomain/:liveIdInTenant', getV1Lives);
+  route.get('/v1/lives/find/:tenantId/top', middlewareTenant, getV1LivesTop);
   route.get('/v1/lives/explore', getV1LivesExplore);
   route.get('/v1/lives/:liveId/url', middlewareLive, getV1LivesUrl);
   route.get('/v1/lives/:liveId/comment', middlewareLive, getV1LivesComment);

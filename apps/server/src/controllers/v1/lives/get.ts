@@ -1,21 +1,31 @@
-import { Methods } from 'api-types/api/v1/lives/find/_tenantId@number/_idInTenant@number';
-import { lives } from '../../../models';
-import { APIRoute, TenantState } from '../../../utils/types';
+import { Methods } from 'api-types/api/v1/lives/find/_tenantDomain@string/_idInTenant@number';
+import { lives, tenants } from '../../../models';
+import { getSlugOrCustomDomain } from '../../../utils/domain';
+import { APIRoute } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];
 
 export const getV1Lives: APIRoute<
-  'liveIdInTenant',
+  'liveIdInTenant' | 'tenantDomain',
   never,
   never,
   Response,
-  TenantState
+  never
 > = async ctx => {
-  const liveIdInTenant = parseInt(
-    (ctx.params as Record<string, string>).liveIdInTenant || '',
-    10
-  );
-  if (!liveIdInTenant || isNaN(liveIdInTenant) || liveIdInTenant <= 0) {
+  const { liveIdInTenant, tenantDomain } = ctx.params;
+  const domain = getSlugOrCustomDomain(tenantDomain);
+  const tenant = await tenants.get(undefined, domain.slug, domain.customDomain);
+
+  if (!tenant) {
+    ctx.status = 404;
+    ctx.body = {
+      errorCode: 'tenant_not_found'
+    };
+    return;
+  }
+
+  const id = parseInt(liveIdInTenant, 10);
+  if (!id || isNaN(id) || id <= 0) {
     ctx.status = 404;
     ctx.body = {
       errorCode: 'live_not_found'
@@ -23,10 +33,7 @@ export const getV1Lives: APIRoute<
     return;
   }
 
-  const live = await lives.getByTenantLiveId(
-    ctx.state.tenant.id,
-    liveIdInTenant
-  );
+  const live = await lives.getByTenantLiveId(tenant.id, id);
   if (!live || !live.startedAt) {
     ctx.status = 404;
     ctx.body = {

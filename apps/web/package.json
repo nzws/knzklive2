@@ -21,6 +21,7 @@
     "@emotion/styled": "^11.10.4",
     "api-types": "*",
     "framer-motion": "^7.3.2",
+    "mpegts.js": "^1.6.10",
     "next": "12.2.5",
     "nextjs-progressbar": "^0.0.14",
     "react": "18.2.0",
