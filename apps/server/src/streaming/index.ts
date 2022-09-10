@@ -1,5 +1,6 @@
 import { Server } from 'http';
 import WebSocket from 'ws';
+import { pathToRegexp } from 'path-to-regexp';
 import { lives, streams } from '../models';
 import { pubsub } from '../redis/pubsub/client';
 import { getCommentKey, getPushKey } from '../redis/pubsub/keys';
@@ -7,6 +8,9 @@ import { UserToken } from '../redis/user-token';
 import { jwtEdge } from '../services/jwt';
 
 const userToken = new UserToken();
+
+const commentsRegexp = pathToRegexp('/websocket/v1/stream/:liveId');
+const pushRegexp = pathToRegexp('/websocket/v1/push');
 
 export class Streaming {
   constructor(server: Server) {
@@ -21,25 +25,15 @@ export class Streaming {
 
   private handleConnection(socket: WebSocket) {
     const url = new URL(socket.url);
-    const paths = url.pathname.split('/').filter(Boolean);
     const token = url.searchParams.get('token') || undefined;
-    if (paths[0] !== 'websocket') {
-      return this.closeConnection(socket, 'invalid_path');
-    }
 
-    const liveId = parseInt(paths[3], 10);
-    if (!liveId || liveId <= 0) {
-      return this.closeConnection(socket, 'invalid_live_id');
-    }
-
-    if (paths[1] === 'v1' && paths[2] === 'comments') {
+    const comments = commentsRegexp.exec(url.pathname);
+    const push = pushRegexp.exec(url.pathname);
+    if (comments) {
+      const liveId = Number(comments[1]);
       return this.handleV1Comments(socket, liveId, token);
-    } else if (paths[1] === 'v1' && paths[2] === 'push') {
-      if (!token) {
-        return this.closeConnection(socket, 'invalid_token');
-      }
-
-      return this.handleV1Push(socket, liveId, token);
+    } else if (push) {
+      return this.handleV1Push(socket);
     }
 
     return this.closeConnection(socket, 'invalid_path');
@@ -81,43 +75,36 @@ export class Streaming {
     await pubsub.on(handle);
   }
 
-  private async handleV1Push(socket: WebSocket, liveId: number, token: string) {
-    const payload = await jwtEdge.verify(token);
-    if (!payload) {
-      return this.closeConnection(socket, 'invalid_token');
-    }
-    if (payload.liveId !== liveId || payload.type !== 'push') {
-      return this.closeConnection(socket, 'invalid_token');
-    }
-    const live = await lives.findUnique({
-      where: {
-        id: liveId
-      },
-      include: {
-        stream: true
-      }
-    });
-    if (!live) {
-      return this.closeConnection(socket, 'invalid_live_id');
-    }
-
+  private async handleV1Push(socket: WebSocket) {
     socket.on('message', message => {
-      try {
-        const msg = JSON.parse(message.toString()) as {
-          action: 'start' | 'stop';
-        };
-        if (msg.action === 'start') {
-          void streams.startStream(live.stream);
-        } else if (msg.action === 'stop') {
-          void streams.stopStream(live.stream);
+      void (async () => {
+        try {
+          const msg = JSON.parse(message.toString()) as {
+            liveId: number;
+            token: string;
+            action: 'start' | 'stop';
+          };
+
+          const live = await this.getStream(msg.liveId, msg.token);
+          if (!live) {
+            console.warn('invalid push token', msg);
+            return;
+          }
+          await pubsub.subscribe(getPushKey(msg.liveId));
+
+          if (msg.action === 'start') {
+            void streams.startStream(live.stream);
+          } else if (msg.action === 'stop') {
+            void streams.stopStream(live.stream);
+          }
+        } catch (e) {
+          console.error(e);
         }
-      } catch (e) {
-        console.error(e);
-      }
+      })();
     });
 
     const handle = {
-      event: getPushKey(liveId),
+      firehoseEvent: 'push:',
       callback: (message: string) => {
         socket.send(message);
       }
@@ -129,6 +116,26 @@ export class Streaming {
     });
 
     await pubsub.on(handle);
+  }
+
+  private async getStream(liveId: number, token: string) {
+    const payload = await jwtEdge.verify(token);
+    if (!payload) {
+      return;
+    }
+    if (payload.liveId !== liveId || payload.type !== 'push') {
+      return;
+    }
+    const live = await lives.findUnique({
+      where: {
+        id: liveId
+      },
+      include: {
+        stream: true
+      }
+    });
+
+    return live;
   }
 
   private closeConnection(socket: WebSocket, error?: string) {

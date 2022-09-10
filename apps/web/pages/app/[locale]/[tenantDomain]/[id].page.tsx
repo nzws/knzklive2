@@ -2,10 +2,10 @@ import useAspidaSWR from '@aspida/swr';
 import { TenantPublic } from 'server/src/models/tenant';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
-import { Fragment, useCallback, useEffect } from 'react';
-import { client } from '../../../utils/api/client';
-import { SignInType } from '../../../utils/contexts/auth';
-import { useAuth } from '../../../utils/hooks/use-auth';
+import { Fragment, useCallback } from 'react';
+import { client } from '~/utils/api/client';
+import { SignInType } from '~/utils/contexts/auth';
+import { useAuth } from '~/utils/hooks/use-auth';
 
 type Props = {
   tenant?: TenantPublic;
@@ -17,16 +17,13 @@ type PathProps = {
 };
 
 const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
-  const { signIn, token, signOut } = useAuth();
+  const { signIn, token } = useAuth();
   const { data: tenant } = useAspidaSWR(
     client.v1.tenants._tenantDomain(tenantDomain),
     {
       fallbackData: tenantFallback
     }
   );
-  useEffect(() => {
-    console.log(token);
-  }, [token]);
 
   const { data: user, mutate } = useAspidaSWR(client.v1.users.me, {
     headers: {
@@ -58,9 +55,7 @@ const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
         <title>{tenant?.displayName || 'KnzkLive'}</title>
       </Head>
 
-      <button onClick={handleLogin}>Login</button>
-
-      {user && <button onClick={signOut}>Logout</button>}
+      <button onClick={handleLogin}>Login test</button>
 
       <pre>{JSON.stringify(tenant, null, 2)}</pre>
 

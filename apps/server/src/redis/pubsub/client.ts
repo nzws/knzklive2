@@ -7,7 +7,8 @@ const subClient = new Redis(redisUrl);
 type Callback = (message: string) => void;
 type Cb = {
   callback: Callback;
-  event: string;
+  event?: string;
+  firehoseEvent?: string;
 };
 
 class PubSub {
@@ -15,9 +16,12 @@ class PubSub {
   private subscribeEvents: string[] = [];
 
   constructor() {
-    subClient.on('message', (channelName, message) => {
+    subClient.on('message', (channelName: string, message) => {
       this.callbacks.forEach(cb => {
-        if (cb.event === channelName) {
+        if (
+          (cb.event && cb.event === channelName) ||
+          (cb.firehoseEvent && channelName.startsWith(cb.firehoseEvent))
+        ) {
           cb.callback(message as string);
         }
       });
@@ -28,7 +32,7 @@ class PubSub {
     return pubClient.publish(channel, message);
   }
 
-  protected subscribe(channel: string) {
+  subscribe(channel: string) {
     if (!this.subscribeEvents.includes(channel)) {
       this.subscribeEvents.push(channel);
       return subClient.subscribe(channel);
@@ -36,7 +40,9 @@ class PubSub {
   }
 
   async on(data: Cb) {
-    await this.subscribe(data.event);
+    if (data.event) {
+      await this.subscribe(data.event);
+    }
     this.callbacks.push(data);
   }
 

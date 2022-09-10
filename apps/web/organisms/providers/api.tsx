@@ -1,8 +1,8 @@
 import useAspidaSWR from '@aspida/swr';
 import { useRouter } from 'next/router';
 import { FC, PropsWithChildren } from 'react';
-import { client } from '../../utils/api/client';
-import { AuthContext, useAuthInProvider } from '../../utils/contexts/auth';
+import { client } from '~/utils/api/client';
+import { AuthContext, useAuthInProvider } from '~/utils/contexts/auth';
 
 export const APIProvider: FC<PropsWithChildren<unknown>> = ({ children }) => {
   const { query } = useRouter();

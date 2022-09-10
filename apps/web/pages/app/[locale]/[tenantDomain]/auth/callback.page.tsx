@@ -1,7 +1,9 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../../../utils/hooks/use-auth';
+import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
+import { defaultStaticProps } from '~/utils/data-fetching/default-static-props';
+import { useAuth } from '~/utils/hooks/use-auth';
 
 const Page: NextPage = () => {
   const { signInCallback } = useAuth();
@@ -34,5 +36,8 @@ const Page: NextPage = () => {
     </div>
   );
 };
+
+export const getStaticPaths = defaultGetStaticPaths;
+export const getStaticProps = defaultStaticProps;
 
 export default Page;

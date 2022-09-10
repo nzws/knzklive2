@@ -58,7 +58,8 @@ export const postV1StreamsAction: APIRoute<
     await pubsub.publish(
       getPushKey(ctx.state.live.id),
       JSON.stringify({
-        action: 'end'
+        action: 'end',
+        liveId: ctx.state.live.id
       })
     );
   }

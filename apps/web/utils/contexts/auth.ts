@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState, createContext } from 'react';
 import { useLocalStorage } from 'react-use';
 import { NewWindow } from '../../utils/new-window';
 import { client } from '../api/client';
+import { useAPIError } from '../hooks/use-api-error';
 
 export enum SignInType {
   Mastodon
@@ -35,12 +36,14 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
       raw: true
     });
   const [requiredRefresh, setRequiredRefresh] = useState(false);
-  const { data: user } = useAspidaSWR(client.v1.users.me, {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const { error } = useAspidaSWR(client.v1.users.me, {
     headers: {
       Authorization: `Bearer ${token || ''}`
     },
-    key: token ? `${token}/users/me` : null
+    key: token ? undefined : null
   });
+  const [userError] = useAPIError(error);
 
   const handleForceUpdateToken = useCallback(() => {
     setToken(localStorage.getItem(TOKEN_LS) || undefined);
@@ -87,24 +90,19 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
           throw new Error('domain is required');
         }
 
-        try {
-          const data = await client.v1.auth.mastodon.token.$post({
-            body: {
-              code,
-              domain
-            }
-          });
-          if (!data) {
-            throw new Error('failed to get');
+        const data = await client.v1.auth.mastodon.token.$post({
+          body: {
+            code,
+            domain
           }
-
-          setToken(data.liveToken);
-          setMastodonToken(data.mastodonToken);
-          setRequiredRefresh(false);
-        } catch (e) {
-          console.error(e);
-          throw new Error('failed to get token');
+        });
+        if (!data) {
+          throw new Error('failed to get');
         }
+
+        setToken(data.liveToken);
+        setMastodonToken(data.mastodonToken);
+        setRequiredRefresh(false);
       } else {
         throw new Error('type is invalid');
       }
@@ -174,10 +172,10 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
   }, [requiredRefresh, refresh]);
 
   useEffect(() => {
-    if (user?.errorCode === 'unauthorized') {
+    if (userError?.errorCode === 'unauthorized') {
       setRequiredRefresh(true);
     }
-  }, [user]);
+  }, [userError]);
 
   return {
     token,

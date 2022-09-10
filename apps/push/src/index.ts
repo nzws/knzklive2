@@ -4,6 +4,7 @@ import { Jwt } from './utils/jwt';
 
 const httpPort = parseInt(process.env.PORT || '8000', 10);
 const LIVE_API = process.env.SERVER_ENDPOINT || '';
+const LIVE_API_WS = LIVE_API.replace('http', 'ws');
 const EDGE_WS = process.env.EDGE_ENDPOINT || '';
 
 const nms = new NodeMediaServer({
@@ -24,19 +25,57 @@ nms.run();
 
 const jwk = new Jwt(`${LIVE_API}/v1/internals/edge/jwt`, 'edge');
 
+let liveApi: WebSocket;
+const connectLiveApi = () => {
+  liveApi = new WebSocket(`${LIVE_API_WS}/websocket/v1/push`);
+
+  liveApi.on('open', () => {
+    console.log('live-api connected');
+  });
+
+  liveApi.on('message', data => {
+    const msg = JSON.parse(data.toString()) as {
+      action: 'end';
+      liveId: number;
+    };
+
+    if (msg.action === 'end') {
+      rejectSession(undefined, msg.liveId);
+      closeSocket(msg.liveId);
+    }
+  });
+
+  liveApi.on('close', () => {
+    console.log('live-api disconnected');
+    setTimeout(connectLiveApi, 1000);
+  });
+};
+connectLiveApi();
+
 type Session = {
   edgeSocket?: WebSocket;
   flvSocket?: WebSocket;
   liveId: number;
 };
-let sessions: Session[] = [];
 
-const rejectSession = (id: string) => {
+let sessions: Session[] = [];
+const nmsIds: Record<number, string> = {};
+
+const rejectSession = (sessionId?: string, liveId?: number) => {
   try {
-    const session = nms.getSession(id) as unknown as {
+    const nmsId = liveId ? nmsIds[liveId] : sessionId;
+    if (!nmsId) {
+      return;
+    }
+
+    const session = nms.getSession(nmsId) as unknown as {
       reject: () => void;
     };
     session.reject();
+
+    if (liveId) {
+      delete nmsIds[liveId];
+    }
   } catch (e) {
     console.warn('rejectSession', e);
   }
@@ -79,27 +118,37 @@ const checkSession = async (
   if (key !== 'live' || !liveId || !parseInt(liveId) || !token) {
     console.warn('invalid session', id, StreamPath, args);
     rejectSession(id);
-    return;
+    throw new Error('invalid session');
   }
 
   const res = await jwk.verify(token);
   if (!res) {
     console.warn('invalid token');
     rejectSession(id);
-    return;
+    throw new Error('invalid token');
   }
 
   if (res.type !== 'push' || res.liveId !== parseInt(liveId)) {
     console.warn('invalid live', res);
     rejectSession(id);
-    return;
+    throw new Error('invalid live');
   }
 };
 
 const onConnect = (sessionId: string, liveId: number, token: string) => {
   console.log('onConnect');
 
+  rejectSession(undefined, liveId);
   closeSocket(liveId);
+  nmsIds[liveId] = sessionId;
+
+  liveApi.send(
+    JSON.stringify({
+      action: 'start',
+      liveId,
+      token
+    })
+  );
 
   const session: Session = { liveId };
   const edge = new WebSocket(
@@ -149,7 +198,12 @@ nms.on('prePublish', (id, StreamPath, args) => {
     `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`
   );
 
-  void checkSession(id, StreamPath, args as Record<string, unknown>);
+  try {
+    void checkSession(id, StreamPath, args as Record<string, unknown>);
+  } catch (e) {
+    console.warn('prePublish', e);
+    rejectSession(id);
+  }
 });
 
 nms.on('postPublish', (id, StreamPath, args) => {
@@ -159,13 +213,18 @@ nms.on('postPublish', (id, StreamPath, args) => {
   );
 
   void (async () => {
-    await checkSession(id, StreamPath, args as Record<string, unknown>);
+    try {
+      await checkSession(id, StreamPath, args as Record<string, unknown>);
 
-    const [, , liveId] = StreamPath.split('/');
-    const token = (args as Record<string, unknown>).token as string;
+      const [, , liveId] = StreamPath.split('/');
+      const token = (args as Record<string, unknown>).token as string;
 
-    onConnect(id, parseInt(liveId), token);
-  });
+      onConnect(id, parseInt(liveId), token);
+    } catch (e) {
+      console.warn('postPublish', e);
+      rejectSession(id);
+    }
+  })();
 });
 
 nms.on('donePublish', (id, StreamPath, args) => {
@@ -174,7 +233,25 @@ nms.on('donePublish', (id, StreamPath, args) => {
     `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`
   );
 
-  const [, , liveId] = StreamPath.split('/');
-  // todo: required authentication?
-  closeSocket(parseInt(liveId));
+  void (async () => {
+    try {
+      await checkSession(id, StreamPath, args as Record<string, unknown>);
+
+      const [, , liveId] = StreamPath.split('/');
+      const token = (args as Record<string, unknown>).token as string;
+      const LiveId = parseInt(liveId);
+
+      closeSocket(LiveId);
+      liveApi.send(
+        JSON.stringify({
+          action: 'stop',
+          liveId,
+          token
+        })
+      );
+      delete nmsIds[LiveId];
+    } catch (e) {
+      console.warn('donePublish', e);
+    }
+  })();
 });

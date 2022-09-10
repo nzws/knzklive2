@@ -48,6 +48,10 @@ export class Jwt {
 
   private async getOrigin(): Promise<JWK> {
     const response = await fetch(this.url);
+    if (!response.ok) {
+      console.warn(await response.json());
+      throw new Error('failed to fetch jwk');
+    }
     const json = (await response.json()) as JWK;
 
     this.cache = json;

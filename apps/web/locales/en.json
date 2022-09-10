@@ -1,0 +1,5 @@
+{
+  "navbar.login": "Login",
+  "navbar.logout": "Logout",
+  "login.enter-domain": "Enter your server domain:"
+}
