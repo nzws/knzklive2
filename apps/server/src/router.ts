@@ -23,6 +23,8 @@ import { patchV1Streams } from './controllers/v1/streams/patch';
 import { postV1StreamsAction } from './controllers/v1/streams/action';
 import { getV1LivesComment } from './controllers/v1/lives/get-comment';
 import { deleteV1LivesComment } from './controllers/v1/lives/delete-comment';
+import { getV1TenantsMe } from './controllers/v1/tenants/get-me';
+import { getV1About } from './controllers/v1/about';
 
 export const router = (): Router => {
   const route = new Router();
@@ -31,6 +33,8 @@ export const router = (): Router => {
     ctx.redirect('https://www.youtube.com/watch?v=8C7s7BiRxdA');
   });
 
+  route.get('/v1/about', getV1About);
+
   route.get('/v1/auth/mastodon/login', v1AuthMastodonLogin);
   route.get('/v1/auth/mastodon/callback', v1AuthMastodonCallback);
   route.post('/v1/auth/mastodon/token', v1AuthMastodonToken);
@@ -38,6 +42,7 @@ export const router = (): Router => {
   route.post('/v1/auth/mastodon/revoke', v1AuthMastodonRevoke);
 
   route.get('/v1/tenants/:key', getV1TenantsOnce);
+  route.get('/v1/tenants', middlewareAuthorizeUser, getV1TenantsMe);
   // route.post('/v1/tenants', middlewareAuthorizeUser);
   // route.patch('/v1/tenants/:id', middlewareAuthorizeUser);
 

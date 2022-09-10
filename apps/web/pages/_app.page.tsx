@@ -1,7 +1,9 @@
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import { ChakraProvider } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { IntlProvider } from 'react-intl';
+import NextNProgress from 'nextjs-progressbar';
 import { APIProvider } from '../organisms/providers/api';
 import {
   Props as LocaleProps,
@@ -30,6 +32,15 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
     >
       <ChakraProvider theme={theme}>
         <APIProvider tenant={props?.tenant}>
+          <NextNProgress
+            options={{ showSpinner: false }}
+            color="#fff"
+            height={3}
+          />
+          <Head>
+            <title>{props?.tenant?.displayName || props?.tenant?.domain}</title>
+          </Head>
+
           <Component {...pageProps} />
         </APIProvider>
       </ChakraProvider>

@@ -50,8 +50,11 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
   const [userError] = useAPIError(error);
 
   const handleForceUpdateToken = useCallback(() => {
-    setToken(localStorage.getItem(TOKEN_LS) || undefined);
+    const token = localStorage.getItem(TOKEN_LS);
+    setToken(token || undefined);
     setMastodonToken(localStorage.getItem(MASTODON_LS) || undefined);
+
+    return !!token;
   }, [setToken, setMastodonToken]);
 
   const signIn = useCallback(
@@ -77,14 +80,16 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
 
         const signInWindow = new NewWindow('sign-in-window', url);
         await signInWindow.waitForClose();
-        handleForceUpdateToken();
-        toast({
-          title: intl.formatMessage({
-            id: 'auth.toast.login'
-          }),
-          status: 'success',
-          isClosable: true
-        });
+        const isUpdated = handleForceUpdateToken();
+        if (isUpdated) {
+          toast({
+            title: intl.formatMessage({
+              id: 'auth.toast.login'
+            }),
+            status: 'success',
+            isClosable: true
+          });
+        }
       } else {
         throw new Error('type is invalid');
       }

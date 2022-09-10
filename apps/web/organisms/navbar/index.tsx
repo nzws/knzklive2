@@ -3,18 +3,23 @@ import {
   Button,
   Container,
   Flex,
+  Heading,
   HStack,
-  useColorModeValue,
   useDisclosure
 } from '@chakra-ui/react';
+import Link from 'next/link';
 import { FC, Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { TenantPublic } from 'server/src/models/tenant';
 import { useUsersMe } from '~/utils/hooks/api/use-users-me';
-import { useAuth } from '~/utils/hooks/use-auth';
 import { LoginModal } from './login-modal';
+import { User } from './user';
 
-export const Navbar: FC = () => {
-  const { signOut } = useAuth();
+type Props = {
+  tenant?: TenantPublic;
+};
+
+export const Navbar: FC<Props> = ({ tenant }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [me] = useUsersMe();
 
@@ -22,26 +27,24 @@ export const Navbar: FC = () => {
     <Fragment>
       <LoginModal isOpen={isOpen} onClose={onClose} />
 
-      <Box
-        as="nav"
-        bg="bg-surface"
-        boxShadow={useColorModeValue('sm', 'sm-dark')}
-      >
-        <Container py={{ base: '4', lg: '5' }} maxW="container.xl">
+      <Box as="nav" bg="gray.900">
+        <Container py={{ base: '3' }} maxW="container.xl">
           <HStack spacing="10" justify="space-between">
-            <div>KnzkLive</div>
+            <Link href="/" passHref>
+              <a>
+                <Heading size="md">
+                  {tenant?.displayName || tenant?.domain}
+                </Heading>
+              </a>
+            </Link>
 
-            <Flex justify="right" flex="1">
+            <Flex justify="right">
               <HStack spacing="3">
                 {me ? (
-                  <HStack spacing="3">
-                    <Button variant="ghost" onClick={signOut}>
-                      <FormattedMessage id="navbar.logout" />
-                    </Button>
-                  </HStack>
+                  <User tenant={tenant} />
                 ) : (
                   <HStack spacing="3">
-                    <Button variant="ghost" onClick={onOpen}>
+                    <Button variant="ghost" onClick={onOpen} size="sm">
                       <FormattedMessage id="navbar.login" />
                     </Button>
                   </HStack>

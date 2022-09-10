@@ -20,5 +20,17 @@
   "navbar.login.modal.domain": "Server domain",
   "navbar.login.modal.domain.placeholder": "e.g. knzk.me",
   "navbar.login.modal.help": "What data do we get from your Mastodon account?",
-  "navbar.login.modal.continue": "Please continue to login in a new window..."
+  "navbar.login.modal.continue": "Please continue to login in a new window...",
+  "navbar.menu.hello": "👋 {displayName} 👋",
+  "navbar.menu.account-settings": "Account settings",
+  "navbar.menu.current-tenant": "(Current) {domain}",
+  "navbar.menu.start-stream": "Start a stream",
+  "navbar.menu.tenant-settings": "Stream settings",
+  "navbar.menu.change-tenant": "Go to the site",
+  "page.about.title": "About this website",
+  "page.about.description.1": "This website is hosted by the platform feature from the live-streaming software, KnzkLive.",
+  "page.about.description.2": "Information about the server hosting this website ({domain}) is listed below.",
+  "page.about.default-domain": "Default domain: {domain}",
+  "page.about.contact": "Contact: {contact}",
+  "page.about.license": "KnzkLive is open source software licensed under AGPL-3.0."
 }

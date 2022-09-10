@@ -9177,6 +9177,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nextjs-progressbar@npm:^0.0.14":
+  version: 0.0.14
+  resolution: "nextjs-progressbar@npm:0.0.14"
+  dependencies:
+    nprogress: ^0.2.0
+    prop-types: ^15.7.2
+  peerDependencies:
+    next: ">= 6.0.0"
+    react: ">= 16.0.0"
+  checksum: d8a193c5fc5e1b3dd1a54b4340f8c83dc7ed8a0715ea3b7e2ca08a88fc9b3fe498987f6ae43ccd64914d5abdb790d79b658d86c11d61a9103ff3393271a7d6a9
+  languageName: node
+  linkType: hard
+
 "nice-try@npm:^1.0.4":
   version: 1.0.5
   resolution: "nice-try@npm:1.0.5"
@@ -9348,6 +9361,13 @@ __metadata:
     gauge: ^4.0.3
     set-blocking: ^2.0.0
   checksum: ae238cd264a1c3f22091cdd9e2b106f684297d3c184f1146984ecbe18aaa86343953f26b9520dedd1b1372bc0316905b736c1932d778dbeb1fcf5a1001390e2a
+  languageName: node
+  linkType: hard
+
+"nprogress@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "nprogress@npm:0.2.0"
+  checksum: 66b7bec5d563ecf2d1c3d2815e6d5eb74ed815eee8563e0afa63d3f185ab1b9cf2ddd97e1ded263b9995c5019d26d600320e849e50f3747984daa033744619dc
   languageName: node
   linkType: hard
 
@@ -9859,7 +9879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.6.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -11841,6 +11861,7 @@ __metadata:
     jest: 29.0.2
     jest-environment-jsdom: 29.0.2
     next: 12.2.5
+    nextjs-progressbar: ^0.0.14
     npm-run-all: 4.1.5
     react: 18.2.0
     react-dom: 18.2.0

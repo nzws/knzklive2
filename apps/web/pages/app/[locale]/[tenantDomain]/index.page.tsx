@@ -1,4 +1,3 @@
-import useAspidaSWR from '@aspida/swr';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment } from 'react';
@@ -9,33 +8,31 @@ import {
   PathProps,
   defaultStaticProps
 } from '~/utils/data-fetching/default-static-props';
-import { client } from '~/utils/api/client';
 import { Navbar } from '~/organisms/navbar';
 import { useUsersMe } from '~/utils/hooks/api/use-users-me';
+import { useTenant } from '~/utils/hooks/api/use-tenant';
+import { Footer } from '~/organisms/footer';
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback },
   pathProps: { tenantDomain }
 }) => {
-  const { data: tenant } = useAspidaSWR(
-    client.v1.tenants._tenantDomain(tenantDomain),
-    {
-      fallbackData: tenantFallback
-    }
-  );
+  const [tenant] = useTenant(tenantDomain, tenantFallback);
   const [me] = useUsersMe();
 
   return (
     <Fragment>
-      <Navbar />
+      <Navbar tenant={tenant} />
 
       <Head>
-        <title>{tenant?.displayName || 'KnzkLive'}</title>
+        <title>{tenant?.displayName || tenant?.domain}</title>
       </Head>
 
       <pre>{JSON.stringify(tenant, null, 2)}</pre>
 
       <pre>{JSON.stringify(me, null, 2)}</pre>
+
+      <Footer />
     </Fragment>
   );
 };
