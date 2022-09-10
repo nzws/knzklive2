@@ -1,5 +1,23 @@
 {
   "navbar.login": "ログイン",
   "navbar.logout": "ログアウト",
-  "login.enter-domain": "サーバーのドメインを入力してください:"
+  "auth.toast.login": "ログインしました",
+  "auth.toast.logout": "ログアウトしました",
+  "toast.api-error.title": "エラーが発生しました",
+  "api-error.unauthorized": "認証に失敗しました: 再ログインしています...",
+  "api-error.invalid_request": "内部エラー: 不正なリクエストです。詳しくは管理者にお問い合わせください",
+  "api-error.not_found": "内部エラー: リソースが存在しません。詳しくは管理者にお問い合わせください",
+  "api-error.forbidden": "権限がありません",
+  "api-error.internal_server_error": "内部エラー: 致命的な問題が発生しました。詳しくは管理者にお問い合わせください",
+  "api-error.invalid_response_from_provider": "内部エラー: 認証プロバイダから不明な結果が返されました",
+  "api-error.live_not_found": "この配信は存在しません",
+  "api-error.tenant_not_found": "このテナントは存在しません",
+  "api-error.user_not_found": "このユーザーは存在しません",
+  "api-error.invalid_authorization_type": "内部エラー: 不正な認証タイプです",
+  "navbar.login.modal.title": "ログイン",
+  "navbar.login.modal.body": "Mastodon アカウントでログインします。 サーバーのドメイン (例: knzk.me) を入力してください。",
+  "navbar.login.modal.domain": "サーバーのドメイン",
+  "navbar.login.modal.domain.placeholder": "例: knzk.me",
+  "navbar.login.modal.help": "Mastodon アカウントから取得する情報について",
+  "navbar.login.modal.continue": "新しいウインドウでログインを続行してください..."
 }

@@ -1,19 +1,21 @@
+import { Center, Spinner } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
 import { defaultStaticProps } from '~/utils/data-fetching/default-static-props';
+import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { useAuth } from '~/utils/hooks/use-auth';
 
 const Page: NextPage = () => {
   const { signInCallback } = useAuth();
-  const [errorCode, setErrorCode] = useState('');
+  const [error, setError] = useState<Error>();
+  useAPIError(error);
   const { query } = useRouter();
 
   useEffect(() => {
     const { code } = query;
     if (!code || typeof code !== 'string' || !signInCallback) {
-      setErrorCode('Invalid code');
       return;
     }
 
@@ -21,7 +23,7 @@ const Page: NextPage = () => {
       try {
         await signInCallback(code);
       } catch (e) {
-        setErrorCode((e as Error).message);
+        setError(e as Error);
         return;
       }
 
@@ -30,10 +32,9 @@ const Page: NextPage = () => {
   }, [query, signInCallback]);
 
   return (
-    <div>
-      <div>Loading...</div>
-      <div>{errorCode}</div>
-    </div>
+    <Center width="100vw" height="100vh">
+      <Spinner size="xl" />
+    </Center>
   );
 };
 

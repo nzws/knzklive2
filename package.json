@@ -14,14 +14,14 @@
   "scripts": {
     "prettier:lint": "prettier --check .",
     "prettier:format": "prettier --write .",
-    "dev": "docker-compose up -d && nf start -x 8080,3000,8787,8000 app,web,edge,push,studio",
-    "lint": "yarn prettier:lint && yarn workspaces foreach --verbose --parallel --exclude knzklive2 run lint",
-    "format": "yarn prettier:format && yarn workspaces foreach --verbose --parallel --exclude knzklive2 run format",
-    "test": "yarn workspaces foreach --verbose --parallel --exclude knzklive2 run test"
+    "dev": "docker-compose up -d && dotenv -- yarn workspaces foreach --verbose --parallel -j unlimited --interlaced --exclude knzklive2 run dev",
+    "lint": "yarn prettier:lint && yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run lint",
+    "format": "yarn prettier:format && yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run format",
+    "test": "yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run test"
   },
   "devDependencies": {
     "@knzk/prettier-config": "^1.0.0",
-    "foreman": "3.0.1",
+    "dotenv-cli": "^6.0.0",
     "prettier": "2.7.1"
   },
   "prettier": "@knzk/prettier-config"

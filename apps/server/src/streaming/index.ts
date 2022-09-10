@@ -22,12 +22,21 @@ export class Streaming {
 
     ws.on('connection', (socket, req) => {
       const ip = req.socket.remoteAddress;
-      void this.handleConnection(socket, ip);
+
+      try {
+        console.log('websocket connected', req.url);
+        if (req.url) {
+          void this.handleConnection(socket, req.url, ip);
+        }
+      } catch (e) {
+        console.warn(e);
+        socket.close();
+      }
     });
   }
 
-  private handleConnection(socket: WebSocket, ip?: string) {
-    const url = new URL(socket.url);
+  private handleConnection(socket: WebSocket, Url: string, ip?: string) {
+    const url = new URL(Url, process.env.SERVER_ENDPOINT);
     const token = url.searchParams.get('token') || undefined;
     if (!ip) {
       return this.closeConnection(socket, 'invalid_ip');

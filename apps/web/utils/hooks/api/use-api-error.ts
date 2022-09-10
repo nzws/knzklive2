@@ -2,6 +2,7 @@ import { HTTPError } from '@aspida/fetch';
 import { useToast } from '@chakra-ui/react';
 import { APIError } from 'api-types/common/types';
 import { useEffect, useRef, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 const checkIsApiError = (error: unknown): error is HTTPError =>
   error instanceof HTTPError;
@@ -23,6 +24,7 @@ export const getAPIError = async (
 };
 
 export const useAPIError = (error?: unknown): [APIError | undefined] => {
+  const intl = useIntl();
   const lastMessageRef = useRef<string>();
   const toast = useToast();
   const [apiError, setApiError] = useState<APIError>();
@@ -36,16 +38,18 @@ export const useAPIError = (error?: unknown): [APIError | undefined] => {
     void (async () => {
       const apiError = await getAPIError(error);
       if (apiError) {
-        const message = apiError.errorCode;
+        const message =
+          intl.formatMessage({ id: `api-error.${apiError.errorCode}` }) +
+          '\n' +
+          JSON.stringify(apiError);
         if (lastMessageRef.current === message) {
           return;
         }
 
         toast({
-          title: 'Error',
+          title: intl.formatMessage({ id: 'toast.api-error.title' }),
           description: message,
           status: 'error',
-          duration: 5000,
           isClosable: true
         });
         setApiError(apiError);
@@ -59,17 +63,16 @@ export const useAPIError = (error?: unknown): [APIError | undefined] => {
         }
 
         toast({
-          title: 'Error',
+          title: intl.formatMessage({ id: 'toast.api-error.title' }),
           description: message,
           status: 'error',
-          duration: 5000,
           isClosable: true
         });
         setApiError(undefined);
         lastMessageRef.current = message;
       }
     })();
-  }, [error, toast]);
+  }, [error, toast, intl]);
 
   return [apiError];
 };

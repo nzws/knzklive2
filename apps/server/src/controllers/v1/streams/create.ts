@@ -61,7 +61,7 @@ export const postV1Streams: APIRoute<
   if (!tenant || tenant.ownerId !== ctx.state.user.id) {
     ctx.status = 400;
     ctx.body = {
-      errorCode: 'tenant_invalid'
+      errorCode: 'tenant_not_found'
     };
     return;
   }

@@ -8,7 +8,7 @@
     "test": "jest",
     "format": "prisma format",
     "lint": "tsc --noEmit && eslint --cache '**/*.{ts,tsx}'",
-    "dev": "ts-node-dev --respawn --transpile-only --exit-child src",
+    "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only --exit-child src",
     "build": "prisma generate && tsc --project tsconfig.build.json",
     "start": "node dist",
     "cli": "ts-node src/cli"

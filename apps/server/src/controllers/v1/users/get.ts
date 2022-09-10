@@ -12,9 +12,9 @@ export const getV1UsersOnce: APIRoute<
 > = async ctx => {
   const userId = parseInt(ctx.params.userId, 10);
   if (!userId || isNaN(userId) || userId <= 0) {
-    ctx.status = 400;
+    ctx.status = 404;
     ctx.body = {
-      errorCode: 'invalid_user_id'
+      errorCode: 'user_not_found'
     };
     return;
   }

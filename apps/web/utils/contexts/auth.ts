@@ -1,9 +1,11 @@
 import useAspidaSWR from '@aspida/swr';
+import { useToast } from '@chakra-ui/react';
 import { useCallback, useEffect, useState, createContext } from 'react';
+import { useIntl } from 'react-intl';
 import { useLocalStorage } from 'react-use';
 import { NewWindow } from '../../utils/new-window';
 import { client } from '../api/client';
-import { useAPIError } from '../hooks/use-api-error';
+import { useAPIError } from '../hooks/api/use-api-error';
 
 export enum SignInType {
   Mastodon
@@ -21,9 +23,11 @@ export type Returns = {
 const TYPE_SS = 'sign-in-provider-type';
 const TOKEN_LS = 'knzklive-token';
 const MASTODON_LS = 'knzklive-mastodon-token';
-const MASTODON_DOMAIN_LS = 'knzklive-mastodon-domain';
+export const MASTODON_DOMAIN_LS = 'knzklive-mastodon-domain';
 
 export const useAuthInProvider = (tenantId?: number): Returns => {
+  const intl = useIntl();
+  const toast = useToast();
   const [token, setToken, removeToken] = useLocalStorage<string | undefined>(
     TOKEN_LS,
     undefined,
@@ -74,11 +78,18 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
         const signInWindow = new NewWindow('sign-in-window', url);
         await signInWindow.waitForClose();
         handleForceUpdateToken();
+        toast({
+          title: intl.formatMessage({
+            id: 'auth.toast.login'
+          }),
+          status: 'success',
+          isClosable: true
+        });
       } else {
         throw new Error('type is invalid');
       }
     },
-    [tenantId, handleForceUpdateToken]
+    [tenantId, handleForceUpdateToken, toast, intl]
   );
 
   const signInCallback = useCallback(
@@ -130,9 +141,15 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
       console.warn(e);
     }
 
+    toast({
+      title: intl.formatMessage({ id: 'auth.toast.logout' }),
+      status: 'success',
+      isClosable: true
+    });
+
     removeToken();
     removeMastodonToken();
-  }, [removeToken, removeMastodonToken, mastodonToken, token]);
+  }, [removeToken, removeMastodonToken, mastodonToken, token, toast, intl]);
 
   const refresh = useCallback(async () => {
     setToken(undefined);

@@ -1,23 +1,26 @@
 import useAspidaSWR from '@aspida/swr';
-import { TenantPublic } from 'server/src/models/tenant';
-import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
+import { NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment, useCallback } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
+import { PageProps } from '~/utils/data-fetching/get-all-static-props';
+import {
+  Props,
+  PathProps,
+  defaultStaticProps
+} from '~/utils/data-fetching/default-static-props';
 import { client } from '~/utils/api/client';
 import { SignInType } from '~/utils/contexts/auth';
 import { useAuth } from '~/utils/hooks/use-auth';
+import { Navbar } from '~/organisms/navbar';
 
-type Props = {
-  tenant?: TenantPublic;
-  tenantDomain: string;
-};
-
-type PathProps = {
-  tenantDomain: string;
-};
-
-const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
-  const { signIn, token } = useAuth();
+const Page: NextPage<PageProps<Props, PathProps>> = ({
+  props: { tenant: tenantFallback },
+  pathProps: { tenantDomain }
+}) => {
+  const intl = useIntl();
+  const { signIn, token, signOut } = useAuth();
   const { data: tenant } = useAspidaSWR(
     client.v1.tenants._tenantDomain(tenantDomain),
     {
@@ -38,7 +41,7 @@ const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
         return;
       }
 
-      const domain = prompt('Enter your domain:');
+      const domain = prompt(intl.formatMessage({ id: 'login.enter-domain' }));
       if (!domain) {
         return;
       }
@@ -47,15 +50,25 @@ const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
 
       await mutate();
     })();
-  }, [signIn, mutate]);
+  }, [signIn, mutate, intl]);
 
   return (
     <Fragment>
+      <Navbar />
+
       <Head>
         <title>{tenant?.displayName || 'KnzkLive'}</title>
       </Head>
 
-      <button onClick={handleLogin}>Login test</button>
+      <button onClick={handleLogin}>
+        <FormattedMessage id="navbar.login" />
+      </button>
+
+      {user && (
+        <button onClick={signOut}>
+          <FormattedMessage id="navbar.logout" />
+        </button>
+      )}
 
       <pre>{JSON.stringify(tenant, null, 2)}</pre>
 
@@ -64,32 +77,7 @@ const Page: NextPage<Props> = ({ tenant: tenantFallback, tenantDomain }) => {
   );
 };
 
-export const getStaticPaths: GetStaticPaths = () => {
-  return {
-    paths: [],
-    fallback: 'blocking'
-  };
-};
-
-export const getStaticProps: GetStaticProps<Props, PathProps> = async ({
-  params
-}) => {
-  const tenantDomain = params?.tenantDomain || '';
-
-  const { body: tenant } = await client.v1.tenants
-    ._tenantDomain(tenantDomain)
-    .get();
-  if (!tenant || 'errorCode' in tenant) {
-    throw new Error('Not found');
-  }
-
-  return {
-    props: {
-      tenant,
-      tenantDomain
-    },
-    revalidate: 60
-  };
-};
+export const getStaticPaths = defaultGetStaticPaths;
+export const getStaticProps = defaultStaticProps;
 
 export default Page;
