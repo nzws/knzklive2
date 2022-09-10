@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "AGPL-3.0",
   "private": true,
-  "packageManager": "yarn@3.2.1",
+  "packageManager": "yarn@3.2.3",
   "scripts": {
     "lint:type": "tsc --noEmit",
     "lint:js": "eslint --cache '**/*.{ts,tsx}'",
