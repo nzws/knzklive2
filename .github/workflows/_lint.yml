@@ -21,7 +21,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v3.0.8
         with:
           path: |
             node_modules
@@ -48,7 +48,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v3.0.8
         with:
           path: |
             node_modules
@@ -75,7 +75,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v3.0.8
         with:
           path: |
             node_modules
@@ -102,7 +102,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v3.0.8
         with:
           path: |
             node_modules
@@ -129,7 +129,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v3.0.8
         with:
           path: |
             node_modules
@@ -156,7 +156,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v3.0.8
         with:
           path: |
             node_modules
