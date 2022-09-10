@@ -6,8 +6,10 @@ import { pubsub } from '../redis/pubsub/client';
 import { getCommentKey, getPushKey } from '../redis/pubsub/keys';
 import { UserToken } from '../redis/user-token';
 import { jwtEdge } from '../services/jwt';
+import { LiveStream } from '../redis/live-stream';
 
 const userToken = new UserToken();
+const liveStream = new LiveStream();
 
 const commentsRegexp = pathToRegexp('/websocket/v1/stream/:liveId');
 const pushRegexp = pathToRegexp('/websocket/v1/push');
@@ -18,20 +20,24 @@ export class Streaming {
       server
     });
 
-    ws.on('connection', socket => {
-      void this.handleConnection(socket);
+    ws.on('connection', (socket, req) => {
+      const ip = req.socket.remoteAddress;
+      void this.handleConnection(socket, ip);
     });
   }
 
-  private handleConnection(socket: WebSocket) {
+  private handleConnection(socket: WebSocket, ip?: string) {
     const url = new URL(socket.url);
     const token = url.searchParams.get('token') || undefined;
+    if (!ip) {
+      return this.closeConnection(socket, 'invalid_ip');
+    }
 
     const comments = commentsRegexp.exec(url.pathname);
     const push = pushRegexp.exec(url.pathname);
     if (comments) {
       const liveId = Number(comments[1]);
-      return this.handleV1Comments(socket, liveId, token);
+      return this.handleV1Comments(socket, ip, liveId, token);
     } else if (push) {
       return this.handleV1Push(socket);
     }
@@ -41,6 +47,7 @@ export class Streaming {
 
   private async handleV1Comments(
     socket: WebSocket,
+    ip: string,
     liveId: number,
     token?: string
   ) {
@@ -53,6 +60,7 @@ export class Streaming {
     }
     // todo: privacy authentication
     console.log('websocket connected', liveId, userId);
+    await liveStream.add(liveId, ip);
 
     const handle = {
       event: getCommentKey(liveId),
@@ -70,6 +78,7 @@ export class Streaming {
     socket.once('close', () => {
       console.log('websocket closed');
       pubsub.off(handle);
+      void liveStream.remove(liveId, ip);
     });
 
     await pubsub.on(handle);
