@@ -20,8 +20,8 @@
     "test": "yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run test"
   },
   "devDependencies": {
-    "@knzk/prettier-config": "^1.0.0",
-    "dotenv-cli": "^6.0.0",
+    "@knzk/prettier-config": "1.0.0",
+    "dotenv-cli": "6.0.0",
     "prettier": "2.7.1"
   },
   "prettier": "@knzk/prettier-config"
