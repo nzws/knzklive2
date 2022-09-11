@@ -10,7 +10,7 @@ import { Controller } from './controller';
 
 type Props = {
   url?: string;
-  updateUrl: () => Promise<void>;
+  updateUrl: () => Promise<string | undefined>;
 };
 
 const preferLowLatency = (suc: number, err: number) =>
