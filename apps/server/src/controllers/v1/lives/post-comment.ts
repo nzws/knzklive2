@@ -36,6 +36,7 @@ export const postV1LivesComment: APIRoute<
     };
     return;
   }
+
   const content = ctx.request.body.content;
 
   if (content.trim().length <= 0) {

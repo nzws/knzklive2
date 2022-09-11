@@ -25,4 +25,4 @@ RUN yarn workspaces focus push --production
 
 COPY --chown=node:node --from=builder /home/node/app/apps/push/dist ./apps/push/dist
 
-CMD ["node", "packages/push/dist"]
+CMD ["node", "apps/push/dist"]

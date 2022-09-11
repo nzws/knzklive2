@@ -2,7 +2,7 @@ import * as jose from 'jose';
 import type { KeyLike } from 'jose';
 
 export const ISSUER = 'github.com/nzws/knzklive2';
-export const alg = 'EdDSA';
+export const alg = 'PS256';
 
 export class JWT {
   private publicKey?: KeyLike;

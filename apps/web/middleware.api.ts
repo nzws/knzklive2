@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { defaultLocale, supportedLocales } from './locales';
+import { defaultLocale, SupportedLocale, supportedLocales } from './locales';
 
 const PUBLIC_FILE = /\.(.*)$/;
+const LOCALE_COOKIE = 'KNZK_LOCALE';
+const ONE_YEAR = 60 * 60 * 24 * 365;
 
 const getLocale = (req: NextRequest) => {
   const { headers, cookies } = req;
 
-  const cookieLang = cookies.get('KNZK_LOCALE');
+  const cookieLang = cookies.get(LOCALE_COOKIE);
   if (cookieLang) {
     return cookieLang;
   }
@@ -50,15 +52,15 @@ export const middleware = (req: NextRequest) => {
 
   const paramLang = url.searchParams.get('lang');
   const language = paramLang || getLocale(req);
-  const validLang = supportedLocales.includes(language)
+  const validLang = supportedLocales.includes(language as SupportedLocale)
     ? language
     : defaultLocale;
 
   url.pathname = `/app/${validLang}/${hostname}${pathname}`;
   const response = NextResponse.rewrite(url);
   if (paramLang && paramLang === validLang) {
-    response.cookies.set('KNZK_LOCALE', validLang, {
-      maxAge: 60 * 60 * 24 * 365
+    response.cookies.set(LOCALE_COOKIE, validLang, {
+      maxAge: ONE_YEAR
     });
   }
 

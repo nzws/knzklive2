@@ -1,7 +1,12 @@
 import { importJWK, JWK, jwtVerify } from 'jose';
 
 const expire = 60 * 1 * 1000; // 1 minutes
-const ISSUER = 'github.com/nzws/knzklive2';
+
+type APIResponse = {
+  publicKey: JWK;
+  alg: string;
+  issuer: string;
+};
 
 export class Jwt {
   timestamp?: number;
@@ -10,11 +15,11 @@ export class Jwt {
 
   async verify(token: string): Promise<Record<string, unknown> | undefined> {
     try {
-      const jwk = await this.getKey();
-      const publicKey = await importJWK(jwk);
+      const data = await this.getKey();
+      const publicKey = await importJWK(data.publicKey, data.alg);
 
       const { payload } = await jwtVerify(token, publicKey, {
-        issuer: ISSUER,
+        issuer: data.issuer,
         subject: this.subject
       });
 
@@ -26,7 +31,7 @@ export class Jwt {
     }
   }
 
-  async getKey(): Promise<JWK> {
+  async getKey(): Promise<APIResponse> {
     const key = await this.getCache();
     if (key) {
       return key;
@@ -35,7 +40,7 @@ export class Jwt {
     return this.getOrigin();
   }
 
-  private async getCache(): Promise<JWK | undefined> {
+  private async getCache(): Promise<APIResponse | undefined> {
     const cache = await caches.open('jwt');
     const cached = await cache.match(this.url);
 
@@ -47,25 +52,24 @@ export class Jwt {
 
       const json = await cached.json();
 
-      return json as JWK;
+      return json as APIResponse;
     }
   }
 
-  private async getOrigin(): Promise<JWK> {
+  private async getOrigin(): Promise<APIResponse> {
     const response = await fetch(this.url);
     if (!response.ok) {
-      console.warn(await response.json());
+      console.warn(this.url, await response.text());
       throw new Error('failed to fetch jwk');
     }
-    const json = await response.json();
 
-    const copy = response.clone();
-    const headers = new Headers(copy.headers);
+    const headers = new Headers();
     headers.append('X-FetchedAt', Date.now().toString());
+    const json = await response.json();
 
     const cache = await caches.open('jwt');
     await cache.put(this.url, new Response(JSON.stringify(json), { headers }));
 
-    return json as JWK;
+    return json as APIResponse;
   }
 }

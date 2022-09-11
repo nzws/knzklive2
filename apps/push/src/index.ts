@@ -68,14 +68,16 @@ const rejectSession = (sessionId?: string, liveId?: number) => {
       return;
     }
 
-    const session = nms.getSession(nmsId) as unknown as {
-      reject: () => void;
-    };
-    session.reject();
+    const session = nms.getSession(nmsId) as unknown as
+      | {
+          reject: () => void;
+        }
+      | undefined;
 
     if (liveId) {
       delete nmsIds[liveId];
     }
+    session?.reject();
   } catch (e) {
     console.warn('rejectSession', e);
   }
@@ -108,30 +110,37 @@ const closeSocket = (liveId: number) => {
   sessions = sessions.filter(s => s.liveId !== liveId);
 };
 
-const checkSession = async (
-  id: string,
-  StreamPath: string,
-  args: Record<string, unknown>
-) => {
+const checkSession = async (id: string, StreamPath: string, token: string) => {
   const [, key, liveId] = StreamPath.split('/');
-  const token = args.token as string;
   if (key !== 'live' || !liveId || !parseInt(liveId) || !token) {
-    console.warn('invalid session', id, StreamPath, args);
-    rejectSession(id);
+    console.warn('invalid session', id, StreamPath, token);
     throw new Error('invalid session');
   }
 
   const res = await jwk.verify(token);
   if (!res) {
     console.warn('invalid token');
-    rejectSession(id);
     throw new Error('invalid token');
   }
 
   if (res.type !== 'push' || res.liveId !== parseInt(liveId)) {
     console.warn('invalid live', res);
-    rejectSession(id);
     throw new Error('invalid live');
+  }
+
+  const response = await fetch(`${LIVE_API}/v1/internals/push/check-token`, {
+    method: 'POST',
+    body: JSON.stringify({
+      liveId: res.liveId,
+      token
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  if (!response.ok) {
+    console.warn('check failed', res, await response.text());
+    throw new Error('check failed');
   }
 };
 
@@ -150,46 +159,52 @@ const onConnect = (sessionId: string, liveId: number, token: string) => {
     })
   );
 
-  const session: Session = { liveId };
-  const edge = new WebSocket(
-    `${EDGE_WS}/streaming/${liveId}/push?token=${token}`
-  );
-  session.edgeSocket = edge;
-  sessions.push(session);
+  try {
+    const session: Session = { liveId };
+    const edge = new WebSocket(
+      `${EDGE_WS}/streaming/${liveId}/push?token=${token}`
+    );
+    session.edgeSocket = edge;
+    sessions.push(session);
 
-  edge.on('open', () => {
-    console.log('edge connected', liveId);
+    edge.on('open', () => {
+      console.log('edge connected', liveId);
 
-    const stream = new WebSocket(`ws://localhost:${httpPort}/live/${liveId}`);
-    session.flvSocket = stream;
+      const stream = new WebSocket(`ws://localhost:${httpPort}/live/${liveId}`);
+      session.flvSocket = stream;
 
-    stream.on('open', () => {
-      console.log('flv socket connected', liveId);
+      stream.on('open', () => {
+        console.log('flv socket connected', liveId);
+      });
+
+      stream.on('message', data => {
+        edge.send(data);
+      });
+
+      stream.on('close', () => {
+        console.log('flv socket disconnected', liveId);
+        closeSocket(liveId);
+        rejectSession(sessionId);
+      });
     });
 
-    stream.on('message', data => {
-      edge.send(data);
+    edge.on('close', () => {
+      console.log('edge disconnected', liveId);
+
+      if (session.flvSocket) {
+        closeSocket(liveId);
+        console.log('Edge Reconnecting...', liveId);
+        onConnect(sessionId, liveId, token);
+      } else {
+        closeSocket(liveId);
+        rejectSession(sessionId);
+      }
     });
-
-    stream.on('close', () => {
-      console.log('flv socket disconnected', liveId);
-      closeSocket(liveId);
-      rejectSession(sessionId);
-    });
-  });
-
-  edge.on('close', () => {
-    console.log('edge disconnected', liveId);
-
-    if (session.flvSocket) {
-      closeSocket(liveId);
-      console.log('Edge Reconnecting...', liveId);
-      onConnect(sessionId, liveId, token);
-    } else {
-      closeSocket(liveId);
-      rejectSession(sessionId);
-    }
-  });
+  } catch (e) {
+    console.warn('onConnect', e);
+    closeSocket(liveId);
+    rejectSession(sessionId);
+  }
 };
 
 nms.on('prePublish', (id, StreamPath, args) => {
@@ -198,12 +213,15 @@ nms.on('prePublish', (id, StreamPath, args) => {
     `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`
   );
 
-  try {
-    void checkSession(id, StreamPath, args as Record<string, unknown>);
-  } catch (e) {
-    console.warn('prePublish', e);
-    rejectSession(id);
-  }
+  void (async () => {
+    try {
+      const token = (args as Record<string, unknown>).token as string;
+      await checkSession(id, StreamPath, token);
+    } catch (e) {
+      console.warn('prePublish', e);
+      rejectSession(id);
+    }
+  })();
 });
 
 nms.on('postPublish', (id, StreamPath, args) => {
@@ -214,10 +232,10 @@ nms.on('postPublish', (id, StreamPath, args) => {
 
   void (async () => {
     try {
-      await checkSession(id, StreamPath, args as Record<string, unknown>);
+      const token = (args as Record<string, unknown>).token as string;
+      await checkSession(id, StreamPath, token);
 
       const [, , liveId] = StreamPath.split('/');
-      const token = (args as Record<string, unknown>).token as string;
 
       onConnect(id, parseInt(liveId), token);
     } catch (e) {
@@ -235,10 +253,10 @@ nms.on('donePublish', (id, StreamPath, args) => {
 
   void (async () => {
     try {
-      await checkSession(id, StreamPath, args as Record<string, unknown>);
+      const token = (args as Record<string, unknown>).token as string;
+      await checkSession(id, StreamPath, token);
 
       const [, , liveId] = StreamPath.split('/');
-      const token = (args as Record<string, unknown>).token as string;
       const LiveId = parseInt(liveId);
 
       closeSocket(LiveId);

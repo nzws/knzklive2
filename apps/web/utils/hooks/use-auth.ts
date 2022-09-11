@@ -1,14 +1,25 @@
-import { useContext } from 'react';
-import {
-  AuthContext,
-  Returns as useAPIReturns
-} from '../../utils/contexts/auth';
+import { useContext, useMemo } from 'react';
+import { AuthContext } from '../../utils/contexts/auth';
 
-type Returns = Partial<Omit<useAPIReturns, 'fetcher'>>;
-
-export const useAuth = (): Returns => {
-  const { token, mastodonToken, signInCallback, signIn, refresh, signOut } =
-    useContext(AuthContext);
+export const useAuth = () => {
+  const {
+    token,
+    mastodonToken,
+    signInCallback,
+    signIn,
+    refresh,
+    signOut,
+    user
+  } = useContext(AuthContext);
+  const headers = useMemo(
+    () =>
+      token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : undefined,
+    [token]
+  );
 
   return {
     token,
@@ -16,6 +27,8 @@ export const useAuth = (): Returns => {
     signInCallback,
     signIn,
     refresh,
-    signOut
+    signOut,
+    headers,
+    user
   };
 };

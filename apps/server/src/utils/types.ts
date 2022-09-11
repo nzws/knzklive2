@@ -10,7 +10,7 @@ export type APIRoute<
   ResponseBody = unknown,
   State = DefaultState
 > = Middleware<
-  State,
+  State & UserIdState,
   DefaultContext & {
     params: Record<Extract<Params, string>, string>;
     request: {
@@ -31,4 +31,8 @@ export type TenantState = {
 
 export type LiveState = {
   live: Live;
+};
+
+export type UserIdState = {
+  userId?: number;
 };

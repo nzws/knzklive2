@@ -22,13 +22,19 @@ export const addUser: Command = {
     }
 
     const tenant = await tenants.createTenant(slug, user);
+
     console.log(`tenant ${tenant.slug} (id=${tenant.id}) created`);
+
+    if (typeof createTenant === 'string') {
+      const tenant2 = await tenants.updateCustomDomain(tenant, createTenant);
+      console.log(`custom domain ${tenant2.customDomain || ''} set`);
+    }
   },
   flags: {
     createTenant: {
       name: ['create-tenant', 'c'],
       description: 'create tenant',
-      hasValue: 0
+      hasValue: 1
     },
     account: {
       name: ['account', 'a'],

@@ -5,6 +5,7 @@ import cors from '@koa/cors';
 import { router } from './router';
 import { Streaming } from './streaming';
 import { middlewareCatch } from './middlewares/catch';
+import { middlewareGetUserId } from './middlewares/user-id';
 
 export const app = async (): Promise<void> => {
   await Promise.resolve();
@@ -14,6 +15,7 @@ export const app = async (): Promise<void> => {
   app.use(bodyParser());
   app.use(logger());
   app.use(cors());
+  app.use(middlewareGetUserId);
 
   const route = router();
   app.use(route.routes()).use(route.allowedMethods());

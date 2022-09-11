@@ -1,4 +1,5 @@
-import { StreamStatus, PrismaClient, Stream } from '@prisma/client';
+import { StreamStatus, PrismaClient, Stream, Live } from '@prisma/client';
+import { lives } from '.';
 
 export const Streams = (client: PrismaClient['stream']) =>
   Object.assign(client, {
@@ -10,6 +11,17 @@ export const Streams = (client: PrismaClient['stream']) =>
       });
 
       return data || undefined;
+    },
+    isAccessibleStreamByUser: (live: Live, stream: Stream, userId?: number) => {
+      const isAccessibleInformation = lives.isAccessibleInformationByUser(
+        live,
+        userId
+      );
+      if (!isAccessibleInformation) {
+        return false;
+      }
+
+      return stream.status === StreamStatus.Live;
     },
     startStream: async (stream: Stream) => {
       if (

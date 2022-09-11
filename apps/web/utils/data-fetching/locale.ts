@@ -1,5 +1,7 @@
+import { SupportedLocale } from '~/locales';
+
 export type PathProps = {
-  locale: string;
+  locale: SupportedLocale;
 };
 
 export type Props = {

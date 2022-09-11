@@ -3,6 +3,7 @@ import { useToast } from '@chakra-ui/react';
 import { useCallback, useEffect, useState, createContext } from 'react';
 import { useIntl } from 'react-intl';
 import { useLocalStorage } from 'react-use';
+import { UserPrivate } from '~/../server/src/models/user';
 import { NewWindow } from '../../utils/new-window';
 import { client } from '../api/client';
 import { useAPIError } from '../hooks/api/use-api-error';
@@ -18,6 +19,7 @@ export type Returns = {
   signInCallback: (code: string) => Promise<void>;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
+  user?: UserPrivate;
 };
 
 const TYPE_SS = 'sign-in-provider-type';
@@ -41,7 +43,7 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
     });
   const [requiredRefresh, setRequiredRefresh] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { error } = useAspidaSWR(client.v1.users.me, {
+  const { data: user, error } = useAspidaSWR(client.v1.users.me, {
     headers: {
       Authorization: `Bearer ${token || ''}`
     },
@@ -205,7 +207,8 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
     signInCallback,
     signIn,
     refresh,
-    signOut
+    signOut,
+    user
   };
 };
 

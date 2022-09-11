@@ -12,10 +12,12 @@ const errorCodes = [
   'live_not_found',
   'tenant_not_found',
   'user_not_found',
-  'invalid_authorization_type'
+  'invalid_authorization_type',
+  'forbidden_live'
 ] as const;
 type ErrorCode = typeof errorCodes[number];
 
 export interface APIError {
   errorCode: ErrorCode;
+  message?: string;
 }

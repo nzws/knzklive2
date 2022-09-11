@@ -107,7 +107,13 @@ export class StreamingDurableObject {
   }
 
   private closeAll() {
-    this.sessions.forEach(session => session.socket.close());
+    this.sessions.forEach(session => {
+      try {
+        session.socket.close();
+      } catch (e) {
+        // ignore
+      }
+    });
     this.sessions = [];
   }
 

@@ -18,13 +18,6 @@ export const getV1TenantsMe: APIRoute<
       }
     }
   });
-  if (!tenant) {
-    ctx.status = 404;
-    ctx.body = {
-      errorCode: 'tenant_not_found'
-    };
-    return;
-  }
 
   ctx.body = tenant.map(t => tenants.getPublic(t));
 };

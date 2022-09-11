@@ -1,18 +1,12 @@
 import type { Middleware } from 'koa';
-import { users } from '../models';
 import { UserToken } from '../redis/user-token';
 
 const userToken = new UserToken();
 
-export const middlewareAuthorizeUser: Middleware = async (ctx, next) => {
+export const middlewareGetUserId: Middleware = async (ctx, next) => {
   const header = ctx.headers.authorization;
   if (!header || typeof header !== 'string') {
-    ctx.status = 401;
-    ctx.body = {
-      errorCode: 'unauthorized'
-    };
-    ctx.throw(401);
-    return;
+    return next();
   }
 
   const [type, token] = header.split(' ');
@@ -33,16 +27,7 @@ export const middlewareAuthorizeUser: Middleware = async (ctx, next) => {
     return;
   }
 
-  const user = await users.get(id);
-  if (!user) {
-    ctx.status = 401;
-    ctx.body = {
-      errorCode: 'user_not_found'
-    };
-    return;
-  }
-
-  ctx.state.user = user;
+  ctx.state.userId = id;
 
   await next();
 };

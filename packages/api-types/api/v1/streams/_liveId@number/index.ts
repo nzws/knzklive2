@@ -1,4 +1,4 @@
-import { LivePublic, StreamStatus } from 'server/src/models/live';
+import { LivePublic } from 'server/src/models/live';
 import { AuthorizationHeader } from '../../../../common/types';
 import { LiveSetting } from '../index';
 
@@ -20,7 +20,7 @@ export type Methods = {
       live: LivePublic;
 
       push: {
-        status: StreamStatus;
+        status: 'Provisioning' | 'Ready' | 'Live' | 'Paused' | 'Ended';
       };
     };
   };

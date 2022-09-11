@@ -7,8 +7,6 @@ import {
 } from '@prisma/client';
 import { prisma } from './_client';
 
-export { LiveStatus, LivePrivacy, StreamStatus };
-
 export type LivePublic = {
   id: number;
   idInTenant: number;
@@ -18,7 +16,10 @@ export type LivePublic = {
   endedAt?: Date;
   title: string;
   description?: string;
-  status: LiveStatus;
+  sensitive: boolean;
+  status: 'Provisioning' | 'Ready' | 'Live' | 'Ended';
+  privacy: 'Public' | 'Private';
+  hashtag?: string;
 };
 
 export const Lives = (client: PrismaClient['live']) =>
@@ -32,7 +33,10 @@ export const Lives = (client: PrismaClient['live']) =>
       endedAt: live.endedAt || undefined,
       title: live.title,
       description: live.description || undefined,
-      status: live.status
+      status: live.status,
+      privacy: live.privacy,
+      sensitive: live.sensitive,
+      hashtag: live.hashtag || undefined
     }),
     get: async (id: number) => {
       const live = await client.findUnique({
@@ -73,6 +77,36 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return lives;
     },
+    isAccessibleInformationByUser: (live: Live, userId?: number) => {
+      // live owner
+      if (live.userId === userId) {
+        return true;
+      } else {
+        if (
+          live.status === LiveStatus.Provisioning ||
+          live.status === LiveStatus.Ready
+        ) {
+          return false;
+        }
+      }
+
+      // public live
+      if (live.privacy === LivePrivacy.Public) {
+        return true;
+      }
+
+      // private live
+      if (live.privacy === LivePrivacy.Private) {
+        if (!userId) {
+          return false;
+        }
+
+        // todo: FF限定とかの機能
+        return true;
+      }
+
+      return false;
+    },
     createLive: async (
       tenantId: number,
       userId: number,
@@ -84,7 +118,7 @@ export const Lives = (client: PrismaClient['live']) =>
       const live = await prisma.$transaction(async prisma => {
         const stream = await prisma.stream.create({
           data: {
-            status: StreamStatus.Provisioning
+            status: StreamStatus.Ready
           }
         });
 
@@ -107,7 +141,7 @@ export const Lives = (client: PrismaClient['live']) =>
             description,
             privacy,
             hashtag,
-            status: LiveStatus.Provisioning
+            status: LiveStatus.Ready
           }
         });
       });

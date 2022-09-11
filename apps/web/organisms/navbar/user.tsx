@@ -16,12 +16,15 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useMyTenants } from '~/utils/hooks/api/use-my-tenant';
 import Link from 'next/link';
 import { TenantPublic } from 'server/src/models/tenant';
+import { LivePublic } from 'server/src/models/live';
 
 type Props = {
   tenant?: TenantPublic;
+  onCreateLive: () => void;
+  recentLive?: LivePublic;
 };
 
-export const User: FC<Props> = ({ tenant }) => {
+export const User: FC<Props> = ({ tenant, onCreateLive, recentLive }) => {
   const { signOut } = useAuth();
   const intl = useIntl();
   const [me] = useUsersMe();
@@ -67,11 +70,19 @@ export const User: FC<Props> = ({ tenant }) => {
                   { domain: t.domain }
                 )}
               >
-                <Link href="/stream" passHref>
-                  <MenuItem as="a">
+                {recentLive &&
+                recentLive.tenantId === t.id &&
+                recentLive.status !== 'Ended' ? (
+                  <Link href={`/watch/${recentLive.idInTenant}`} passHref>
+                    <MenuItem as="a">
+                      <FormattedMessage id="navbar.menu.stream-link" />
+                    </MenuItem>
+                  </Link>
+                ) : (
+                  <MenuItem onClick={onCreateLive}>
                     <FormattedMessage id="navbar.menu.start-stream" />
                   </MenuItem>
-                </Link>
+                )}
 
                 <Link href="/tenant/settings" passHref>
                   <MenuItem as="a">
@@ -81,11 +92,9 @@ export const User: FC<Props> = ({ tenant }) => {
               </MenuGroup>
             ) : (
               <MenuGroup title={t.domain}>
-                <LinkBox>
+                <LinkBox as={MenuItem}>
                   <LinkOverlay href={`https://${t.domain}`} isExternal>
-                    <MenuItem>
-                      <FormattedMessage id="navbar.menu.change-tenant" />
-                    </MenuItem>
+                    <FormattedMessage id="navbar.menu.change-tenant" />
                   </LinkOverlay>
                 </LinkBox>
               </MenuGroup>

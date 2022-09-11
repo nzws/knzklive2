@@ -98,20 +98,39 @@ export class Streaming {
       void (async () => {
         try {
           const msg = JSON.parse(message.toString()) as {
-            liveId: number;
+            liveId: string;
             token: string;
             action: 'start' | 'stop';
           };
+          const liveId = Number(msg.liveId);
 
-          const live = await this.getStream(msg.liveId, msg.token);
+          const live = await this.getStream(liveId, msg.token);
           if (!live) {
             console.warn('invalid push token', msg);
+
+            socket.send(
+              JSON.stringify({
+                action: 'end',
+                liveId: msg.liveId
+              })
+            );
             return;
           }
-          await pubsub.subscribe(getPushKey(msg.liveId));
+          await pubsub.subscribe(getPushKey(liveId));
 
           if (msg.action === 'start') {
-            void streams.startStream(live.stream);
+            try {
+              void streams.startStream(live.stream);
+            } catch (e) {
+              console.warn(e);
+
+              socket.send(
+                JSON.stringify({
+                  action: 'end',
+                  liveId: msg.liveId
+                })
+              );
+            }
           } else if (msg.action === 'stop') {
             void streams.stopStream(live.stream);
           }

@@ -23,6 +23,14 @@ export const middlewareLive: Middleware = async (ctx, next) => {
     return;
   }
 
+  if (!lives.isAccessibleInformationByUser(data, ctx.state.userId as number)) {
+    ctx.status = 403;
+    ctx.body = {
+      errorCode: 'forbidden_live'
+    };
+    return;
+  }
+
   ctx.state.live = data;
 
   await next();

@@ -1,21 +1,26 @@
 import { importJWK, JWK, jwtVerify } from 'jose';
 
 const expire = 60 * 1 * 1000; // 1 minutes
-const ISSUER = 'github.com/nzws/knzklive2';
+
+type APIResponse = {
+  publicKey: JWK;
+  alg: string;
+  issuer: string;
+};
 
 export class Jwt {
   timestamp?: number;
-  cache?: JWK;
+  cache?: APIResponse;
 
   constructor(private readonly url: string, private readonly subject: string) {}
 
   async verify(token: string): Promise<Record<string, unknown> | undefined> {
     try {
-      const jwk = await this.getKey();
-      const publicKey = await importJWK(jwk);
+      const data = await this.getKey();
+      const publicKey = await importJWK(data.publicKey, data.alg);
 
       const { payload } = await jwtVerify(token, publicKey, {
-        issuer: ISSUER,
+        issuer: data.issuer,
         subject: this.subject
       });
 
@@ -27,7 +32,7 @@ export class Jwt {
     }
   }
 
-  async getKey(): Promise<JWK> {
+  async getKey(): Promise<APIResponse> {
     const key = this.getCache();
     if (key) {
       return key;
@@ -36,7 +41,7 @@ export class Jwt {
     return this.getOrigin();
   }
 
-  private getCache(): JWK | undefined {
+  private getCache(): APIResponse | undefined {
     if (this.cache) {
       if (!this.timestamp || this.timestamp + expire < Date.now()) {
         return;
@@ -46,13 +51,13 @@ export class Jwt {
     }
   }
 
-  private async getOrigin(): Promise<JWK> {
+  private async getOrigin(): Promise<APIResponse> {
     const response = await fetch(this.url);
     if (!response.ok) {
       console.warn(await response.json());
       throw new Error('failed to fetch jwk');
     }
-    const json = (await response.json()) as JWK;
+    const json = (await response.json()) as APIResponse;
 
     this.cache = json;
     this.timestamp = Date.now();

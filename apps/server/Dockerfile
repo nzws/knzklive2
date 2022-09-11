@@ -29,4 +29,4 @@ RUN yarn workspaces focus server --production
 COPY --chown=node:node --from=builder /home/node/app/apps/server/dist ./apps/server/dist
 COPY --chown=node:node --from=builder /home/node/app/node_modules/.prisma/client ./node_modules/.prisma/client
 
-CMD ["node", "packages/server/dist"]
+CMD ["node", "apps/server/dist"]

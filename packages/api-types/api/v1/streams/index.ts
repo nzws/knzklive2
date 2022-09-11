@@ -1,10 +1,10 @@
-import { LivePrivacy, LivePublic } from 'server/src/models/live';
+import { LivePublic } from 'server/src/models/live';
 import { AuthorizationHeader } from '../../../common/types';
 
 export type LiveSetting = {
   title: string;
   description?: string;
-  privacy: LivePrivacy;
+  privacy: 'Public' | 'Private';
   sensitive: boolean;
   hashtag?: string;
 };

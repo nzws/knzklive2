@@ -1,7 +1,7 @@
 import Router from '@koa/router';
 import { getV1TenantsOnce } from './controllers/v1/tenants/get-once';
 import { getV1UsersMe } from './controllers/v1/users/me';
-import { middlewareAuthorizeUser } from './middlewares/user-token';
+import { middlewareAuthorizeUser } from './middlewares/user-auth';
 import { v1AuthMastodonCallback } from './controllers/v1/auth/mastodon/callback';
 import { v1AuthMastodonLogin } from './controllers/v1/auth/mastodon/login';
 import { v1AuthMastodonToken } from './controllers/v1/auth/mastodon/token';
@@ -11,7 +11,7 @@ import { middlewareLive } from './middlewares/live';
 import { middlewareTenant } from './middlewares/tenant';
 import { getV1LivesExplore } from './controllers/v1/lives/explore';
 import { getV1UsersOnce } from './controllers/v1/users/get';
-import { getV1Lives } from './controllers/v1/lives/get';
+import { getV1LivesFindById } from './controllers/v1/lives/find-by-id';
 import { middlewareMyStream } from './middlewares/stream';
 import { getV1InternalsEdgeJwt } from './controllers/v1/internals/edge/jwt';
 import { getV1LivesUrl } from './controllers/v1/lives/get-url';
@@ -26,6 +26,10 @@ import { deleteV1LivesComment } from './controllers/v1/lives/delete-comment';
 import { getV1TenantsMe } from './controllers/v1/tenants/get-me';
 import { getV1About } from './controllers/v1/about';
 import { getV1LivesTop } from './controllers/v1/lives/get-top';
+import { getV1Lives } from './controllers/v1/lives/get';
+import { middlewareMyTenant } from './middlewares/my-tenant';
+import { getV1TenantStreamStatus } from './controllers/v1/tenants/get-stream-status';
+import { getV1InternalsPushCheckToken } from './controllers/v1/internals/push/check-token';
 
 export const router = (): Router => {
   const route = new Router();
@@ -46,13 +50,21 @@ export const router = (): Router => {
   route.get('/v1/tenants', middlewareAuthorizeUser, getV1TenantsMe);
   // route.post('/v1/tenants', middlewareAuthorizeUser);
   // route.patch('/v1/tenants/:id', middlewareAuthorizeUser);
+  route.get(
+    '/v1/tenants/:tenantId/stream-status',
+    middlewareAuthorizeUser,
+    middlewareTenant,
+    middlewareMyTenant,
+    getV1TenantStreamStatus
+  );
 
   route.get('/v1/users/me', middlewareAuthorizeUser, getV1UsersMe);
   route.get('/v1/users/:userId', getV1UsersOnce);
 
-  route.get('/v1/lives/find/:tenantDomain/:liveIdInTenant', getV1Lives);
+  route.get('/v1/lives/find/:tenantDomain/:liveIdInTenant', getV1LivesFindById);
   route.get('/v1/lives/find/:tenantId/top', middlewareTenant, getV1LivesTop);
   route.get('/v1/lives/explore', getV1LivesExplore);
+  route.get('/v1/lives/:liveId', middlewareLive, getV1Lives);
   route.get('/v1/lives/:liveId/url', middlewareLive, getV1LivesUrl);
   route.get('/v1/lives/:liveId/comment', middlewareLive, getV1LivesComment);
   route.post(
@@ -99,6 +111,7 @@ export const router = (): Router => {
   );
 
   route.get('/v1/internals/edge/jwt', getV1InternalsEdgeJwt);
+  route.post('/v1/internals/push/check-token', getV1InternalsPushCheckToken);
 
   return route;
 };
