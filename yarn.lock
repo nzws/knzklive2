@@ -3390,13 +3390,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:29.0.0":
-  version: 29.0.0
-  resolution: "@types/jest@npm:29.0.0"
+"@types/jest@npm:29.0.1":
+  version: 29.0.1
+  resolution: "@types/jest@npm:29.0.1"
   dependencies:
     expect: ^29.0.0
     pretty-format: ^29.0.0
-  checksum: b20c4b38c7c963862d82c21c0a1ae2b96015afb1511c835da43e8fd53659ca884f8103a2159be2ce74d2888472a1ac93d20d08ec1ac0970385cbb74c46d47585
+  checksum: efd30357c290b5d385382302fae927885f2a9bde0aa45d4c7f970fa6e6d750df83edef73f16d1e9a005e08a5bcd7c6ff56a43f5ac2534a517df9ad1e44dd30c4
   languageName: node
   linkType: hard
 
@@ -5426,7 +5426,7 @@ __metadata:
   dependencies:
     "@cloudflare/workers-types": 3.16.0
     "@tsconfig/node18": 1.0.1
-    "@types/jest": 29.0.0
+    "@types/jest": 29.0.1
     "@types/node": 18.7.16
     "@typescript-eslint/eslint-plugin": 5.36.2
     "@typescript-eslint/parser": 5.36.2
@@ -10791,7 +10791,7 @@ __metadata:
     "@mux/mux-node": 6.3.0
     "@prisma/client": 4.3.1
     "@tsconfig/node18": 1.0.1
-    "@types/jest": 29.0.0
+    "@types/jest": 29.0.1
     "@types/koa": 2.13.5
     "@types/koa-bodyparser": 4.3.8
     "@types/koa-logger": 3.1.2
@@ -12008,7 +12008,7 @@ __metadata:
     "@testing-library/react": 13.4.0
     "@testing-library/user-event": 14.4.3
     "@tsconfig/next": 1.0.2
-    "@types/jest": 29.0.0
+    "@types/jest": 29.0.1
     "@types/node": 18.7.16
     "@types/react": 18.0.19
     "@types/react-dom": 18.0.6
