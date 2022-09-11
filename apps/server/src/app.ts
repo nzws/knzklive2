@@ -6,6 +6,7 @@ import { router } from './router';
 import { Streaming } from './streaming';
 import { middlewareCatch } from './middlewares/catch';
 import { middlewareGetUserId } from './middlewares/user-id';
+import { MastodonStreaming } from './streaming/mastodon';
 
 export const app = async (): Promise<void> => {
   await Promise.resolve();
@@ -30,4 +31,7 @@ export const app = async (): Promise<void> => {
   console.log(`Listening on port ${port}`);
 
   new Streaming(server);
+  const mastodon = new MastodonStreaming();
+  await mastodon.prepareHashtag();
+  mastodon.connect();
 };

@@ -72,7 +72,7 @@ export const Users = (prismaUser: PrismaClient['user']) =>
 
       return updatedUser;
     },
-    getOrCreateForRemote: async (account: string) => {
+    getOrCreateForRemote: async (displayName: string, account: string) => {
       account = account.toLowerCase();
 
       const user = await prismaUser.findUnique({
@@ -87,6 +87,7 @@ export const Users = (prismaUser: PrismaClient['user']) =>
 
       const newUser = await prismaUser.create({
         data: {
+          displayName,
           account,
           config: {}
         }

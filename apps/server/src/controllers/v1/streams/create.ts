@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams';
 import { lives, tenants } from '../../../models';
+import { pubsub } from '../../../redis/pubsub/client';
 import { APIRoute, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
@@ -74,6 +75,16 @@ export const postV1Streams: APIRoute<
     body.description,
     body.hashtag
   );
+  if (body.hashtag) {
+    await pubsub.publish(
+      'update:hashtag',
+      JSON.stringify({
+        hashtag: body.hashtag,
+        type: 'add',
+        liveId: live.id
+      })
+    );
+  }
 
   const livePublic = lives.getPublic(live);
 

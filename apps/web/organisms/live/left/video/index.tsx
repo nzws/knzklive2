@@ -58,9 +58,13 @@ export const Video: FC<Props> = ({ url, updateUrl }) => {
         );
       }
 
-      video.currentTime =
-        video.buffered.end(0) -
-        (isEnabledLowLatency ? 2 : highLatencySeekRef.current);
+      try {
+        video.currentTime =
+          video.buffered.end(0) -
+          (isEnabledLowLatency ? 2 : highLatencySeekRef.current);
+      } catch (e) {
+        console.warn(e);
+      }
     })();
   }, []);
 

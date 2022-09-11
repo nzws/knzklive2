@@ -2,7 +2,11 @@ import { JWT } from './_base';
 
 export class JWTEdge extends JWT {
   constructor() {
-    super('edge');
+    super(
+      'edge',
+      process.env.JWT_EDGE_PRIVATE_KEY || '',
+      process.env.JWT_EDGE_PUBLIC_KEY || ''
+    );
   }
 
   async generateTokenAsPush(liveId: number): Promise<string> {

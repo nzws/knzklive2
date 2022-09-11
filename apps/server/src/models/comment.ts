@@ -1,5 +1,7 @@
-import type { Comment, Live, PrismaClient } from '@prisma/client';
-import { users } from '.';
+import type { Comment, PrismaClient } from '@prisma/client';
+import { comments } from '.';
+import { pubsub } from '../redis/pubsub/client';
+import { getCommentKey } from '../redis/pubsub/keys';
 
 export type CommentPublic = {
   id: number;
@@ -8,6 +10,7 @@ export type CommentPublic = {
   createdAt: Date;
   content: string;
   sourceUrl?: string;
+  isDeleted: boolean;
 };
 
 export const Comments = (client: PrismaClient['comment']) =>
@@ -23,37 +26,47 @@ export const Comments = (client: PrismaClient['comment']) =>
         userId: comment.userId,
         createdAt: comment.createdAt,
         content: comment.content,
-        sourceUrl: comment.sourceUrl || undefined
+        sourceUrl: comment.sourceUrl || undefined,
+        isDeleted: comment.isDeleted
       };
     },
     createViaLocal: async (userId: number, liveId: number, content: string) => {
-      return client.create({
+      const data = await client.create({
         data: {
           liveId,
           userId,
           content
         }
       });
+
+      const result = comments.getPublic(data);
+      await pubsub.publish(getCommentKey(liveId), JSON.stringify(result));
+
+      return result;
     },
     createViaRemote: async (
-      account: string,
-      live: Live,
+      userId: number,
+      liveId: number,
       content: string,
-      sourceUrl: string
+      sourceUrl: string,
+      sourceId: string
     ) => {
-      const user = await users.getOrCreateForRemote(account);
-
-      return client.create({
+      const data = await client.create({
         data: {
-          liveId: live.id,
-          userId: user.id,
+          liveId,
+          userId,
           content,
-          sourceUrl
+          sourceUrl,
+          sourceId
         }
       });
+      const result = comments.getPublic(data);
+      await pubsub.publish(getCommentKey(liveId), JSON.stringify(result));
+
+      return result;
     },
     markAsDelete: async (commentId: number) => {
-      return client.update({
+      const updated = await client.update({
         data: {
           isDeleted: true
         },
@@ -61,5 +74,24 @@ export const Comments = (client: PrismaClient['comment']) =>
           id: commentId
         }
       });
+
+      await pubsub.publish(
+        getCommentKey(updated.liveId),
+        JSON.stringify({
+          id: updated.id,
+          isDeleted: true
+        })
+      );
+    },
+    markAsDeleteBySourceId: async (sourceId: string) => {
+      await client.updateMany({
+        data: {
+          isDeleted: true
+        },
+        where: {
+          sourceId
+        }
+      });
+      // todo: publish
     }
   });

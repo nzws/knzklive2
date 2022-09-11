@@ -29,6 +29,7 @@ export const addUser: Command = {
       const tenant2 = await tenants.updateCustomDomain(tenant, createTenant);
       console.log(`custom domain ${tenant2.customDomain || ''} set`);
     }
+    process.exit(0);
   },
   flags: {
     createTenant: {

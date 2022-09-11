@@ -147,5 +147,16 @@ export const Lives = (client: PrismaClient['live']) =>
       });
 
       return live;
+    },
+    getAliveAll: async () => {
+      const lives = await client.findMany({
+        where: {
+          status: {
+            in: [LiveStatus.Live, LiveStatus.Ready]
+          }
+        }
+      });
+
+      return lives;
     }
   });

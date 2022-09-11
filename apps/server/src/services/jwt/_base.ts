@@ -8,14 +8,28 @@ export class JWT {
   private publicKey?: KeyLike;
   private privateKey?: KeyLike;
 
-  constructor(private readonly subject: string) {}
+  constructor(
+    private readonly subject: string,
+    private privateKeyStr: string,
+    private publicKeyStr: string
+  ) {}
 
   async getKey(): Promise<{ publicKey: KeyLike; privateKey: KeyLike }> {
     if (!this.publicKey || !this.privateKey) {
-      const { publicKey, privateKey } = await jose.generateKeyPair(alg);
-
-      this.publicKey = publicKey;
+      const privateKey = (await jose.importJWK(
+        JSON.parse(
+          Buffer.from(this.privateKeyStr, 'base64').toString()
+        ) as jose.JWK,
+        alg
+      )) as KeyLike;
+      const publicKey = (await jose.importJWK(
+        JSON.parse(
+          Buffer.from(this.publicKeyStr, 'base64').toString()
+        ) as jose.JWK,
+        alg
+      )) as KeyLike;
       this.privateKey = privateKey;
+      this.publicKey = publicKey;
 
       return { publicKey, privateKey };
     }

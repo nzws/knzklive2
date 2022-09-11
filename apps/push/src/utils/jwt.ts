@@ -1,6 +1,6 @@
 import { importJWK, JWK, jwtVerify } from 'jose';
 
-const expire = 60 * 1 * 1000; // 1 minutes
+const expire = 60 * 60 * 24 * 7 * 1000; // 7 days
 
 type APIResponse = {
   publicKey: JWK;

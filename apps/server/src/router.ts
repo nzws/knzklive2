@@ -66,15 +66,15 @@ export const router = (): Router => {
   route.get('/v1/lives/explore', getV1LivesExplore);
   route.get('/v1/lives/:liveId', middlewareLive, getV1Lives);
   route.get('/v1/lives/:liveId/url', middlewareLive, getV1LivesUrl);
-  route.get('/v1/lives/:liveId/comment', middlewareLive, getV1LivesComment);
+  route.get('/v1/lives/:liveId/comments', middlewareLive, getV1LivesComment);
   route.post(
-    '/v1/lives/:liveId/comment',
+    '/v1/lives/:liveId/comments',
     middlewareAuthorizeUser,
     middlewareLive,
     postV1LivesComment
   );
   route.delete(
-    '/v1/lives/:liveId/comment',
+    '/v1/lives/:liveId/comments',
     middlewareAuthorizeUser,
     middlewareLive,
     deleteV1LivesComment

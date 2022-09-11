@@ -14,6 +14,7 @@
 ```bash
 # 初回
 cp .env.development .env
+yarn workspace server cli generateKey >> .env
 
 # 毎回
 yarn

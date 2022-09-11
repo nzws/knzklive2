@@ -19,6 +19,7 @@ import { UserPublic } from '~/../server/src/models/user';
 import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { Footer } from '../footer';
+import { Comment } from './comment';
 import { Admin } from './left/admin';
 import { MobileTitle } from './left/mobile-title';
 import { PublicStats } from './left/public-stats';
@@ -100,8 +101,8 @@ export const Live: FC<Props> = ({ live, streamer }) => {
 
         <Spacer />
 
-        <Box width={{ xl: '500px' }} bg="tomato">
-          <Text>Box 3</Text>
+        <Box width={{ xl: '500px' }}>
+          <Comment live={live} />
         </Box>
       </Flex>
 

@@ -77,6 +77,14 @@ export const postV1StreamsAction: APIRoute<
       }
     });
     await pubsub.publish(
+      'update:hashtag',
+      JSON.stringify({
+        type: 'add',
+        liveId: ctx.state.live.id
+      })
+    );
+
+    await pubsub.publish(
       getPushKey(ctx.state.live.id),
       JSON.stringify({
         action: 'end',

@@ -115,10 +115,12 @@ model Comment {
   createdAt DateTime @default(now())
   content   String   @db.Text
   sourceUrl String?  @db.VarChar(200)
+  sourceId  String?  @db.VarChar(100)
   isDeleted Boolean  @default(false)
 
   live Live @relation(fields: [liveId], references: [id])
   user User @relation(fields: [userId], references: [id])
 
+  @@unique([liveId, sourceUrl, sourceId])
   @@index([liveId, createdAt, isDeleted])
 }

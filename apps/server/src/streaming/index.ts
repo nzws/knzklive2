@@ -67,7 +67,14 @@ export class Streaming {
         return this.closeConnection(socket, 'invalid_token');
       }
     }
-    // todo: privacy authentication
+    const live = await lives.get(liveId);
+    if (!live) {
+      return this.closeConnection(socket, 'live_not_found');
+    }
+    if (!lives.isAccessibleInformationByUser(live, userId)) {
+      return this.closeConnection(socket, 'forbidden_live');
+    }
+
     console.log('websocket connected', liveId, userId);
     await liveStream.add(liveId, ip);
 
