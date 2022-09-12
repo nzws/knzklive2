@@ -1,3 +1,3 @@
-# @knzklive2/server
+# knzklive2/server
 
 > KnzkLive Server

@@ -1,3 +1,3 @@
-# @knzklive2/edge
+# knzklive2/edge
 
 > KnzkLive Edge Network

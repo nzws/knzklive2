@@ -1,3 +1,3 @@
-# @knzklive2/push
+# knzklive2/push
 
 > KnzkLive Push Server

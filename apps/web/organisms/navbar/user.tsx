@@ -72,7 +72,7 @@ export const User: FC<Props> = ({ tenant, onCreateLive, recentLive }) => {
               >
                 {recentLive &&
                 recentLive.tenantId === t.id &&
-                recentLive.status !== 'Ended' ? (
+                !recentLive.endedAt ? (
                   <Link href={`/watch/${recentLive.idInTenant}`} passHref>
                     <MenuItem as="a">
                       <FormattedMessage id="navbar.menu.stream-link" />

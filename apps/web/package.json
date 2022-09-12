@@ -5,7 +5,7 @@
   "private": true,
   "packageManager": "yarn@3.2.3",
   "scripts": {
-    "lint": "eslint --cache '**/*.{ts,tsx}'",
+    "lint": "tsc --noEmit && eslint --cache '**/*.{ts,tsx}'",
     "test": "jest",
     "dev": "next dev",
     "build": "next build",
