@@ -19,8 +19,9 @@ import { UserPublic } from '~/../server/src/models/user';
 import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { Footer } from '../footer';
-import { Comment } from './comment';
+import { Comments } from './comment';
 import { Admin } from './left/admin';
+import { CommentPost } from './left/comment-post';
 import { MobileTitle } from './left/mobile-title';
 import { PublicStats } from './left/public-stats';
 import { Streamer } from './left/streamer';
@@ -41,11 +42,9 @@ export const Live: FC<Props> = ({ live, streamer }) => {
   );
   const { isOpen, onToggle } = useDisclosure();
   const isStreamer = streamer && user?.id === streamer?.id;
-  const [url, updateUrl] = useStreamUrl(
-    live.status !== 'Ended' ? live.id : undefined
-  );
+  const [url, updateUrl] = useStreamUrl(!live.endedAt ? live.id : undefined);
 
-  // 仮
+  // todo: 仮
   const streamerUrl = useMemo(() => {
     if (!streamer?.account) {
       return;
@@ -71,6 +70,8 @@ export const Live: FC<Props> = ({ live, streamer }) => {
             </Alert>
           )}
 
+          <CommentPost liveId={live.id} hashtag={live.hashtag} />
+
           {!isDesktop && <MobileTitle title={live.title} onClick={onToggle} />}
 
           <Collapse in={isDesktop || isOpen} animateOpacity>
@@ -92,7 +93,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
 
               <Text>{live.description}</Text>
 
-              {isStreamer && live.status !== 'Ended' && <Admin live={live} />}
+              {isStreamer && !live.endedAt && <Admin live={live} />}
             </Stack>
           </Collapse>
 
@@ -102,7 +103,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
         <Spacer />
 
         <Box width={{ xl: '500px' }}>
-          <Comment live={live} />
+          <Comments live={live} />
         </Box>
       </Flex>
 

@@ -51,7 +51,7 @@ export const getV1InternalsPushCheckToken: Middleware = async ctx => {
     return;
   }
 
-  if (live.status === 'Ended' || live.status === 'Provisioning') {
+  if (live.endedAt) {
     ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'

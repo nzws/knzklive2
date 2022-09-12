@@ -26,6 +26,7 @@ import { useLive } from '~/utils/hooks/api/use-live';
 import { useStream } from '~/utils/hooks/api/use-stream';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { Dialog } from './dialog';
+import { EditLiveModal } from './edit-live-modal';
 import { PushKey } from './push-key';
 
 type Props = {
@@ -46,11 +47,15 @@ export const Admin: FC<Props> = ({ live }) => {
     onOpen: onOpenStop,
     onClose: onCloseStop
   } = useDisclosure();
+  const {
+    isOpen: isOpenLiveEdit,
+    onOpen: onOpenLiveEdit,
+    onClose: onCloseLiveEdit
+  } = useDisclosure();
   const [error, setError] = useState<unknown>();
   useAPIError(error);
 
-  const notPushing =
-    stream?.push.status === 'Ready' || stream?.push.status === 'Paused';
+  const notPushing = !!(stream?.pushLastEndedAt || !stream?.pushFirstStartedAt);
 
   const handlePublish = useCallback(
     (isStart: boolean) => {
@@ -86,19 +91,13 @@ export const Admin: FC<Props> = ({ live }) => {
         <Heading size="md">配信者パネル</Heading>
 
         <Box>
-          {stream?.push.status === 'Provisioning' && (
-            <Alert status="info">
-              <AlertIcon />
-              配信システムが準備中です。5分経っても状態が変化しない場合は管理者にお問い合わせください。
-            </Alert>
-          )}
           {notPushing && (
             <Alert status="warning">
               <AlertIcon />
               映像がサーバーへプッシュされていません。「配信ソフトウェア設定」から設定を参照し、映像の送信を開始してください。
             </Alert>
           )}
-          {live.status !== 'Live' && (
+          {!live.startedAt && (
             <Alert status="warning">
               <AlertIcon />
               配信が開始されていないため、現在は自分のみ視聴できます。「配信設定」から配信を開始してください。
@@ -128,7 +127,7 @@ export const Admin: FC<Props> = ({ live }) => {
                     <Button
                       size="lg"
                       colorScheme="green"
-                      isDisabled={notPushing || live.status !== 'Ready'}
+                      isDisabled={notPushing || !!live.startedAt}
                       onClick={onOpenStart}
                     >
                       配信を開始
@@ -150,14 +149,15 @@ export const Admin: FC<Props> = ({ live }) => {
                   </WrapItem>
                 </Wrap>
 
-                <Box>
-                  <Badge>
-                    <FormattedMessage id="common.coming-soon" />
-                  </Badge>
-                </Box>
                 <Wrap>
                   <WrapItem>
-                    <Button>配信情報を編集</Button>
+                    <EditLiveModal
+                      isOpen={isOpenLiveEdit}
+                      onClose={onCloseLiveEdit}
+                      live={live}
+                    />
+
+                    <Button onClick={onOpenLiveEdit}>配信情報を編集</Button>
                   </WrapItem>
                 </Wrap>
               </Stack>

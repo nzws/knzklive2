@@ -2,13 +2,7 @@
 CREATE TYPE "AuthProviderType" AS ENUM ('Mastodon');
 
 -- CreateEnum
-CREATE TYPE "LiveStatus" AS ENUM ('Provisioning', 'Ready', 'Live', 'Ended');
-
--- CreateEnum
 CREATE TYPE "LivePrivacy" AS ENUM ('Public', 'Private');
-
--- CreateEnum
-CREATE TYPE "StreamStatus" AS ENUM ('Provisioning', 'Ready', 'Live', 'Paused', 'Ended');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -57,27 +51,16 @@ CREATE TABLE "Live" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "startedAt" TIMESTAMP(3),
     "endedAt" TIMESTAMP(3),
+    "pushFirstStartedAt" TIMESTAMP(3),
+    "pushLastStartedAt" TIMESTAMP(3),
+    "pushLastEndedAt" TIMESTAMP(3),
     "title" VARCHAR(200) NOT NULL,
     "description" TEXT,
-    "status" "LiveStatus" NOT NULL,
     "privacy" "LivePrivacy" NOT NULL,
-    "streamId" INTEGER NOT NULL,
     "hashtag" VARCHAR(100),
     "sensitive" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Live_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Stream" (
-    "id" SERIAL NOT NULL,
-    "status" "StreamStatus" NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "firstStartedAt" TIMESTAMP(3),
-    "lastStartedAt" TIMESTAMP(3),
-    "lastEndedAt" TIMESTAMP(3),
-
-    CONSTRAINT "Stream_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -88,6 +71,7 @@ CREATE TABLE "Comment" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "content" TEXT NOT NULL,
     "sourceUrl" VARCHAR(200),
+    "sourceId" VARCHAR(100),
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
@@ -103,13 +87,13 @@ CREATE UNIQUE INDEX "Tenant_slug_key" ON "Tenant"("slug");
 CREATE UNIQUE INDEX "Tenant_customDomain_key" ON "Tenant"("customDomain");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Live_streamId_key" ON "Live"("streamId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Live_idInTenant_tenantId_key" ON "Live"("idInTenant", "tenantId");
 
 -- CreateIndex
 CREATE INDEX "Comment_liveId_createdAt_isDeleted_idx" ON "Comment"("liveId", "createdAt", "isDeleted");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Comment_liveId_sourceUrl_sourceId_key" ON "Comment"("liveId", "sourceUrl", "sourceId");
 
 -- AddForeignKey
 ALTER TABLE "Tenant" ADD CONSTRAINT "Tenant_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -119,9 +103,6 @@ ALTER TABLE "Live" ADD CONSTRAINT "Live_userId_fkey" FOREIGN KEY ("userId") REFE
 
 -- AddForeignKey
 ALTER TABLE "Live" ADD CONSTRAINT "Live_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Live" ADD CONSTRAINT "Live_streamId_fkey" FOREIGN KEY ("streamId") REFERENCES "Stream"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_liveId_fkey" FOREIGN KEY ("liveId") REFERENCES "Live"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

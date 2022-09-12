@@ -1,11 +1,5 @@
-import {
-  Live,
-  LiveStatus,
-  LivePrivacy,
-  StreamStatus,
-  PrismaClient
-} from '@prisma/client';
-import { prisma } from './_client';
+import { Live, LivePrivacy, PrismaClient } from '@prisma/client';
+import { lives } from '.';
 
 export type LivePublic = {
   id: number;
@@ -17,7 +11,6 @@ export type LivePublic = {
   title: string;
   description?: string;
   sensitive: boolean;
-  status: 'Provisioning' | 'Ready' | 'Live' | 'Ended';
   privacy: 'Public' | 'Private';
   hashtag?: string;
 };
@@ -33,7 +26,6 @@ export const Lives = (client: PrismaClient['live']) =>
       endedAt: live.endedAt || undefined,
       title: live.title,
       description: live.description || undefined,
-      status: live.status,
       privacy: live.privacy,
       sensitive: live.sensitive,
       hashtag: live.hashtag || undefined
@@ -62,7 +54,6 @@ export const Lives = (client: PrismaClient['live']) =>
     getPublicAndAlive: async (tenantId?: number) => {
       const lives = await client.findMany({
         where: {
-          status: LiveStatus.Live,
           endedAt: null,
           startedAt: {
             not: null
@@ -82,10 +73,7 @@ export const Lives = (client: PrismaClient['live']) =>
       if (live.userId === userId) {
         return true;
       } else {
-        if (
-          live.status === LiveStatus.Provisioning ||
-          live.status === LiveStatus.Ready
-        ) {
+        if (!live.startedAt) {
           return false;
         }
       }
@@ -107,6 +95,17 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return false;
     },
+    isAccessibleStreamByUser: (live: Live, userId?: number) => {
+      const isAccessibleInformation = lives.isAccessibleInformationByUser(
+        live,
+        userId
+      );
+      if (!isAccessibleInformation) {
+        return false;
+      }
+
+      return live.pushLastStartedAt && !live.pushLastEndedAt;
+    },
     createLive: async (
       tenantId: number,
       userId: number,
@@ -115,48 +114,92 @@ export const Lives = (client: PrismaClient['live']) =>
       description?: string,
       hashtag?: string
     ) => {
-      const live = await prisma.$transaction(async prisma => {
-        const stream = await prisma.stream.create({
-          data: {
-            status: StreamStatus.Ready
-          }
-        });
-
-        const lastLive = await prisma.live.findFirst({
-          where: {
-            tenantId
-          },
-          orderBy: {
-            idInTenant: 'desc'
-          }
-        });
-
-        return await prisma.live.create({
-          data: {
-            idInTenant: lastLive ? lastLive.idInTenant + 1 : 1,
-            streamId: stream.id,
-            tenantId,
-            userId,
-            title,
-            description,
-            privacy,
-            hashtag,
-            status: LiveStatus.Ready
-          }
-        });
+      const lastLive = await client.findFirst({
+        where: {
+          tenantId
+        },
+        orderBy: {
+          idInTenant: 'desc'
+        }
       });
 
-      return live;
+      return await client.create({
+        data: {
+          idInTenant: lastLive ? lastLive.idInTenant + 1 : 1,
+          tenantId,
+          userId,
+          title,
+          description,
+          privacy,
+          hashtag
+        }
+      });
     },
     getAliveAll: async () => {
       const lives = await client.findMany({
         where: {
-          status: {
-            in: [LiveStatus.Live, LiveStatus.Ready]
-          }
+          endedAt: null
         }
       });
 
       return lives;
+    },
+    startStream: async (live: Live) => {
+      if (live.endedAt) {
+        throw new Error('Live is not ready');
+      }
+
+      const data = await client.update({
+        where: {
+          id: live.id
+        },
+        data: {
+          pushFirstStartedAt: live.pushFirstStartedAt || new Date(),
+          pushLastEndedAt: null,
+          pushLastStartedAt: new Date()
+        }
+      });
+
+      return data;
+    },
+    stopStream: async (live: Live) => {
+      if (live.endedAt && live.pushLastEndedAt) {
+        throw new Error('Live is not live');
+      }
+
+      const data = await client.update({
+        where: {
+          id: live.id
+        },
+        data: {
+          pushLastEndedAt: new Date()
+        }
+      });
+
+      return data;
+    },
+    startLive: async (live: Live) => {
+      const data = await client.update({
+        where: {
+          id: live.id
+        },
+        data: {
+          startedAt: new Date()
+        }
+      });
+
+      return data;
+    },
+    endLive: async (live: Live) => {
+      const data = await client.update({
+        where: {
+          id: live.id
+        },
+        data: {
+          endedAt: new Date()
+        }
+      });
+
+      return data;
     }
   });

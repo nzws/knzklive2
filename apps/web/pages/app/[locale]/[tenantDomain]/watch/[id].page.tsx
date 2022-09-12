@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { Fragment } from 'react';
+import { Fragment, useCallback, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { Box, Spinner } from '@chakra-ui/react';
 import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
 import {
@@ -28,6 +29,7 @@ import { useConvertLiveId } from '~/utils/hooks/api/use-convert-live-id';
 import { Live } from '~/organisms/live';
 import { useLive } from '~/utils/hooks/api/use-live';
 import { useUser } from '~/utils/hooks/api/use-user';
+import { SensitiveWarning } from '~/organisms/live/sensitive-warning';
 
 type Props = TenantProps & LocaleProps & LiveProps;
 type PathProps = TenantPathProps & LocalePathProps & LivePathProps;
@@ -36,10 +38,14 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback, live: liveFallback },
   pathProps: { tenantDomain, id }
 }) => {
+  const intl = useIntl();
   const [tenant] = useTenant(tenantDomain, tenantFallback);
   const [liveId] = useConvertLiveId(tenantDomain, id, liveFallback);
   const [live] = useLive(liveId, liveFallback);
   const [streamer] = useUser(live?.userId);
+  const [isSensitiveAgreed, setIsSensitiveAgreed] = useState(false);
+
+  const handleAgree = useCallback(() => setIsSensitiveAgreed(true), []);
 
   return (
     <Fragment>
@@ -47,11 +53,22 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 
       <Head>
         <title>
-          {[live?.title, tenant?.displayName || tenant?.domain].join(' - ')}
+          {[
+            live?.title || intl.formatMessage({ id: 'page.live.title' }),
+            tenant?.displayName || tenant?.domain
+          ].join(' - ')}
         </title>
       </Head>
 
-      {live ? (
+      {live?.sensitive && (
+        <SensitiveWarning
+          isOpen={!isSensitiveAgreed}
+          onClose={handleAgree}
+          title={live?.title}
+        />
+      )}
+
+      {live && (!live.sensitive || isSensitiveAgreed) ? (
         <Live live={live} streamer={streamer} />
       ) : (
         <Box textAlign="center" py="12">

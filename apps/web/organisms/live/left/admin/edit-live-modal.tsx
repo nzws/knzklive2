@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -12,49 +12,40 @@ import {
   Input,
   FormLabel,
   Stack,
-  Text,
-  Link,
   Collapse,
   FormHelperText,
   RadioGroup,
   Radio,
   Checkbox,
-  Badge
+  Badge,
+  Textarea
 } from '@chakra-ui/react';
-import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { getDocsUrl } from '~/utils/constants';
 import { LivePublic } from 'server/src/models/live';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
-import { TenantPublic } from '~/../server/src/models/tenant';
 import { useAuth } from '~/utils/hooks/use-auth';
-import { useRouter } from 'next/router';
+import { FormattedMessage } from 'react-intl';
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  recentLive?: LivePublic;
-  tenant: TenantPublic;
+  live: LivePublic;
+  onSubmitted?: () => void;
 };
 
-const guidelineDocs = getDocsUrl('help/guideline');
+// todo: 配信開始モーダルと統合
 
-export const CreateLive: FC<Props> = ({
+export const EditLiveModal: FC<Props> = ({
   isOpen,
   onClose,
-  recentLive,
-  tenant
+  live,
+  onSubmitted
 }) => {
   const { token } = useAuth();
-  const intl = useIntl();
-  const router = useRouter();
-  const [title, setTitle] = useState(recentLive?.title || '');
-  const [privacy, setPrivacy] = useState<string>(
-    recentLive?.privacy || 'Public'
-  );
-  const [hashTag, setHashTag] = useState(recentLive?.hashtag || '');
-  const [sensitive, setSensitive] = useState(recentLive?.sensitive || false);
+  const [title, setTitle] = useState(live.title);
+  const [description, setDescription] = useState(live.description || '');
+  const [privacy, setPrivacy] = useState<string>(live.privacy || 'Public');
+  const [sensitive, setSensitive] = useState(live.sensitive || false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
@@ -67,23 +58,20 @@ export const CreateLive: FC<Props> = ({
       setIsLoading(true);
 
       try {
-        const {
-          body: { live }
-        } = await client.v1.streams.post({
+        await client.v1.streams._liveId(live.id).patch({
           body: {
             title,
             privacy: privacy as LivePublic['privacy'],
-            hashtag: hashTag,
             sensitive,
-            tenantId: tenant.id
+            description
           },
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
 
-        void router.push(`/watch/${live.id}`);
         onClose();
+        onSubmitted && onSubmitted();
       } catch (e) {
         console.warn(e);
         setError(e);
@@ -91,15 +79,29 @@ export const CreateLive: FC<Props> = ({
         setIsLoading(false);
       }
     })();
-  }, [title, privacy, hashTag, sensitive, token, tenant.id, router, onClose]);
+  }, [
+    title,
+    privacy,
+    token,
+    live.id,
+    onClose,
+    onSubmitted,
+    sensitive,
+    description
+  ]);
+
+  useEffect(() => {
+    setTitle(live.title);
+    setDescription(live.description || '');
+    setPrivacy(live.privacy || 'Public');
+    setSensitive(live.sensitive || false);
+  }, [live.title, live.description, live.privacy, live.sensitive]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>
-          <FormattedMessage id="create-live.title" />
-        </ModalHeader>
+        <ModalHeader>配信を編集</ModalHeader>
         <ModalCloseButton />
 
         <ModalBody>
@@ -113,6 +115,15 @@ export const CreateLive: FC<Props> = ({
                 type="text"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>配信の説明文</FormLabel>
+
+              <Textarea
+                value={description}
+                onChange={e => setDescription(e.target.value)}
               />
             </FormControl>
 
@@ -154,25 +165,6 @@ export const CreateLive: FC<Props> = ({
             </Collapse>
 
             <FormControl>
-              <FormLabel>
-                <FormattedMessage id="create-live.hashtag" />
-              </FormLabel>
-
-              <Input
-                type="text"
-                value={hashTag}
-                onChange={e => setHashTag(e.target.value)}
-                placeholder={intl.formatMessage({
-                  id: 'create-live.hashtag.placeholder'
-                })}
-              />
-
-              <FormHelperText>
-                <FormattedMessage id="create-live.hashtag.note" />
-              </FormHelperText>
-            </FormControl>
-
-            <FormControl>
               <Checkbox
                 checked={sensitive}
                 onChange={e => setSensitive(e.target.checked)}
@@ -188,30 +180,14 @@ export const CreateLive: FC<Props> = ({
         </ModalBody>
 
         <ModalFooter>
-          <Stack spacing={4} width="100%">
-            <Text>
-              <FormattedMessage
-                id="create-live.guideline"
-                values={{
-                  guideline: (
-                    <Link href={guidelineDocs} isExternal>
-                      <FormattedMessage id="create-live.guideline-link" />
-                      <ExternalLinkIcon mx="2px" />
-                    </Link>
-                  )
-                }}
-              />
-            </Text>
-
-            <Button
-              colorScheme="blue"
-              onClick={handleSubmit}
-              width="100%"
-              isLoading={isLoading}
-            >
-              <FormattedMessage id="create-live.submit" />
-            </Button>
-          </Stack>
+          <Button
+            colorScheme="blue"
+            onClick={handleSubmit}
+            width="100%"
+            isLoading={isLoading}
+          >
+            編集
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

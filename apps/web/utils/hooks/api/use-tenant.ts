@@ -8,7 +8,9 @@ export const useTenant = (domain: string, fallbackData?: TenantPublic) => {
   const { data, error } = useAspidaSWR(
     client.v1.tenants._tenantDomain(domain),
     {
-      fallbackData
+      fallbackData,
+      revalidateIfStale: false,
+      revalidateOnFocus: false
     }
   );
   useAPIError(error);

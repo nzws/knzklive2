@@ -6,7 +6,7 @@ export type Methods = {
   patch: {
     reqHeaders: AuthorizationHeader;
 
-    reqBody: Partial<Omit<LiveSetting, 'hashtag' | 'privacy'>>;
+    reqBody: Partial<Omit<LiveSetting, 'hashtag'>>;
 
     resBody: {
       success: boolean;
@@ -18,10 +18,9 @@ export type Methods = {
 
     resBody: {
       live: LivePublic;
-
-      push: {
-        status: 'Provisioning' | 'Ready' | 'Live' | 'Paused' | 'Ended';
-      };
+      pushFirstStartedAt?: Date;
+      pushLastStartedAt?: Date;
+      pushLastEndedAt?: Date;
     };
   };
 };

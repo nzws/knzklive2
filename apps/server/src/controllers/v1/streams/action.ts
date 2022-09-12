@@ -1,4 +1,3 @@
-import { LiveStatus } from '@prisma/client';
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams/_liveId@number/action';
 import { lives } from '../../../models';
@@ -39,26 +38,18 @@ export const postV1StreamsAction: APIRoute<
   const body = ctx.request.body;
 
   if (body.command === 'publish') {
-    if (ctx.state.live.status !== LiveStatus.Ready) {
+    if (ctx.state.live.startedAt) {
       ctx.status = 400;
       ctx.body = {
         errorCode: 'invalid_request',
-        message: '配信のステータスが Ready ではありません'
+        message: '配信は開始済みです'
       };
       return;
     }
 
-    await lives.update({
-      where: {
-        id: ctx.state.live.id
-      },
-      data: {
-        startedAt: new Date(),
-        status: LiveStatus.Live
-      }
-    });
+    await lives.startLive(ctx.state.live);
   } else if (body.command === 'end') {
-    if (ctx.state.live.status === LiveStatus.Ended) {
+    if (ctx.state.live.endedAt) {
       ctx.status = 400;
       ctx.body = {
         errorCode: 'invalid_request',
@@ -67,15 +58,7 @@ export const postV1StreamsAction: APIRoute<
       return;
     }
 
-    await lives.update({
-      where: {
-        id: ctx.state.live.id
-      },
-      data: {
-        endedAt: new Date(),
-        status: LiveStatus.Ended
-      }
-    });
+    await lives.endLive(ctx.state.live);
     await pubsub.publish(
       'update:hashtag',
       JSON.stringify({

@@ -45,6 +45,12 @@ export const Footer: FC = () => {
           </Box>
 
           <Box color="gray.400">
+            <ChakraLink href="https://github.com/sponsors/nzws" isExternal>
+              <FormattedMessage id="footer.donate" />
+            </ChakraLink>
+          </Box>
+
+          <Box color="gray.400">
             <Menu>
               <MenuButton as={ChakraLink}>
                 <Icon as={FiGlobe} mr={2} pt={1} />

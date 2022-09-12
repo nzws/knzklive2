@@ -1,9 +1,10 @@
-import { Box } from '@chakra-ui/react';
+import { Box, VStack } from '@chakra-ui/react';
 import { FC, useCallback, useEffect, useReducer, useRef } from 'react';
 import { CommentPublic } from '~/../server/src/models/comment';
 import { LivePublic } from '~/../server/src/models/live';
 import { client, wsURL } from '~/utils/api/client';
 import { useAuth } from '~/utils/hooks/use-auth';
+import { Comment } from './comment';
 
 type Props = {
   live: LivePublic;
@@ -44,7 +45,7 @@ const commentReducer = (
   return result;
 };
 
-export const Comment: FC<Props> = ({ live }) => {
+export const Comments: FC<Props> = ({ live }) => {
   const { token, headers } = useAuth();
   const socketRef = useRef<WebSocket>();
   const timeoutRef = useRef<NodeJS.Timeout>();
@@ -52,10 +53,8 @@ export const Comment: FC<Props> = ({ live }) => {
   const [comments, setComment] = useReducer(commentReducer, []);
 
   const connect = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
     try {
+      clearTimeout(timeoutRef.current);
       if (socketRef.current) {
         socketRef.current.close();
       }
@@ -89,9 +88,7 @@ export const Comment: FC<Props> = ({ live }) => {
       ws.onclose = () => {
         console.log('close');
 
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
+        clearTimeout(timeoutRef.current);
         if (isConnectingRef.current) {
           timeoutRef.current = setTimeout(connect, 1000);
         }
@@ -99,9 +96,7 @@ export const Comment: FC<Props> = ({ live }) => {
     } catch (e) {
       console.warn(e);
 
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      clearTimeout(timeoutRef.current);
       if (isConnectingRef.current) {
         timeoutRef.current = setTimeout(connect, 1000);
       }
@@ -111,7 +106,10 @@ export const Comment: FC<Props> = ({ live }) => {
   useEffect(() => {
     try {
       isConnectingRef.current = true;
-      connect();
+
+      if (!live.endedAt) {
+        connect();
+      }
 
       void client.v1.lives
         ._liveId(live.id)
@@ -133,15 +131,15 @@ export const Comment: FC<Props> = ({ live }) => {
       clearTimeout(timeoutRef.current);
       setComment(undefined);
     };
-  }, [connect, live.id, headers]);
-
-  console.log(comments);
+  }, [connect, live.id, live.endedAt, headers]);
 
   return (
     <Box w="100%" h="100%" overflowY="auto">
-      {comments.map(comment => (
-        <Box key={comment.id}>{comment.content}</Box>
-      ))}
+      <VStack spacing={4} p={4} align="stretch" width="100%">
+        {comments.map(comment => (
+          <Comment key={comment.id} comment={comment} />
+        ))}
+      </VStack>
     </Box>
   );
 };

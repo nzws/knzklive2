@@ -26,30 +26,51 @@ nms.run();
 const jwk = new Jwt(`${LIVE_API}/v1/internals/edge/jwt`, 'edge');
 
 let liveApi: WebSocket;
+let timeout: NodeJS.Timeout;
+
 const connectLiveApi = () => {
-  liveApi = new WebSocket(`${LIVE_API_WS}/websocket/v1/push`);
-
-  liveApi.on('open', () => {
-    console.log('live-api connected');
-  });
-
-  liveApi.on('message', data => {
-    const msg = JSON.parse(data.toString()) as {
-      action: 'end';
-      liveId: number;
-    };
-
-    if (msg.action === 'end') {
-      rejectSession(undefined, msg.liveId);
-      closeSocket(msg.liveId);
+  try {
+    try {
+      if (liveApi) {
+        liveApi.close();
+      }
+    } catch (e) {
+      console.warn(e);
     }
-  });
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    console.log('connecting to live-api');
+    liveApi = new WebSocket(`${LIVE_API_WS}/websocket/v1/push`);
 
-  liveApi.on('close', () => {
-    console.log('live-api disconnected');
-    setTimeout(connectLiveApi, 1000);
-  });
+    liveApi.on('open', () => {
+      console.log('live-api connected');
+    });
+
+    liveApi.on('message', data => {
+      const msg = JSON.parse(data.toString()) as {
+        action: 'end';
+        liveId: number;
+      };
+
+      if (msg.action === 'end') {
+        rejectSession(undefined, msg.liveId);
+        closeSocket(msg.liveId);
+      }
+    });
+
+    liveApi.on('close', () => {
+      console.log('live-api disconnected, reconnecting...');
+      clearTimeout(timeout);
+      timeout = setTimeout(connectLiveApi, 1000);
+    });
+  } catch (e) {
+    console.warn('connectLiveApi', e);
+    clearTimeout(timeout);
+    timeout = setTimeout(connectLiveApi, 1000);
+  }
 };
+
 connectLiveApi();
 
 type Session = {

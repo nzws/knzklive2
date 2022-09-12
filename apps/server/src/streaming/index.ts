@@ -1,7 +1,7 @@
 import { Server } from 'http';
 import WebSocket from 'ws';
 import { pathToRegexp } from 'path-to-regexp';
-import { lives, streams } from '../models';
+import { lives } from '../models';
 import { pubsub } from '../redis/pubsub/client';
 import { getCommentKey, getPushKey } from '../redis/pubsub/keys';
 import { UserToken } from '../redis/user-token';
@@ -110,8 +110,9 @@ export class Streaming {
             action: 'start' | 'stop';
           };
           const liveId = Number(msg.liveId);
+          console.log('websocket push', msg.action, liveId);
 
-          const live = await this.getStream(liveId, msg.token);
+          const live = await this.getLive(liveId, msg.token);
           if (!live) {
             console.warn('invalid push token', msg);
 
@@ -126,8 +127,9 @@ export class Streaming {
           await pubsub.subscribe(getPushKey(liveId));
 
           if (msg.action === 'start') {
+            console.log('push start', liveId);
             try {
-              void streams.startStream(live.stream);
+              void lives.startStream(live);
             } catch (e) {
               console.warn(e);
 
@@ -139,7 +141,7 @@ export class Streaming {
               );
             }
           } else if (msg.action === 'stop') {
-            void streams.stopStream(live.stream);
+            void lives.stopStream(live);
           }
         } catch (e) {
           console.error(e);
@@ -162,7 +164,7 @@ export class Streaming {
     await pubsub.on(handle);
   }
 
-  private async getStream(liveId: number, token: string) {
+  private async getLive(liveId: number, token: string) {
     const payload = await jwtEdge.verify(token);
     if (!payload) {
       return;
@@ -173,9 +175,6 @@ export class Streaming {
     const live = await lives.findUnique({
       where: {
         id: liveId
-      },
-      include: {
-        stream: true
       }
     });
 

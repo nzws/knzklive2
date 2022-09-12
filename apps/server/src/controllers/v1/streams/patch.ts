@@ -25,6 +25,11 @@ const reqBodySchema: JSONSchemaType<Request> = {
     sensitive: {
       type: 'boolean',
       nullable: true
+    },
+    privacy: {
+      type: 'string',
+      enum: ['Public', 'Private'],
+      nullable: true
     }
   },
   additionalProperties: false
@@ -53,7 +58,8 @@ export const patchV1Streams: APIRoute<
     data: {
       title: body.title,
       description: body.description,
-      sensitive: body.sensitive
+      sensitive: body.sensitive,
+      privacy: body.privacy
     }
   });
 
