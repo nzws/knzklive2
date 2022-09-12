@@ -27,7 +27,8 @@ export const getAllStaticProps = <
       const resolves = await Promise.all(fetchers.map(f => f(params)));
       if (resolves.some(r => r === undefined)) {
         return {
-          notFound: true
+          notFound: true,
+          revalidate
         };
       }
 
@@ -44,7 +45,8 @@ export const getAllStaticProps = <
       console.warn(e);
 
       return {
-        notFound: true
+        notFound: true,
+        revalidate
       };
     }
   };
