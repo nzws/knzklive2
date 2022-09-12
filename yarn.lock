@@ -10819,7 +10819,7 @@ __metadata:
     npm-run-all: 4.1.5
     path-to-regexp: 6.2.1
     prisma: 4.3.1
-    striptags: ^3.2.0
+    striptags: 3.2.0
     ts-jest: 29.0.0
     ts-node: 10.9.1
     ts-node-dev: 2.0.0
@@ -11305,7 +11305,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"striptags@npm:^3.2.0":
+"striptags@npm:3.2.0":
   version: 3.2.0
   resolution: "striptags@npm:3.2.0"
   checksum: 1b1f127ab46394665bd4f4dc3dc10f5f98c012cbdea93a68b10d78693671e98efc9ae7609f546af997ae0a02b81a5c9b7b916fa119482c31741406cdabaebf3b
