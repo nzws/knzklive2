@@ -55,6 +55,7 @@ jobs:
           key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
       - run: yarn install --immutable
+      - run: yarn workspace server prisma generate
       - run: yarn lint
 
   test-server:
@@ -82,6 +83,7 @@ jobs:
           key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
       - run: yarn install --immutable
+      - run: yarn workspace server prisma generate
       - run: yarn workspace server test
 
   test-web:
@@ -109,6 +111,7 @@ jobs:
           key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
       - run: yarn install --immutable
+      - run: yarn workspace server prisma generate
       - run: yarn workspace web test
 
   test-edge:
