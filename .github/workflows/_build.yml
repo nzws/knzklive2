@@ -8,27 +8,8 @@ on:
         type: string
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      server: ${{ steps.filter.outputs.server }}
-      push: ${{ steps.filter.outputs.push }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            server:
-              - 'apps/server/**'
-            push:
-              - 'apps/push/**'
-
   build-server:
-    needs: changes
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.server == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-buildx-action@v2
@@ -51,9 +32,7 @@ jobs:
           cache-to: type=registry,ref=ghcr.io/nzws/knzklive2-server:${{ inputs.tag }},mode=max
 
   build-push:
-    needs: changes
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.push == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-qemu-action@v2

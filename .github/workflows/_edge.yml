@@ -13,24 +13,8 @@ on:
         required: true
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      edge: ${{ steps.filter.outputs.edge }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            edge:
-              - 'apps/edge/**'
-
   deploy:
-    needs: changes
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.edge == 'true' }}
     steps:
       - uses: actions/checkout@v3
 
