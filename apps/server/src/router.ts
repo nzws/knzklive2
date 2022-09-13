@@ -35,7 +35,9 @@ export const router = (): Router => {
   const route = new Router();
 
   route.get('/', ctx => {
-    ctx.redirect('https://www.youtube.com/watch?v=8C7s7BiRxdA');
+    ctx.body = {
+      message: 'https://www.youtube.com/watch?v=8C7s7BiRxdA'
+    };
   });
 
   route.get('/v1/about', getV1About);
