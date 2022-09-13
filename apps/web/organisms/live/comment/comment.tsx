@@ -10,22 +10,20 @@ type Props = {
 export const Comment: FC<Props> = ({ comment }) => {
   const [user] = useUser(comment.userId);
 
-  // todo: 280px 直す
-
   return (
     <VStack
       spacing={2}
-      bg="rbga(255, 255, 255, 0.1)"
+      bg="#ffffff10"
+      p={2}
       borderRadius={4}
-      width="100%"
       alignItems="left"
       flexShrink={0}
     >
-      <Flex gap={2} width="100%">
+      <Flex gap={2}>
         <Avatar name={user?.displayName} src={user?.avatarUrl} size="xs" />
 
         {user?.account ? (
-          <Text noOfLines={1} flexShrink={0} width="280px">
+          <Text noOfLines={1}>
             <Text as="b" mr={2}>
               {user?.displayName}
             </Text>
@@ -35,7 +33,7 @@ export const Comment: FC<Props> = ({ comment }) => {
             </Text>
           </Text>
         ) : (
-          <Skeleton height="24px" width="120px" />
+          <Skeleton height="23px" width="200px" ml={2} />
         )}
       </Flex>
 

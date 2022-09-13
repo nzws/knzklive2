@@ -21,7 +21,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 }) => {
   const router = useRouter();
   const [tenant] = useTenant(tenantDomain, tenantFallback);
-  const [live] = useLiveTop();
+  const [live] = useLiveTop(tenant?.id);
 
   useEffect(() => {
     if (live) {

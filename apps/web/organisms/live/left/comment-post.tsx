@@ -3,8 +3,7 @@ import {
   Icon,
   Input,
   InputGroup,
-  InputRightElement,
-  Tooltip
+  InputRightElement
 } from '@chakra-ui/react';
 import { FC, FormEvent, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -19,21 +18,12 @@ type Props = {
 };
 
 export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
-  const { token } = useAuth();
+  const { token, isSignedIn } = useAuth();
   const intl = useIntl();
   const [comment, setComment] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
-
-  const requiredLoginMessage = intl.formatMessage(
-    {
-      id: hashtag
-        ? 'live.comment-post.require-login.with-hashtag'
-        : 'live.comment-post.require-login'
-    },
-    { hashtag }
-  );
 
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
@@ -69,31 +59,35 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
   return (
     <form onSubmit={handleSubmit}>
       <InputGroup>
-        <Tooltip hasArrow label={!token ? requiredLoginMessage : undefined}>
-          <Input
-            pr="4.5rem"
-            type="text"
-            value={comment}
-            onChange={e => setComment(e.target.value)}
-            placeholder={intl.formatMessage(
-              {
-                id: hashtag
-                  ? 'live.comment-post.placeholder.with-hashtag'
-                  : 'live.comment-post.placeholder'
-              },
-              { hashtag }
-            )}
-            isDisabled={!token}
-          />
-        </Tooltip>
+        <Input
+          pr="3.5rem"
+          type="text"
+          value={comment}
+          onChange={e => setComment(e.target.value)}
+          placeholder={intl.formatMessage(
+            {
+              id: !isSignedIn
+                ? hashtag
+                  ? 'live.comment-post.require-login.with-hashtag'
+                  : 'live.comment-post.require-login'
+                : hashtag
+                ? 'live.comment-post.placeholder.with-hashtag'
+                : 'live.comment-post.placeholder'
+            },
+            { hashtag }
+          )}
+          isDisabled={!isSignedIn}
+          maxLength={100}
+        />
 
-        <InputRightElement width="4.5rem">
+        <InputRightElement width="3.5rem">
           <Button
             h="1.75rem"
             size="sm"
             type="submit"
             colorScheme="blue"
             isLoading={isLoading}
+            isDisabled={!isSignedIn}
           >
             <Icon as={FiSend} />
           </Button>

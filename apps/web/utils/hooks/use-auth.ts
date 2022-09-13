@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { AuthContext } from '../../utils/contexts/auth';
 
 export const useAuth = () => {
@@ -11,6 +11,7 @@ export const useAuth = () => {
     signOut,
     user
   } = useContext(AuthContext);
+  const [isSignedIn, setIsSignedIn] = useState(false);
   const headers = useMemo(
     () =>
       token
@@ -21,7 +22,12 @@ export const useAuth = () => {
     [token]
   );
 
+  useEffect(() => {
+    setIsSignedIn(!!token);
+  }, [token]);
+
   return {
+    isSignedIn,
     token,
     mastodonToken,
     signInCallback,

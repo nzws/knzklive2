@@ -5,7 +5,9 @@ export const useLiveTop = (tenantId?: number) => {
   const { data } = useAspidaSWR(
     client.v1.lives.find._tenantId(tenantId || 0).top,
     {
-      key: tenantId ? undefined : null
+      key: tenantId ? undefined : null,
+      refreshInterval: 5000,
+      refreshWhenHidden: true
     }
   );
 

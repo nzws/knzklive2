@@ -35,6 +35,19 @@ export const postV1LivesComment: APIRoute<
     return;
   }
 
+  if (
+    ctx.state.live.endedAt &&
+    new Date(ctx.state.live.endedAt).getTime() < Date.now() - 30 * 1000 &&
+    ctx.state.user.id !== ctx.state.live.userId
+  ) {
+    ctx.status = 403;
+    ctx.body = {
+      errorCode: 'forbidden',
+      message: '配信は終了済みです'
+    };
+    return;
+  }
+
   const content = ctx.request.body.content;
 
   if (content.trim().length <= 0) {

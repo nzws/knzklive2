@@ -7,6 +7,7 @@ import { validateWithType } from '../../../../utils/validate';
 type Request = {
   liveId: number;
   token: string;
+  ignoreEndedAtCheck?: boolean;
 };
 
 const reqBodySchema: JSONSchemaType<Request> = {
@@ -18,6 +19,10 @@ const reqBodySchema: JSONSchemaType<Request> = {
     },
     token: {
       type: 'string'
+    },
+    ignoreEndedAtCheck: {
+      type: 'boolean',
+      nullable: true
     }
   },
   required: ['liveId', 'token'],
@@ -51,7 +56,7 @@ export const getV1InternalsPushCheckToken: Middleware = async ctx => {
     return;
   }
 
-  if (live.endedAt) {
+  if (live.endedAt && !ctx.request.body.ignoreEndedAtCheck) {
     ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'

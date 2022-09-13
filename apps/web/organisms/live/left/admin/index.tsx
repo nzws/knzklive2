@@ -15,7 +15,8 @@ import {
   Wrap,
   Button,
   WrapItem,
-  useDisclosure
+  useDisclosure,
+  Tooltip
 } from '@chakra-ui/react';
 import { FC, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -124,14 +125,19 @@ export const Admin: FC<Props> = ({ live }) => {
                       submitText="配信を開始"
                     />
 
-                    <Button
-                      size="lg"
-                      colorScheme="green"
-                      isDisabled={notPushing || !!live.startedAt}
-                      onClick={onOpenStart}
+                    <Tooltip
+                      label={notPushing ? '先に映像をプッシュしてください' : ''}
+                      shouldWrapChildren
                     >
-                      配信を開始
-                    </Button>
+                      <Button
+                        size="lg"
+                        colorScheme="green"
+                        isDisabled={notPushing || !!live.startedAt}
+                        onClick={onOpenStart}
+                      >
+                        配信を開始
+                      </Button>
+                    </Tooltip>
                   </WrapItem>
 
                   <WrapItem>

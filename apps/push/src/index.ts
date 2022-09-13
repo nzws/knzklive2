@@ -131,7 +131,12 @@ const closeSocket = (liveId: number) => {
   sessions = sessions.filter(s => s.liveId !== liveId);
 };
 
-const checkSession = async (id: string, StreamPath: string, token: string) => {
+const checkSession = async (
+  id: string,
+  StreamPath: string,
+  token: string,
+  ignoreEndedAtCheck = false
+) => {
   const [, key, liveId] = StreamPath.split('/');
   if (key !== 'live' || !liveId || !parseInt(liveId) || !token) {
     console.warn('invalid session', id, StreamPath, token);
@@ -153,7 +158,8 @@ const checkSession = async (id: string, StreamPath: string, token: string) => {
     method: 'POST',
     body: JSON.stringify({
       liveId: res.liveId,
-      token
+      token,
+      ignoreEndedAtCheck
     }),
     headers: {
       'Content-Type': 'application/json'
@@ -275,7 +281,7 @@ nms.on('donePublish', (id, StreamPath, args) => {
   void (async () => {
     try {
       const token = (args as Record<string, unknown>).token as string;
-      await checkSession(id, StreamPath, token);
+      await checkSession(id, StreamPath, token, true);
 
       const [, , liveId] = StreamPath.split('/');
       const LiveId = parseInt(liveId);

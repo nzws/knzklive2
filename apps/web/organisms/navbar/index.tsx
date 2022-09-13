@@ -38,7 +38,7 @@ export const Navbar: FC<Props> = ({ tenant }) => {
   return (
     <Fragment>
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
-      {tenant && (
+      {tenant && status && (
         <CreateLive
           isOpen={isOpenCreateLive}
           onClose={onCloseCreateLive}

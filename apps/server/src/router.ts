@@ -63,8 +63,8 @@ export const router = (): Router => {
   route.get('/v1/users/me', middlewareAuthorizeUser, getV1UsersMe);
   route.get('/v1/users/:userId', getV1UsersOnce);
 
-  route.get('/v1/lives/find/:tenantDomain/:liveIdInTenant', getV1LivesFindById);
   route.get('/v1/lives/find/:tenantId/top', middlewareTenant, getV1LivesTop);
+  route.get('/v1/lives/find/:tenantDomain/:liveIdInTenant', getV1LivesFindById);
   route.get('/v1/lives/explore', getV1LivesExplore);
   route.get('/v1/lives/:liveId', middlewareLive, getV1Lives);
   route.get('/v1/lives/:liveId/url', middlewareLive, getV1LivesUrl);

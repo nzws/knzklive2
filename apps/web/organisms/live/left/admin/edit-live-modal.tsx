@@ -18,7 +18,9 @@ import {
   Radio,
   Checkbox,
   Badge,
-  Textarea
+  Textarea,
+  Alert,
+  AlertIcon
 } from '@chakra-ui/react';
 import { LivePublic } from 'server/src/models/live';
 import { client } from '~/utils/api/client';
@@ -127,6 +129,15 @@ export const EditLiveModal: FC<Props> = ({
               />
             </FormControl>
 
+            <Collapse in={privacy !== live.privacy} animateOpacity>
+              <Alert status="warning" size="sm">
+                <AlertIcon />
+                現時点では公開範囲を配信中に変更しても、コメントサーバーや配信サーバーとは自動的に切断されません。
+                <br />
+                確実に管理するには配信ソフトウェアから切断→再接続を行うか、枠を取り直してください。
+              </Alert>
+            </Collapse>
+
             <FormControl isRequired>
               <FormLabel as="legend">
                 <FormattedMessage id="create-live.privacy" />
@@ -166,7 +177,7 @@ export const EditLiveModal: FC<Props> = ({
 
             <FormControl>
               <Checkbox
-                checked={sensitive}
+                isChecked={sensitive}
                 onChange={e => setSensitive(e.target.checked)}
               >
                 <FormattedMessage id="create-live.sensitive" />

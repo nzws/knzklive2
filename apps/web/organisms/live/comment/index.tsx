@@ -1,5 +1,13 @@
-import { Box, VStack } from '@chakra-ui/react';
-import { FC, useCallback, useEffect, useReducer, useRef } from 'react';
+import { Box, Flex, Heading, VStack } from '@chakra-ui/react';
+import {
+  FC,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
+import { FormattedMessage } from 'react-intl';
 import { CommentPublic } from '~/../server/src/models/comment';
 import { LivePublic } from '~/../server/src/models/live';
 import { client, wsURL } from '~/utils/api/client';
@@ -48,13 +56,11 @@ const commentReducer = (
 export const Comments: FC<Props> = ({ live }) => {
   const { token, headers } = useAuth();
   const socketRef = useRef<WebSocket>();
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const isConnectingRef = useRef(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [comments, setComment] = useReducer(commentReducer, []);
 
   const connect = useCallback(() => {
     try {
-      clearTimeout(timeoutRef.current);
       if (socketRef.current) {
         socketRef.current.close();
       }
@@ -67,6 +73,7 @@ export const Comments: FC<Props> = ({ live }) => {
         `${wsURL}/websocket/v1/stream/${live.id}?token=${token || ''}`
       );
       socketRef.current = ws;
+      setIsConnecting(true);
 
       ws.onopen = () => {
         console.log('open');
@@ -87,26 +94,19 @@ export const Comments: FC<Props> = ({ live }) => {
 
       ws.onclose = () => {
         console.log('close');
-
-        clearTimeout(timeoutRef.current);
-        if (isConnectingRef.current) {
-          timeoutRef.current = setTimeout(connect, 1000);
-        }
+        setIsConnecting(false);
       };
     } catch (e) {
       console.warn(e);
-
-      clearTimeout(timeoutRef.current);
-      if (isConnectingRef.current) {
-        timeoutRef.current = setTimeout(connect, 1000);
-      }
     }
   }, [live.id, token]);
 
   useEffect(() => {
-    try {
-      isConnectingRef.current = true;
+    if (isConnecting) {
+      return;
+    }
 
+    try {
       if (!live.endedAt) {
         connect();
       }
@@ -116,30 +116,43 @@ export const Comments: FC<Props> = ({ live }) => {
         .comments.$get({
           headers
         })
-        .then(data => data.forEach(setComment));
+        .then(data => {
+          setComment(undefined);
+          data.forEach(comment => {
+            setComment(comment);
+          });
+        });
     } catch (e) {
       console.warn(e);
     }
 
     return () => {
-      isConnectingRef.current = false;
-      try {
-        socketRef.current?.close();
-      } catch (e) {
-        console.warn(e);
-      }
-      clearTimeout(timeoutRef.current);
       setComment(undefined);
     };
-  }, [connect, live.id, live.endedAt, headers]);
+  }, [connect, isConnecting, live.id, live.endedAt, headers]);
 
   return (
-    <Box w="100%" h="100%" overflowY="auto">
-      <VStack spacing={4} p={4} align="stretch" width="100%">
-        {comments.map(comment => (
-          <Comment key={comment.id} comment={comment} />
-        ))}
-      </VStack>
-    </Box>
+    <Flex flexDirection="column" height={{ base: '700px', xl: '100%' }}>
+      <Box p={4}>
+        <Heading size="sm">
+          <FormattedMessage
+            id={
+              live.hashtag
+                ? 'live.comment.title.with-hashtag'
+                : 'live.comment.title'
+            }
+            values={{ hashtag: live.hashtag }}
+          />
+        </Heading>
+      </Box>
+
+      <Box overflowY="auto">
+        <VStack spacing={2} p={2} align="stretch">
+          {comments.map(comment => (
+            <Comment key={comment.id} comment={comment} />
+          ))}
+        </VStack>
+      </Box>
+    </Flex>
   );
 };

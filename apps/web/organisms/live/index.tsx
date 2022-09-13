@@ -1,6 +1,4 @@
 import {
-  Alert,
-  AlertIcon,
   Box,
   Collapse,
   Container,
@@ -12,8 +10,7 @@ import {
   useBreakpointValue,
   useDisclosure
 } from '@chakra-ui/react';
-import { FC, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { LivePublic } from '~/../server/src/models/live';
 import { UserPublic } from '~/../server/src/models/user';
 import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
@@ -26,6 +23,7 @@ import { MobileTitle } from './left/mobile-title';
 import { PublicStats } from './left/public-stats';
 import { Streamer } from './left/streamer';
 import { Video } from './left/video';
+import { NotPushed } from './left/video/not-pushed';
 
 type Props = {
   live: LivePublic;
@@ -40,7 +38,8 @@ export const Live: FC<Props> = ({ live, streamer }) => {
     { base: false, xl: true },
     { fallback: 'xl' }
   );
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle, onOpen, onClose } = useDisclosure();
+  const [isManuallyTapped, setIsManuallyTapped] = useState(false);
   const isStreamer = streamer && user?.id === streamer?.id;
   const [url, updateUrl] = useStreamUrl(!live.endedAt ? live.id : undefined);
 
@@ -54,25 +53,43 @@ export const Live: FC<Props> = ({ live, streamer }) => {
     return `https://${domain}/@${user}`;
   }, [streamer?.account]);
 
+  const toggleMobileDescription = useCallback(() => {
+    setIsManuallyTapped(true);
+    onToggle();
+  }, [onToggle]);
+
+  useEffect(() => {
+    if (isDesktop || isManuallyTapped) {
+      return;
+    }
+
+    onOpen();
+    const timeout = setTimeout(() => {
+      onClose();
+    }, 1.5 * 1000);
+
+    return () => clearInterval(timeout);
+  }, [isDesktop, isManuallyTapped, onOpen, onClose]);
+
   return (
     <Container maxW={{ base: '100%', xl: '2000px' }} padding={0}>
       <Flex
         height={{ xl: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
-        flexDirection={{ base: 'column', xl: 'row' }}
+        width="100%"
+        direction={{ base: 'column', xl: 'row' }}
       >
-        <Box width="100%" overflowY="auto">
-          {url ? (
-            <Video url={url} updateUrl={updateUrl} />
-          ) : (
-            <Alert status="info">
-              <AlertIcon />
-              <FormattedMessage id="live.not-pushed" />
-            </Alert>
-          )}
+        <Box
+          overflowY="auto"
+          width={{ xl: 'calc(100% - 400px)' }}
+          flexShrink={0}
+        >
+          {url ? <Video url={url} updateUrl={updateUrl} /> : <NotPushed />}
 
           <CommentPost liveId={live.id} hashtag={live.hashtag} />
 
-          {!isDesktop && <MobileTitle title={live.title} onClick={onToggle} />}
+          {!isDesktop && (
+            <MobileTitle title={live.title} onClick={toggleMobileDescription} />
+          )}
 
           <Collapse in={isDesktop || isOpen} animateOpacity>
             <Stack spacing={4} p={4}>
@@ -82,6 +99,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
                 startedAt={live.startedAt}
                 endedAt={live.endedAt}
                 viewingCount={9999}
+                privacy={live.privacy}
               />
 
               <Streamer
@@ -102,7 +120,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
 
         <Spacer />
 
-        <Box width={{ xl: '500px' }}>
+        <Box width={{ xl: '400px' }}>
           <Comments live={live} />
         </Box>
       </Flex>

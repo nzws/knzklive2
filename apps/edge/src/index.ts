@@ -82,7 +82,11 @@ export class StreamingDurableObject {
   }
 
   private handleClose(session: Session) {
-    session.socket.close();
+    try {
+      session.socket.close();
+    } catch (e) {
+      //
+    }
     this.sessions = this.sessions.filter(s => s !== session);
   }
 

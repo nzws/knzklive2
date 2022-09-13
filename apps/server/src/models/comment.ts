@@ -51,6 +51,10 @@ export const Comments = (client: PrismaClient['comment']) =>
       sourceUrl: string,
       sourceId: string
     ) => {
+      if (content.length > 100) {
+        content = content.slice(0, 100) + '...';
+      }
+
       const data = await client.create({
         data: {
           liveId,
