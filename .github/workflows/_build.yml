@@ -14,8 +14,29 @@ on:
         required: true
 
 jobs:
-  build-server:
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+      push: ${{ steps.filter.outputs.push }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            server:
+              - 'apps/server/**'
+            push:
+              - 'apps/push/**'
+
+  build-server:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.server == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-qemu-action@v2
@@ -49,7 +70,9 @@ jobs:
       FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
   build-push:
+    needs: changes
     runs-on: ubuntu-latest
+    if: ${{ needs.changes.outputs.push == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-qemu-action@v2
