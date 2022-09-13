@@ -12,8 +12,7 @@ export const getAllStaticProps = <
   Props extends Record<string, unknown>,
   PathProps extends Record<string, string>
 >(
-  fetchers: ((pathProps: PathProps) => Promise<Partial<Props> | undefined>)[],
-  revalidate = 60
+  fetchers: ((pathProps: PathProps) => Promise<Partial<Props> | undefined>)[]
 ): GetStaticProps<PageProps<Props, PathProps>, PathProps> => {
   return async ({ params }) => {
     if (!params) {
@@ -28,7 +27,7 @@ export const getAllStaticProps = <
       if (resolves.some(r => r === undefined)) {
         return {
           notFound: true,
-          revalidate
+          revalidate: 5
         };
       }
 
@@ -39,14 +38,14 @@ export const getAllStaticProps = <
           pathProps: params,
           props
         },
-        revalidate
+        revalidate: 300
       };
     } catch (e) {
       console.warn(e);
 
       return {
         notFound: true,
-        revalidate
+        revalidate: 5
       };
     }
   };
