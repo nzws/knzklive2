@@ -1,8 +1,12 @@
 import Redis from 'ioredis';
-import { redisUrl } from '../_client';
+import { redisUrl, family } from '../_client';
 
-const pubClient = new Redis(redisUrl);
-const subClient = new Redis(redisUrl);
+const pubClient = new Redis(redisUrl, {
+  family
+});
+const subClient = new Redis(redisUrl, {
+  family
+});
 
 type Callback = (message: string) => void;
 type Cb = {

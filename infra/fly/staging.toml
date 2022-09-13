@@ -9,7 +9,7 @@ processes = []
   image = "ghcr.io/nzws/knzklive2-server:staging"
 
 [deploy]
-release_command = "yarn workspace server prisma migrate deploy && exit 0"
+  release_command = "yarn workspace server prisma migrate deploy && exit 0"
 
 [env]
   NODE_ENV = "production"
@@ -30,13 +30,13 @@ release_command = "yarn workspace server prisma migrate deploy && exit 0"
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
+
   [services.concurrency]
-    hard_limit = 25
     soft_limit = 20
     type = "connections"
 
   [[services.ports]]
-    force_https = true
+    force_https = false
     handlers = ["http"]
     port = 80
 
