@@ -16,7 +16,7 @@ processes = []
   SERVER_ENDPOINT = "https://stg-api.knzk.live"
   DEFAULT_FRONT_DOMAIN = "stg.knzk.live"
   EDGE_ENDPOINT = "wss://stg-edge.knzk.live"
-  PUSH_DOMAIN = "stg-push.knzk.live"
+  PUSH_DOMAIN = "push.knzk.live:1936"
   MASTODON_DOMAIN="don.nzws.me"
   REDIS_USE_IPV6 = "true"
 
