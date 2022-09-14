@@ -13,6 +13,7 @@ import { FormattedMessage } from 'react-intl';
 import { TenantPublic } from 'server/src/models/tenant';
 import { useStreamStatus } from '~/utils/hooks/api/use-stream-status';
 import { useUsersMe } from '~/utils/hooks/api/use-users-me';
+import { useAuth } from '~/utils/hooks/use-auth';
 import { CreateLive } from './create-live';
 import { LoginModal } from './login-modal';
 import { User } from './user';
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export const Navbar: FC<Props> = ({ tenant }) => {
+  const { user } = useAuth();
   const {
     isOpen: isOpenLogin,
     onOpen: onOpenLogin,
@@ -33,7 +35,9 @@ export const Navbar: FC<Props> = ({ tenant }) => {
     onClose: onCloseCreateLive
   } = useDisclosure();
   const [me] = useUsersMe();
-  const [status] = useStreamStatus(tenant?.id);
+  const [status] = useStreamStatus(
+    tenant?.ownerId === user?.id ? tenant?.id : undefined
+  );
 
   return (
     <Fragment>

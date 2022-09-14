@@ -82,7 +82,7 @@ export const CreateLive: FC<Props> = ({
           }
         });
 
-        void router.push(`/watch/${live.id}`);
+        void router.push(`/watch/${live.idInTenant}`);
         onClose();
       } catch (e) {
         console.warn(e);
