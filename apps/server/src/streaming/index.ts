@@ -6,10 +6,8 @@ import { pubsub } from '../redis/pubsub/client';
 import { getCommentKey, getPushKey } from '../redis/pubsub/keys';
 import { UserToken } from '../redis/user-token';
 import { jwtEdge } from '../services/jwt';
-import { LiveWatching } from '../redis/live-watching';
 
 const userToken = new UserToken();
-const liveWatching = new LiveWatching();
 
 const commentsRegexp = pathToRegexp('/websocket/v1/stream/:liveId');
 const pushRegexp = pathToRegexp('/websocket/v1/push');
@@ -79,7 +77,6 @@ export class Streaming {
     }
 
     console.log('websocket connected', liveId, userId);
-    await liveWatching.startWatching(liveId, ip);
 
     const handle = {
       event: getCommentKey(liveId),
@@ -97,7 +94,6 @@ export class Streaming {
     socket.once('close', () => {
       console.log('websocket closed');
       pubsub.off(handle);
-      void liveWatching.stopWatching(liveId, ip);
     });
 
     await pubsub.on(handle);
