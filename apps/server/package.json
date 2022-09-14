@@ -14,7 +14,7 @@
     "cli": "ts-node src/cli"
   },
   "dependencies": {
-    "@bull-board/api": "4.3.0",
+    "@bull-board/api": "4.3.1",
     "@bull-board/koa": "4.3.0",
     "@dotplants/cli": "0.2.3",
     "@koa/cors": "3.4.1",
