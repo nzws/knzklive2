@@ -7,6 +7,7 @@ export const useLiveRealtimeCount = (liveId?: number) => {
   const { data } = useAspidaSWR(client.v1.lives._liveId(liveId || 0).count, {
     key: liveId ? undefined : null,
     refreshInterval: 10000,
+    refreshWhenHidden: true,
     headers
   });
 
