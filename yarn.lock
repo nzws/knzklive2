@@ -461,28 +461,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bull-board/koa@npm:4.3.0":
-  version: 4.3.0
-  resolution: "@bull-board/koa@npm:4.3.0"
+"@bull-board/api@npm:4.3.1":
+  version: 4.3.1
+  resolution: "@bull-board/api@npm:4.3.1"
   dependencies:
-    "@bull-board/api": 4.3.0
-    "@bull-board/ui": 4.3.0
+    redis-info: ^3.0.8
+  checksum: 05113b1e888e79f8efecdffdc1043455fa6f8714c55a1e973d8a0a7f60cf574b00487b5b86324523ff91641784a55ff14c469edc8dd985295dcfc27cf55b4c4a
+  languageName: node
+  linkType: hard
+
+"@bull-board/koa@npm:4.3.1":
+  version: 4.3.1
+  resolution: "@bull-board/koa@npm:4.3.1"
+  dependencies:
+    "@bull-board/api": 4.3.1
+    "@bull-board/ui": 4.3.1
     ejs: ^3.1.7
     koa: ^2.13.1
     koa-mount: ^4.0.0
     koa-router: ^10.0.0
     koa-static: ^5.0.0
     koa-views: ^7.0.1
-  checksum: 90885d72b7dcb1040bcbf359d5aedea9a60f5097e3f899d34384690cff42aaca7fc7c626b9e1b39dbc8280be87c6df73d483dd53967dd5a5225e68f5398cb3b2
+  checksum: 08f198cdaaa28fe8e254288a0d4c13e9cd481a97e40e5e9152fb9094cbac54459e86901da5d90c46fe2dccf310f78a50ef8763bf5980b98d33180299c64fbc3f
   languageName: node
   linkType: hard
 
-"@bull-board/ui@npm:4.3.0":
-  version: 4.3.0
-  resolution: "@bull-board/ui@npm:4.3.0"
+"@bull-board/ui@npm:4.3.1":
+  version: 4.3.1
+  resolution: "@bull-board/ui@npm:4.3.1"
   dependencies:
-    "@bull-board/api": 4.3.0
-  checksum: 5413b67176b4fa571ebfcfe01359c7f70e113baea4c5bc75dba9f9b8fc25076a64ed59d80efb5425c8bbce896748fd76d2a4f7a6272dce78dfb0072ba3fbbbc6
+    "@bull-board/api": 4.3.1
+  checksum: 7bc4787ba8f9e3dda5cb580b4374872bc7b0870a08a504cfc2f380a39dda164ae71518e7b1921e53ff8abc4224c0861504b26b63510b6c9c9d23d647bdab54b2
   languageName: node
   linkType: hard
 
@@ -10660,7 +10669,7 @@ __metadata:
   resolution: "server@workspace:apps/server"
   dependencies:
     "@bull-board/api": 4.3.0
-    "@bull-board/koa": 4.3.0
+    "@bull-board/koa": 4.3.1
     "@dotplants/cli": 0.2.3
     "@koa/cors": 3.4.1
     "@koa/router": 12.0.0
