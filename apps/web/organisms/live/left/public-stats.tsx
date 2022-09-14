@@ -7,14 +7,16 @@ import { FormattedDateTime } from '~/atoms/formatted-date-time';
 type Props = {
   startedAt?: Date;
   endedAt?: Date;
-  viewingCount?: number;
   privacy: 'Public' | 'Private';
+  currentViewers?: number;
+  sumViewers?: number;
 };
 
 export const PublicStats: FC<Props> = ({
   startedAt,
   endedAt,
-  viewingCount,
+  currentViewers,
+  sumViewers,
   privacy
 }) => (
   <Stack
@@ -34,10 +36,17 @@ export const PublicStats: FC<Props> = ({
     </Box>
 
     <Text>
-      <FormattedMessage
-        id="live.current-viewer"
-        values={{ count: viewingCount ?? '?' }}
-      />
+      {currentViewers === undefined ? (
+        <FormattedMessage
+          id="live.viewers-count"
+          values={{ sum: sumViewers ?? '?' }}
+        />
+      ) : (
+        <FormattedMessage
+          id="live.viewers-count.with-current"
+          values={{ current: currentViewers, sum: sumViewers ?? '?' }}
+        />
+      )}
     </Text>
 
     {privacy === 'Private' && (

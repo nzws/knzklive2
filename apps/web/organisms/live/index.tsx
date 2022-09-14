@@ -13,6 +13,7 @@ import {
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { LivePublic } from '~/../server/src/models/live';
 import { UserPublic } from '~/../server/src/models/user';
+import { useLiveRealtimeCount } from '~/utils/hooks/api/use-live-realtime-count';
 import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { Footer } from '../footer';
@@ -42,6 +43,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
   const [isManuallyTapped, setIsManuallyTapped] = useState(false);
   const isStreamer = streamer && user?.id === streamer?.id;
   const [url, updateUrl] = useStreamUrl(!live.endedAt ? live.id : undefined);
+  const [count] = useLiveRealtimeCount(!live.endedAt ? live.id : undefined);
 
   // todo: 仮
   const streamerUrl = useMemo(() => {
@@ -98,7 +100,8 @@ export const Live: FC<Props> = ({ live, streamer }) => {
               <PublicStats
                 startedAt={live.startedAt}
                 endedAt={live.endedAt}
-                viewingCount={9999}
+                currentViewers={count?.current}
+                sumViewers={count?.sum || live.watchingSumCount}
                 privacy={live.privacy}
               />
 

@@ -13,7 +13,8 @@ const errorCodes = [
   'tenant_not_found',
   'user_not_found',
   'invalid_authorization_type',
-  'forbidden_live'
+  'forbidden_live',
+  'live_already_ended'
 ] as const;
 type ErrorCode = typeof errorCodes[number];
 

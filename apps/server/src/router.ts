@@ -30,6 +30,7 @@ import { getV1Lives } from './controllers/v1/lives/get';
 import { middlewareMyTenant } from './middlewares/my-tenant';
 import { getV1TenantStreamStatus } from './controllers/v1/tenants/get-stream-status';
 import { getV1InternalsPushCheckToken } from './controllers/v1/internals/push/check-token';
+import { getV1LivesCount } from './controllers/v1/lives/get-count';
 
 export const router = (): Router => {
   const route = new Router();
@@ -68,6 +69,7 @@ export const router = (): Router => {
   route.get('/v1/lives/explore', getV1LivesExplore);
   route.get('/v1/lives/:liveId', middlewareLive, getV1Lives);
   route.get('/v1/lives/:liveId/url', middlewareLive, getV1LivesUrl);
+  route.get('/v1/lives/:liveId/count', middlewareLive, getV1LivesCount);
   route.get('/v1/lives/:liveId/comments', middlewareLive, getV1LivesComment);
   route.post(
     '/v1/lives/:liveId/comments',

@@ -68,6 +68,7 @@ model Live {
   privacy            LivePrivacy
   hashtag            String?     @db.VarChar(100)
   sensitive          Boolean     @default(false)
+  watchingSumCount   Int?
 
   user   User   @relation(fields: [userId], references: [id])
   tenant Tenant @relation(fields: [tenantId], references: [id])

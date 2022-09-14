@@ -13,6 +13,7 @@ export type LivePublic = {
   sensitive: boolean;
   privacy: 'Public' | 'Private';
   hashtag?: string;
+  watchingSumCount?: number;
 };
 
 export const Lives = (client: PrismaClient['live']) =>
@@ -28,7 +29,8 @@ export const Lives = (client: PrismaClient['live']) =>
       description: live.description || undefined,
       privacy: live.privacy,
       sensitive: live.sensitive,
-      hashtag: live.hashtag || undefined
+      hashtag: live.hashtag || undefined,
+      watchingSumCount: live.watchingSumCount || undefined
     }),
     get: async (id: number) => {
       const live = await client.findUnique({
@@ -190,13 +192,14 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return data;
     },
-    endLive: async (live: Live) => {
+    endLive: async (live: Live, watchingSumCount: number) => {
       const data = await client.update({
         where: {
           id: live.id
         },
         data: {
-          endedAt: new Date()
+          endedAt: new Date(),
+          watchingSumCount
         }
       });
 
