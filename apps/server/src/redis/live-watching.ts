@@ -36,6 +36,7 @@ export class LiveWatching {
     if (now - this.lastCleanup < 30) {
       return;
     }
+    this.lastCleanup = now;
 
     const data = await redis.hgetall(this.getKey(liveId));
 
