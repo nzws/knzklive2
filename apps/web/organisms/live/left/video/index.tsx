@@ -11,12 +11,19 @@ import { Controller } from './controller';
 type Props = {
   url?: string;
   updateUrl: () => Promise<string | undefined>;
+  onToggleContainerSize: () => void;
   isStreamer?: boolean;
 };
 
-export const Video: FC<Props> = ({ url, updateUrl, isStreamer }) => {
+export const Video: FC<Props> = ({
+  url,
+  updateUrl,
+  onToggleContainerSize,
+  isStreamer
+}) => {
   const intl = useIntl();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<Mpegts.Player>();
   const lastPlayingRef = useRef(0);
   const [latency, setLatency] = useState<number>(-1);
@@ -47,6 +54,19 @@ export const Video: FC<Props> = ({ url, updateUrl, isStreamer }) => {
         console.warn(e);
       }
     })();
+  }, []);
+
+  const toggleMaximize = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) {
+      return;
+    }
+
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+    } else {
+      void container.requestFullscreen();
+    }
   }, []);
 
   useEffect(() => {
@@ -175,14 +195,24 @@ export const Video: FC<Props> = ({ url, updateUrl, isStreamer }) => {
   }, [updateUrl]);
 
   return (
-    <Container {...events}>
+    <Container
+      {...events}
+      ref={containerRef}
+      style={{
+        cursor: show ? 'auto' : 'none'
+      }}
+    >
       <AspectRatio ratio={16 / 9}>
-        <video ref={videoRef} autoPlay />
+        <video ref={videoRef} autoPlay controls={false} />
       </AspectRatio>
 
       {isBlocking && <Blocking onClick={autoSeek} />}
+
       <Controller
         onLive={autoSeek}
+        onToggleContainerSize={onToggleContainerSize}
+        onToggleMaximize={toggleMaximize}
+        onReload={() => void updateUrl()}
         isStreamer={isStreamer}
         videoRef={videoRef}
         show={show}

@@ -1,6 +1,5 @@
 import {
   Button,
-  ButtonGroup,
   Flex,
   Spacer,
   Slider,
@@ -8,14 +7,25 @@ import {
   SliderFilledTrack,
   SliderThumb,
   useBreakpointValue,
-  Fade
+  Fade,
+  Tooltip
 } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { FC, RefObject, useEffect, useState } from 'react';
-import { FiMaximize, FiVolume2, FiVolumeX } from 'react-icons/fi';
+import {
+  FiChevronsUp,
+  FiMaximize,
+  FiRefreshCw,
+  FiVolume2,
+  FiVolumeX
+} from 'react-icons/fi';
+import { useIntl } from 'react-intl';
 
 type Props = {
   onLive: () => void;
+  onReload: () => void;
+  onToggleContainerSize: () => void;
+  onToggleMaximize: () => void;
   videoRef: RefObject<HTMLVideoElement>;
   isStreamer?: boolean;
   show: boolean;
@@ -24,11 +34,15 @@ type Props = {
 
 export const Controller: FC<Props> = ({
   onLive,
+  onReload,
+  onToggleContainerSize,
+  onToggleMaximize,
   isStreamer,
   videoRef,
   show,
   latency
 }) => {
+  const intl = useIntl();
   const [isMuted, setIsMuted] = useState<boolean>();
   const [volume, setVolume] = useState<number>();
   const isDesktop = useBreakpointValue(
@@ -59,7 +73,7 @@ export const Controller: FC<Props> = ({
     }
 
     const mute = window.localStorage.getItem('live-mute') || 'false';
-    const volume = window.localStorage.getItem('live-volume') || '60';
+    const volume = window.localStorage.getItem('live-volume') || '100';
 
     if (mute || isStreamer) {
       setIsMuted(isStreamer || mute === 'true');
@@ -73,9 +87,19 @@ export const Controller: FC<Props> = ({
     <Fade in={show}>
       <Container>
         <Flex minWidth="max-content" alignItems="center" gap="2" p={2}>
-          <Button variant="ghost" onClick={onLive} size="sm">
-            {latency === -1 ? 'BUFFERING' : `LIVE (${latency}s)`}
-          </Button>
+          <Tooltip
+            label={intl.formatMessage({ id: 'live.player.seek-latest' })}
+          >
+            <Button variant="ghost" onClick={onLive} size="sm">
+              {latency === -1 ? 'BUFFERING' : `LIVE (${latency}s)`}
+            </Button>
+          </Tooltip>
+
+          <Tooltip label={intl.formatMessage({ id: 'live.player.reload' })}>
+            <Button variant="ghost" onClick={onReload} size="sm">
+              <FiRefreshCw />
+            </Button>
+          </Tooltip>
 
           <Button
             variant="ghost"
@@ -103,11 +127,19 @@ export const Controller: FC<Props> = ({
 
           <Spacer />
 
-          <ButtonGroup gap="2">
-            <Button variant="ghost" size="sm">
+          {isDesktop && (
+            <Tooltip label={intl.formatMessage({ id: 'live.player.wide' })}>
+              <Button variant="ghost" size="sm" onClick={onToggleContainerSize}>
+                <FiChevronsUp />
+              </Button>
+            </Tooltip>
+          )}
+
+          <Tooltip label={intl.formatMessage({ id: 'live.player.maximize' })}>
+            <Button variant="ghost" size="sm" onClick={onToggleMaximize}>
               <FiMaximize />
             </Button>
-          </ButtonGroup>
+          </Tooltip>
         </Flex>
       </Container>
     </Fade>

@@ -70,5 +70,9 @@
   "live.is-private": "Required login",
   "live.not-pushed": "The streamer is not pushing the stream at this time.",
   "live.player.not-supported": "For now, you cannot play the stream on this device. Try iPad, Android, PC, etc., as Apple, Inc does not allow the use of the necessary APIs in the iPhone.",
-  "live.player.autoplay-blocked": "Auto-play has been blocked, please click the player to play."
+  "live.player.autoplay-blocked": "Auto-play has been blocked, please click the player to play.",
+  "live.player.seek-latest": "Seek to the latest",
+  "live.player.reload": "Reload the stream",
+  "live.player.wide": "Wide in window",
+  "live.player.maximize": "Maximize"
 }

@@ -70,5 +70,9 @@
   "live.is-private": "ログインが必要",
   "live.not-pushed": "現在、配信者がプッシュしていません。",
   "live.player.not-supported": "今のところ、このデバイスで再生する事はできません。iPhone の場合は Apple 社が必要な API の使用を許可しないため iPad、Android、PC などでお試しください。",
-  "live.player.autoplay-blocked": "ブラウザが自動再生をブロックしたため、再生するにはプレイヤーのどこかをクリックしてください。"
+  "live.player.autoplay-blocked": "ブラウザが自動再生をブロックしたため、再生するにはプレイヤーのどこかをクリックしてください。",
+  "live.player.seek-latest": "最新までシーク",
+  "live.player.reload": "配信を開き直す",
+  "live.player.wide": "ウインドウ内ワイド",
+  "live.player.maximize": "最大化"
 }

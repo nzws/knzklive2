@@ -23,14 +23,24 @@ export const usePlayerTouch = () => {
     }
   }, []);
 
+  const onMouseMove = useCallback(() => {
+    setShow(true);
+
+    if (lastTouchRef.current) {
+      clearTimeout(lastTouchRef.current);
+    }
+    lastTouchRef.current = setTimeout(() => {
+      setShow(false);
+    }, 2000);
+  }, []);
+
   const onMouseLeave = useCallback(() => {
     if (lastTouchRef.current) {
       clearTimeout(lastTouchRef.current);
     }
-    const timeout = setTimeout(() => {
+    lastTouchRef.current = setTimeout(() => {
       setShow(false);
     }, 500);
-    lastTouchRef.current = timeout;
   }, []);
 
   return {
@@ -39,9 +49,10 @@ export const usePlayerTouch = () => {
       () => ({
         onTouchStart,
         onMouseEnter,
+        onMouseMove,
         onMouseLeave
       }),
-      [onTouchStart, onMouseEnter, onMouseLeave]
+      [onTouchStart, onMouseEnter, onMouseMove, onMouseLeave]
     )
   };
 };

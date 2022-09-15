@@ -40,6 +40,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
     { fallback: 'xl' }
   );
   const { isOpen, onToggle, onOpen, onClose } = useDisclosure();
+  const [isContainerMaximized, setIsContainerMaximized] = useState(false);
   const [isManuallyTapped, setIsManuallyTapped] = useState(false);
   const isStreamer = streamer && user?.id === streamer?.id;
   const [url, updateUrl] = useStreamUrl(!live.endedAt ? live.id : undefined);
@@ -60,6 +61,11 @@ export const Live: FC<Props> = ({ live, streamer }) => {
     onToggle();
   }, [onToggle]);
 
+  const toggleContainerSize = useCallback(
+    () => setIsContainerMaximized(v => !v),
+    []
+  );
+
   useEffect(() => {
     if (isDesktop || isManuallyTapped) {
       return;
@@ -74,7 +80,10 @@ export const Live: FC<Props> = ({ live, streamer }) => {
   }, [isDesktop, isManuallyTapped, onOpen, onClose]);
 
   return (
-    <Container maxW={{ base: '100%', xl: '2000px' }} padding={0}>
+    <Container
+      maxW={isContainerMaximized ? '100%' : { base: '100%', xl: '2000px' }}
+      padding={0}
+    >
       <Flex
         height={{ xl: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
         width="100%"
@@ -86,7 +95,12 @@ export const Live: FC<Props> = ({ live, streamer }) => {
           flexShrink={0}
         >
           {url ? (
-            <Video isStreamer={isStreamer} url={url} updateUrl={updateUrl} />
+            <Video
+              isStreamer={isStreamer}
+              url={url}
+              updateUrl={updateUrl}
+              onToggleContainerSize={toggleContainerSize}
+            />
           ) : (
             <NotPushed />
           )}
