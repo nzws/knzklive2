@@ -3225,13 +3225,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:29.0.2":
-  version: 29.0.2
-  resolution: "@types/jest@npm:29.0.2"
+"@types/jest@npm:29.0.3":
+  version: 29.0.3
+  resolution: "@types/jest@npm:29.0.3"
   dependencies:
     expect: ^29.0.0
     pretty-format: ^29.0.0
-  checksum: 27c46b58fad9791adf88167ba2c14ae3513cb1fe5df038faafe7fc4513ebb230dd8029a1dd0acd1abeb82aa014839ac10e0dcf1bfae9fcc0e69bc1eb1e5204f0
+  checksum: 14a8ec1954540ec59f4072c3c4dbc6b5d5ff616556c98671aca26606bdf9d49616a3f269f3e488c80cd481ee19880351575c1f6895827628818e193600c121e0
   languageName: node
   linkType: hard
 
@@ -5240,7 +5240,7 @@ __metadata:
   dependencies:
     "@cloudflare/workers-types": 3.16.0
     "@tsconfig/node18": 1.0.1
-    "@types/jest": 29.0.2
+    "@types/jest": 29.0.3
     "@types/node": 18.7.18
     "@typescript-eslint/eslint-plugin": 5.37.0
     "@typescript-eslint/parser": 5.37.0
@@ -10286,7 +10286,7 @@ __metadata:
     "@mermaid-js/mermaid-cli": 9.1.6
     "@prisma/client": 4.3.1
     "@tsconfig/node18": 1.0.1
-    "@types/jest": 29.0.2
+    "@types/jest": 29.0.3
     "@types/koa": 2.13.5
     "@types/koa-bodyparser": 4.3.8
     "@types/koa-logger": 3.1.2
@@ -11512,7 +11512,7 @@ __metadata:
     "@testing-library/react": 13.4.0
     "@testing-library/user-event": 14.4.3
     "@tsconfig/next": 1.0.2
-    "@types/jest": 29.0.2
+    "@types/jest": 29.0.3
     "@types/node": 18.7.18
     "@types/react": 18.0.20
     "@types/react-dom": 18.0.6
