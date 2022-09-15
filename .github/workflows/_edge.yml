@@ -11,28 +11,20 @@ on:
         required: true
       CF_ACCOUNT_ID:
         required: true
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      edge: ${{ steps.filter.outputs.edge }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            edge:
-              - 'apps/edge/**'
-
   deploy:
-    needs: changes
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.edge == 'true' }}
     steps:
       - uses: actions/checkout@v3
 
