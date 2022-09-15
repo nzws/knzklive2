@@ -28,7 +28,7 @@ export const Footer: FC = () => {
       <Container as={Stack} maxW="container.xl" py={8}>
         <Divider mb={2} />
 
-        <Stack as={Stack} direction={{ base: 'column', md: 'row' }} spacing={6}>
+        <Stack as={Stack} direction={{ base: 'column', lg: 'row' }} spacing={6}>
           <Box color="gray.400">
             Powered by{' '}
             <ChakraLink href="https://github.com/nzws/knzklive2" isExternal>

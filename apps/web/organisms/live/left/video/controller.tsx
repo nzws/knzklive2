@@ -46,8 +46,8 @@ export const Controller: FC<Props> = ({
   const [isMuted, setIsMuted] = useState<boolean>();
   const [volume, setVolume] = useState<number>();
   const isDesktop = useBreakpointValue(
-    { base: false, xl: true },
-    { fallback: 'xl' }
+    { base: false, lg: true },
+    { fallback: 'lg' }
   );
 
   useEffect(() => {

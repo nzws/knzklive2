@@ -12,17 +12,17 @@ export const Blocking: FC<Props> = ({ onClick }) => (
     <Box
       bg="pink.500"
       borderRadius={8}
-      flexDirection={{ base: 'column', xl: 'row' }}
+      flexDirection={{ base: 'column', lg: 'row' }}
       maxW="60%"
       width={600}
     >
       <Grid
-        gridTemplateColumns={{ base: '1fr', xl: '160px 1fr' }}
+        gridTemplateColumns={{ base: '1fr', lg: '160px 1fr' }}
         alignItems="end"
         position="relative"
         minH="120px"
       >
-        <Hide below="xl">
+        <Hide below="lg">
           <Box>
             <Knzk
               src="/static/surprized_knzk.png"

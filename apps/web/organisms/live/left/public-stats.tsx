@@ -21,7 +21,7 @@ export const PublicStats: FC<Props> = ({
 }) => (
   <Stack
     spacing={4}
-    direction={{ base: 'column', xl: 'row' }}
+    direction={{ base: 'column', lg: 'row' }}
     color="gray.300"
     flexWrap="wrap"
   >

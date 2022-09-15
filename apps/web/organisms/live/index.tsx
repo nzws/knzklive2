@@ -36,8 +36,8 @@ const NAVBAR_HEIGHT = 56;
 export const Live: FC<Props> = ({ live, streamer }) => {
   const { user } = useAuth();
   const isDesktop = useBreakpointValue(
-    { base: false, xl: true },
-    { fallback: 'xl' }
+    { base: false, lg: true },
+    { fallback: 'lg' }
   );
   const { isOpen, onToggle, onOpen, onClose } = useDisclosure();
   const [isContainerMaximized, setIsContainerMaximized] = useState(false);
@@ -81,17 +81,17 @@ export const Live: FC<Props> = ({ live, streamer }) => {
 
   return (
     <Container
-      maxW={isContainerMaximized ? '100%' : { base: '100%', xl: '2000px' }}
+      maxW={isContainerMaximized ? '100%' : { base: '100%', lg: '2000px' }}
       padding={0}
     >
       <Flex
-        height={{ xl: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
+        height={{ lg: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
         width="100%"
-        direction={{ base: 'column', xl: 'row' }}
+        direction={{ base: 'column', lg: 'row' }}
       >
         <Box
           overflowY="auto"
-          width={{ xl: 'calc(100% - 400px)' }}
+          width={{ lg: 'calc(100% - 400px)' }}
           flexShrink={0}
         >
           {url ? (
@@ -141,7 +141,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
 
         <Spacer />
 
-        <Box width={{ xl: '400px' }}>
+        <Box width={{ lg: '400px' }}>
           <Comments live={live} />
         </Box>
       </Flex>

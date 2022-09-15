@@ -132,7 +132,7 @@ export const Comments: FC<Props> = ({ live }) => {
   }, [connect, isConnecting, live.id, live.endedAt, headers]);
 
   return (
-    <Flex flexDirection="column" height={{ base: '700px', xl: '100%' }}>
+    <Flex flexDirection="column" height={{ base: '700px', lg: '100%' }}>
       <Box p={4}>
         <Heading size="sm">
           <FormattedMessage
