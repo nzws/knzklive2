@@ -85,7 +85,11 @@ export const Live: FC<Props> = ({ live, streamer }) => {
           width={{ xl: 'calc(100% - 400px)' }}
           flexShrink={0}
         >
-          {url ? <Video url={url} updateUrl={updateUrl} /> : <NotPushed />}
+          {url ? (
+            <Video isStreamer={isStreamer} url={url} updateUrl={updateUrl} />
+          ) : (
+            <NotPushed />
+          )}
 
           <CommentPost liveId={live.id} hashtag={live.hashtag} />
 

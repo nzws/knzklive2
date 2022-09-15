@@ -11,19 +11,15 @@ import { Controller } from './controller';
 type Props = {
   url?: string;
   updateUrl: () => Promise<string | undefined>;
+  isStreamer?: boolean;
 };
 
-const preferLowLatency = (suc: number, err: number) =>
-  err < 5 || suc > Math.max(err * 2, 60);
-
-export const Video: FC<Props> = ({ url, updateUrl }) => {
+export const Video: FC<Props> = ({ url, updateUrl, isStreamer }) => {
   const intl = useIntl();
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<Mpegts.Player>();
-  const successCountRef = useRef(0);
-  const errorCountRef = useRef(0);
   const lastPlayingRef = useRef(0);
-  const highLatencySeekRef = useRef(5);
+  const [latency, setLatency] = useState<number>(-1);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
   const [isBlocking, setIsBlocking] = useState(false);
@@ -45,23 +41,8 @@ export const Video: FC<Props> = ({ url, updateUrl }) => {
         return;
       }
 
-      const isEnabledLowLatency = preferLowLatency(
-        successCountRef.current,
-        errorCountRef.current
-      );
-      if (isEnabledLowLatency) {
-        highLatencySeekRef.current = 0;
-      } else {
-        highLatencySeekRef.current = Math.min(
-          Math.max(5, highLatencySeekRef.current + 1),
-          10
-        );
-      }
-
       try {
-        video.currentTime =
-          video.buffered.end(0) -
-          (isEnabledLowLatency ? 2 : highLatencySeekRef.current);
+        video.currentTime = video.buffered.end(0) - 2;
       } catch (e) {
         console.warn(e);
       }
@@ -74,6 +55,7 @@ export const Video: FC<Props> = ({ url, updateUrl }) => {
         return;
       }
 
+      let player;
       try {
         const Mpegts = (await import('mpegts.js')).default;
 
@@ -83,7 +65,7 @@ export const Video: FC<Props> = ({ url, updateUrl }) => {
           );
         }
 
-        const player = Mpegts.createPlayer(
+        player = Mpegts.createPlayer(
           {
             type: 'mse',
             isLive: true,
@@ -101,12 +83,21 @@ export const Video: FC<Props> = ({ url, updateUrl }) => {
 
         player.attachMediaElement(videoRef.current);
         player.load();
-
-        autoSeek();
       } catch (e) {
         setError(e);
       }
+
+      try {
+        await player?.play();
+      } catch (e) {
+        console.warn(e);
+      }
     })();
+
+    return () => {
+      playerRef.current?.destroy();
+      playerRef.current = undefined;
+    };
   }, [url, autoSeek, intl]);
 
   useEffect(() => {
@@ -120,40 +111,23 @@ export const Video: FC<Props> = ({ url, updateUrl }) => {
       if (!video || !player) {
         return;
       }
+
+      let bufferTime = 0;
       try {
-        const bufferTime = video.buffered.end(0);
-        const playingTime = video.currentTime;
-
-        const isEnabledLowLatency = preferLowLatency(
-          successCountRef.current,
-          errorCountRef.current
-        );
-
-        if (
-          bufferTime > playingTime &&
-          lastPlayingRef.current !== playingTime
-        ) {
-          const delay = bufferTime - playingTime;
-
-          if (delay > 5 && isEnabledLowLatency) {
-            autoSeek();
-          }
-
-          successCountRef.current++;
-        } else {
-          if (!highLatencySeekRef.current && isEnabledLowLatency) {
-            successCountRef.current = 0;
-            autoSeek();
-          }
-
-          errorCountRef.current++;
-        }
-
-        lastPlayingRef.current = playingTime;
+        bufferTime = video.buffered.end(0);
       } catch (e) {
         console.warn(e);
-        return;
       }
+
+      const playingTime = video.currentTime;
+      if (bufferTime > playingTime && lastPlayingRef.current !== playingTime) {
+        const delay = bufferTime - playingTime;
+        setLatency(Math.round(delay * 10) / 10);
+      } else {
+        setLatency(-1);
+      }
+
+      lastPlayingRef.current = playingTime;
     }, 1000);
 
     return () => clearInterval(cleanup);
@@ -182,10 +156,7 @@ export const Video: FC<Props> = ({ url, updateUrl }) => {
     };
 
     const handleLoadedMetadata = () => {
-      setTimeout(() => {
-        autoSeek();
-        successCountRef.current = 0;
-      }, 1000);
+      //
     };
 
     video.addEventListener('error', handleError);
@@ -201,16 +172,22 @@ export const Video: FC<Props> = ({ url, updateUrl }) => {
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
-  }, [updateUrl, autoSeek]);
+  }, [updateUrl]);
 
   return (
     <Container {...events}>
       <AspectRatio ratio={16 / 9}>
-        <video ref={videoRef} />
+        <video ref={videoRef} autoPlay />
       </AspectRatio>
 
       {isBlocking && <Blocking onClick={autoSeek} />}
-      {show && <Controller onLive={autoSeek} videoRef={videoRef} />}
+      <Controller
+        onLive={autoSeek}
+        isStreamer={isStreamer}
+        videoRef={videoRef}
+        show={show}
+        latency={latency}
+      />
     </Container>
   );
 };
