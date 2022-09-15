@@ -12,9 +12,33 @@ on:
     secrets:
       FLY_API_TOKEN:
         required: true
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      tag:
+        description: 'Docker tag (staging→staging, production→latest)'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - latest
+      skip-check:
+        description: 'Skip check'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   changes:
+    if: ${{ !inputs.skip-check }}
     runs-on: ubuntu-latest
     outputs:
       server: ${{ steps.filter.outputs.server }}
@@ -36,7 +60,7 @@ jobs:
   build-server:
     needs: changes
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.server == 'true' }}
+    if: ${{ inputs.skip-check || needs.changes.outputs.server == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-qemu-action@v2
@@ -72,7 +96,7 @@ jobs:
   build-push:
     needs: changes
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.push == 'true' }}
+    if: ${{ inputs.skip-check || needs.changes.outputs.push == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-qemu-action@v2
