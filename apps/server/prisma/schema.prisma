@@ -6,9 +6,9 @@ generator client {
   previewFeatures = ["interactiveTransactions"]
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-}
+// generator erd {
+//   provider = "prisma-erd-generator"
+// }
 
 datasource db {
   provider = "postgresql"

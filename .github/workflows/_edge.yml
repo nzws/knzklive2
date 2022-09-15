@@ -3,9 +3,6 @@ name: Deploy Edge Network
 on:
   workflow_call:
     inputs:
-      skip-check:
-        required: false
-        type: boolean
       environment:
         required: true
         type: string
@@ -14,21 +11,6 @@ on:
         required: true
       CF_ACCOUNT_ID:
         required: true
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
-      skip-check:
-        description: 'Skip check'
-        required: false
-        default: true
-        type: boolean
 
 jobs:
   changes:
@@ -48,9 +30,9 @@ jobs:
               - 'apps/edge/**'
 
   deploy:
-    needs: ${{ (inputs.skip-check && null) || 'changes' }}
+    needs: changes
     runs-on: ubuntu-latest
-    if: ${{ inputs.skip-check || needs.changes.outputs.edge == 'true' }}
+    if: ${{ needs.changes.outputs.edge == 'true' }}
     steps:
       - uses: actions/checkout@v3
 
