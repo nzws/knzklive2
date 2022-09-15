@@ -5303,7 +5303,7 @@ __metadata:
     eslint-config-prettier: 8.5.0
     jest: 29.0.3
     jest-environment-miniflare: 2.8.2
-    jose: 4.9.2
+    jose: 4.9.3
     npm-run-all: 4.1.5
     ts-jest: 29.0.1
     typescript: 4.8.3
@@ -8057,10 +8057,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:4.9.2":
-  version: 4.9.2
-  resolution: "jose@npm:4.9.2"
-  checksum: d3950385a6417d988c50bd8ba5407f5960624060aa8e4662c2109f1ebcc40c418e64b721a87065d8197b4aa0ddd7fb4dad5064618956dba8e74dc630916bf40f
+"jose@npm:4.9.3":
+  version: 4.9.3
+  resolution: "jose@npm:4.9.3"
+  checksum: 95865830768dcf82774d19e92dc854c5bc9dc5d9c9626a65a2974272e3aca5d2f56678611943f85802431d2d6d6f8bff9548b7cdb7578e6fe61529bd9c82e1d3
   languageName: node
   linkType: hard
 
@@ -9984,7 +9984,7 @@ __metadata:
     eslint: 8.23.1
     eslint-config-prettier: 8.5.0
     jest: 29.0.3
-    jose: 4.9.2
+    jose: 4.9.3
     node-media-server: 2.4.7
     npm-run-all: 4.1.5
     ts-node: 10.9.1
@@ -10687,7 +10687,7 @@ __metadata:
     ioredis: 5.2.3
     is-valid-domain: 0.1.6
     jest: 29.0.3
-    jose: 4.9.2
+    jose: 4.9.3
     koa: 2.13.4
     koa-bodyparser: 4.3.0
     koa-logger: 3.2.1
