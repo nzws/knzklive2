@@ -58,7 +58,7 @@ jobs:
               - 'apps/push/**'
 
   build-server:
-    needs: changes
+    needs: ${{ (inputs.skip-check && null) || 'changes' }}
     runs-on: ubuntu-latest
     if: ${{ inputs.skip-check || needs.changes.outputs.server == 'true' }}
     steps:

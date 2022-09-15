@@ -32,7 +32,6 @@ on:
 
 jobs:
   changes:
-    if: ${{ !inputs.skip-check }}
     runs-on: ubuntu-latest
     outputs:
       edge: ${{ steps.filter.outputs.edge }}
@@ -49,7 +48,7 @@ jobs:
               - 'apps/edge/**'
 
   deploy:
-    needs: changes
+    needs: ${{ (inputs.skip-check && null) || 'changes' }}
     runs-on: ubuntu-latest
     if: ${{ inputs.skip-check || needs.changes.outputs.edge == 'true' }}
     steps:
