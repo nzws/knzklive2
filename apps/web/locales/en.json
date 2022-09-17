@@ -69,7 +69,7 @@
   "live.viewers-count.with-current": "{current} viewers (Total: {sum})",
   "live.is-private": "Required login",
   "live.not-pushed": "The streamer is not pushing the stream at this time.",
-  "live.player.not-supported": "For now, you cannot play the stream on this device. Try iPad, Android, PC, etc., as Apple, Inc does not allow the use of the necessary APIs in the iPhone.",
+  "live.player.play-type": "Change streaming method: FLV (Low-latency, recommend) / HLS (High-latency, for iOS)",
   "live.player.autoplay-blocked": "Auto-play has been blocked, please click the player to play.",
   "live.player.seek-latest": "Seek to the latest",
   "live.player.reload": "Reload the stream",

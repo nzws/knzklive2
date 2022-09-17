@@ -5,9 +5,6 @@
 - Docker / Docker Compose
 - Node.js v16.x~
 - Yarn
-- Cloudflare アカウント
-  - たしか Wrangler CLI のログインが必要なので、しておいてください
-  - `wrangler dev` を使うだけなら Workers Paid Plan は不要です。実際のデプロイ時にはエラーが発生します。
 
 ## 起動
 

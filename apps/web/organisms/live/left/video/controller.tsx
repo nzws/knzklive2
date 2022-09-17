@@ -20,6 +20,7 @@ import {
   FiVolumeX
 } from 'react-icons/fi';
 import { useIntl } from 'react-intl';
+import { PlayType } from '.';
 
 type Props = {
   onLive: () => void;
@@ -30,6 +31,8 @@ type Props = {
   isStreamer?: boolean;
   show: boolean;
   latency: number;
+  playType: PlayType;
+  onTogglePlayType: () => void;
 };
 
 export const Controller: FC<Props> = ({
@@ -40,7 +43,9 @@ export const Controller: FC<Props> = ({
   isStreamer,
   videoRef,
   show,
-  latency
+  latency,
+  playType,
+  onTogglePlayType
 }) => {
   const intl = useIntl();
   const [isMuted, setIsMuted] = useState<boolean>();
@@ -126,6 +131,14 @@ export const Controller: FC<Props> = ({
           )}
 
           <Spacer />
+
+          {/*
+          <Tooltip label={intl.formatMessage({ id: 'live.player.play-type' })}>
+            <Button variant="ghost" size="sm" onClick={onTogglePlayType}>
+              {playType}
+            </Button>
+          </Tooltip>
+          */}
 
           {isDesktop && (
             <Tooltip label={intl.formatMessage({ id: 'live.player.wide' })}>

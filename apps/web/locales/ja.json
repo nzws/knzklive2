@@ -69,7 +69,7 @@
   "live.viewers-count.with-current": "{current} 人が視聴中 (合計: {sum} 人)",
   "live.is-private": "ログインが必要",
   "live.not-pushed": "現在、配信者がプッシュしていません。",
-  "live.player.not-supported": "今のところ、このデバイスで再生する事はできません。iPhone の場合は Apple 社が必要な API の使用を許可しないため iPad、Android、PC などでお試しください。",
+  "live.player.play-type": "再生方法を変更: FLV (低遅延、推奨) / HLS (高遅延、iOS 用)",
   "live.player.autoplay-blocked": "ブラウザが自動再生をブロックしたため、再生するにはプレイヤーのどこかをクリックしてください。",
   "live.player.seek-latest": "最新までシーク",
   "live.player.reload": "配信を開き直す",

@@ -36,6 +36,10 @@ export const getStreamUrl = (liveId: number, token: string) =>
   `${
     process.env.EDGE_ENDPOINT || ''
   }/streaming/${liveId}/stream?token=${token}`;
+export const getHlsStreamUrl = (liveId: number, token: string) =>
+  `http${process.env.USE_HTTP ? '' : 's'}://${
+    process.env.PUSH_DOMAIN || ''
+  }/live/${liveId}.m3u8?token=${token}`;
 
 export const getPushUrl = () => `rtmp://${process.env.PUSH_DOMAIN || ''}/live`;
 export const getPushStreamKey = (liveId: number, token: string) =>

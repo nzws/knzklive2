@@ -1,7 +1,7 @@
 import { Methods } from 'api-types/api/v1/lives/_liveId@number/url';
 import { lives } from '../../../models';
 import { jwtEdge } from '../../../services/jwt';
-import { getStreamUrl } from '../../../utils/domain';
+import { getHlsStreamUrl, getStreamUrl } from '../../../utils/domain';
 import { APIRoute, LiveState } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];
@@ -27,6 +27,7 @@ export const getV1LivesUrl: APIRoute<
   const token = await jwtEdge.generateTokenAsStream(live.id);
 
   ctx.body = {
-    wsFlv: getStreamUrl(live.id, token)
+    wsFlv: getStreamUrl(live.id, token),
+    hls: getHlsStreamUrl(live.id, token)
   };
 };
