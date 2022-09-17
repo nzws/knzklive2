@@ -1,16 +1,23 @@
 import { AspectRatio } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import type Mpegts from 'mpegts.js';
+import type Hls from 'hls.js';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { usePlayerTouch } from '~/utils/hooks/use-player-touch';
 import { Blocking } from './blocking';
 import { Controller } from './controller';
+import { PlayUrl } from 'api-types/api/v1/lives/_liveId@number/url';
+
+export enum PlayType {
+  Flv = 'FLV',
+  Hls = 'HLS'
+}
 
 type Props = {
-  url?: string;
-  updateUrl: () => Promise<string | undefined>;
+  url?: PlayUrl;
+  updateUrl: () => Promise<unknown | undefined>;
   onToggleContainerSize: () => void;
   isStreamer?: boolean;
 };
@@ -25,23 +32,28 @@ export const Video: FC<Props> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<Mpegts.Player>();
+  const hlsRef = useRef<Hls>();
   const lastPlayingRef = useRef(0);
   const [latency, setLatency] = useState<number>(-1);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
   const [isBlocking, setIsBlocking] = useState(false);
+  const [playType, setPlayType] = useState<PlayType>(PlayType.Flv);
   const { show, events } = usePlayerTouch();
 
   const autoSeek = useCallback(() => {
     void (async () => {
       const video = videoRef.current;
-      const player = playerRef.current;
-      if (!video || !player) {
+      if (!video) {
         return;
       }
 
       try {
-        await player.play();
+        if (playerRef.current) {
+          await playerRef.current.play();
+        } else {
+          await video.play();
+        }
       } catch (e) {
         console.warn(e);
         setIsBlocking(true);
@@ -69,9 +81,19 @@ export const Video: FC<Props> = ({
     }
   }, []);
 
+  const togglePlayType = useCallback(() => {
+    setPlayType(prev => {
+      if (prev === PlayType.Flv) {
+        return PlayType.Hls;
+      }
+
+      return PlayType.Flv;
+    });
+  }, []);
+
   useEffect(() => {
     void (async () => {
-      if (!videoRef.current || !url) {
+      if (!videoRef.current || !url || playType !== PlayType.Flv) {
         return;
       }
 
@@ -80,16 +102,15 @@ export const Video: FC<Props> = ({
         const Mpegts = (await import('mpegts.js')).default;
 
         if (!Mpegts.getFeatureList().mseLivePlayback) {
-          throw new Error(
-            intl.formatMessage({ id: 'live.player.not-supported' })
-          );
+          setPlayType(PlayType.Hls);
+          return;
         }
 
         player = Mpegts.createPlayer(
           {
             type: 'mse',
             isLive: true,
-            url
+            url: url.wsFlv
           },
           {
             enableStashBuffer: false,
@@ -111,6 +132,7 @@ export const Video: FC<Props> = ({
         await player?.play();
       } catch (e) {
         console.warn(e);
+        setIsBlocking(true);
       }
     })();
 
@@ -118,7 +140,52 @@ export const Video: FC<Props> = ({
       playerRef.current?.destroy();
       playerRef.current = undefined;
     };
-  }, [url, autoSeek, intl]);
+  }, [url, autoSeek, intl, playType]);
+
+  useEffect(() => {
+    void (async () => {
+      if (!videoRef.current || !url || playType !== PlayType.Hls) {
+        return;
+      }
+
+      let player;
+      try {
+        const Hls = (await import('hls.js')).default;
+
+        if (Hls.isSupported()) {
+          player = new Hls({
+            enableWorker: true,
+            lowLatencyMode: true
+          });
+          hlsRef.current = player;
+
+          player.loadSource(url.hls);
+          player.attachMedia(videoRef.current);
+        } else if (
+          videoRef.current.canPlayType('application/vnd.apple.mpegurl')
+        ) {
+          videoRef.current.src = url.hls;
+          return;
+        } else {
+          throw new Error('HLS is not supported');
+        }
+      } catch (e) {
+        setError(e);
+      }
+
+      try {
+        await videoRef.current.play();
+      } catch (e) {
+        console.warn(e);
+        setIsBlocking(true);
+      }
+    })();
+
+    return () => {
+      hlsRef.current?.destroy();
+      hlsRef.current = undefined;
+    };
+  }, [url, autoSeek, intl, playType]);
 
   useEffect(() => {
     if (!url) {
@@ -217,6 +284,8 @@ export const Video: FC<Props> = ({
         videoRef={videoRef}
         show={show}
         latency={latency}
+        playType={playType}
+        onTogglePlayType={togglePlayType}
       />
     </Container>
   );

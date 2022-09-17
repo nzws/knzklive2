@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { PlayUrl } from 'api-types/api/v1/lives/_liveId@number/url';
 import { client } from '~/utils/api/client';
 import { useAuth } from '../use-auth';
 import { getAPIError, useAPIError } from './use-api-error';
@@ -6,7 +7,7 @@ import { getAPIError, useAPIError } from './use-api-error';
 export const useStreamUrl = (liveId?: number) => {
   const { token } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout>();
-  const [url, setUrl] = useState<string | undefined>();
+  const [url, setUrl] = useState<PlayUrl | undefined>();
   const [error, setError] = useState<unknown>();
   useAPIError(error);
 
@@ -25,9 +26,9 @@ export const useStreamUrl = (liveId?: number) => {
           : undefined
       });
 
-      setUrl(body.wsFlv);
+      setUrl(body);
 
-      return body.wsFlv;
+      return body;
     } catch (e) {
       const err = await getAPIError(e);
       if (err?.errorCode === 'forbidden_live') {

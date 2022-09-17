@@ -122,8 +122,7 @@ export class StreamingDurableObject {
   }
 
   private hasHeadPackets() {
-    // todo: 必要なヘッダーってどれ？？
-    return this.headPackets.length === 4;
+    return this.headPackets.length === 3;
   }
 }
 

@@ -13,6 +13,7 @@ RUN yarn workspaces focus push && yarn workspace push build
 
 FROM node:18-slim
 RUN apt-get update && apt-get install -y ca-certificates gnupg openssl libssl-dev libc6
+# RUN apt-get install -y curl
 
 USER node
 RUN mkdir /home/node/app

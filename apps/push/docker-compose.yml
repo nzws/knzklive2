@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  srs:
+    image: ossrs/srs:4
+    restart: unless-stopped
+    container_name: srs
+    expose:
+      - 8080
+      - 1985
+    ports:
+      - 8081:8080
+      - 1935:1935
+    volumes:
+      - ./prod/srs.conf:/usr/local/srs/conf/knzklive.conf
+    command: ./objs/srs -c conf/knzklive.conf
+
+  agent:
+    # image: ghcr.io/nzws/knzklive2-push:latest
+    build:
+      context: ../../
+      dockerfile: ./apps/push/Dockerfile
+    container_name: push
+    expose:
+      - 8000
+    environment:
+      SERVER_ENDPOINT: http://host.docker.internal:8080
+      EDGE_ENDPOINT: ws://host.docker.internal:8787
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'

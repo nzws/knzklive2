@@ -8,13 +8,18 @@ type APIResponse = {
   issuer: string;
 };
 
+type Payload = {
+  type: 'stream' | 'push';
+  liveId: number;
+};
+
 export class Jwt {
   timestamp?: number;
   cache?: APIResponse;
 
   constructor(private readonly url: string, private readonly subject: string) {}
 
-  async verify(token: string): Promise<Record<string, unknown> | undefined> {
+  async verify(token: string): Promise<Payload | undefined> {
     try {
       const data = await this.getKey();
       const publicKey = await importJWK(data.publicKey, data.alg);
@@ -24,7 +29,7 @@ export class Jwt {
         subject: this.subject
       });
 
-      return payload;
+      return payload as Payload;
     } catch (e) {
       console.error(e);
 

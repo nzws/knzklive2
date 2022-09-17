@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  srs:
+    image: ossrs/srs:4
+    restart: unless-stopped
+    container_name: srs
+    expose:
+      - 8080
+      - 1985
+    ports:
+      - 80:8080
+      - 443:8081
+      - 1935:1935
+    volumes:
+      - ./srs.conf:/usr/local/srs/conf/knzklive.conf
+      - /etc/letsencrypt/live/push.knzk.live:/usr/local/srs/conf/ssl
+    command: ./objs/srs -c conf/knzklive.conf
+
+  agent:
+    image: ghcr.io/nzws/knzklive2-push:latest
+    # build: .
+    restart: unless-stopped
+    container_name: push
+    expose:
+      - 8000
+    env_file:
+      - .env
