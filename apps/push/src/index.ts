@@ -59,7 +59,8 @@ route.post('/api/v1/on_publish', async ctx => {
     return;
   }
 
-  const liveId = parseInt(body.stream, 10);
+  const [LiveId, watchToken] = body.stream.split('_');
+  const liveId = parseInt(LiveId, 10);
   // todo: 仮
   const token = body.param.replace('?token=', '');
   if (!liveId || !token) {
@@ -72,7 +73,7 @@ route.post('/api/v1/on_publish', async ctx => {
   }
 
   try {
-    await BackendApi.checkToken(liveId, token, false);
+    await BackendApi.checkToken(liveId, token, watchToken);
   } catch (e) {
     console.warn(e);
     ctx.status = 401;
@@ -90,7 +91,7 @@ route.post('/api/v1/on_publish', async ctx => {
   const session = new FlvStream(
     liveId,
     token,
-    `${LOCAL_FLV}/live/${liveId}.flv?token=${token}`
+    `${LOCAL_FLV}/live/${liveId}_${watchToken}.flv?token=${token}`
   );
   sessions.push({
     clientId: body.client_id,
@@ -123,7 +124,7 @@ route.post('/api/v1/on_unpublish', async ctx => {
     return;
   }
 
-  const liveId = parseInt(body.stream, 10);
+  const liveId = parseInt(body.stream.split('_')[0], 10);
   const token = body.param.replace('?token=', '');
   if (!liveId || !token) {
     ctx.status = 400;
@@ -168,7 +169,7 @@ route.post('/api/v1/on_play', async ctx => {
   const body = ctx.request.body as SRSCallback;
   console.log('play', body);
 
-  const liveId = parseInt(body.stream, 10);
+  const liveId = parseInt(body.stream.split('_')[0], 10);
   const token = body.param.replace('?token=', '');
   if (!liveId || !token) {
     ctx.status = 400;

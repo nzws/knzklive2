@@ -43,7 +43,9 @@ export const Live: FC<Props> = ({ live, streamer }) => {
   const [isContainerMaximized, setIsContainerMaximized] = useState(false);
   const [isManuallyTapped, setIsManuallyTapped] = useState(false);
   const isStreamer = streamer && user?.id === streamer?.id;
-  const [url, updateUrl] = useStreamUrl(!live.endedAt ? live.id : undefined);
+  const [url, updateUrl] = useStreamUrl(
+    !live.endedAt && live.isPushing ? live.id : undefined
+  );
   const [count] = useLiveRealtimeCount(!live.endedAt ? live.id : undefined);
 
   // todo: 仮

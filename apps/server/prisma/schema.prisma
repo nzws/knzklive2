@@ -73,6 +73,7 @@ model Live {
   hashtag            String?     @db.VarChar(100)
   sensitive          Boolean     @default(false)
   watchingSumCount   Int?
+  watchToken         String?     @db.VarChar(100)
 
   user   User   @relation(fields: [userId], references: [id])
   tenant Tenant @relation(fields: [tenantId], references: [id])

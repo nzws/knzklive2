@@ -8,7 +8,12 @@ import {
   SliderThumb,
   useBreakpointValue,
   Fade,
-  Tooltip
+  Tooltip,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItemOption,
+  MenuOptionGroup
 } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { FC, RefObject, useEffect, useState } from 'react';
@@ -16,11 +21,12 @@ import {
   FiChevronsUp,
   FiMaximize,
   FiRefreshCw,
+  FiSettings,
   FiVolume2,
   FiVolumeX
 } from 'react-icons/fi';
-import { useIntl } from 'react-intl';
-import { PlayType } from '.';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { PlayType } from '~/utils/hooks/use-video-stream';
 
 type Props = {
   onLive: () => void;
@@ -32,7 +38,7 @@ type Props = {
   show: boolean;
   latency: number;
   playType: PlayType;
-  onTogglePlayType: () => void;
+  onChangePlayType: (type: PlayType) => void;
 };
 
 export const Controller: FC<Props> = ({
@@ -45,7 +51,7 @@ export const Controller: FC<Props> = ({
   show,
   latency,
   playType,
-  onTogglePlayType
+  onChangePlayType
 }) => {
   const intl = useIntl();
   const [isMuted, setIsMuted] = useState<boolean>();
@@ -132,13 +138,31 @@ export const Controller: FC<Props> = ({
 
           <Spacer />
 
-          {/*
-          <Tooltip label={intl.formatMessage({ id: 'live.player.play-type' })}>
-            <Button variant="ghost" size="sm" onClick={onTogglePlayType}>
-              {playType}
-            </Button>
-          </Tooltip>
-          */}
+          <Menu>
+            <MenuButton as={Button} variant="ghost" size="sm">
+              <FiSettings />
+            </MenuButton>
+            <MenuList>
+              <MenuOptionGroup
+                title={intl.formatMessage({ id: 'live.player.settings.type' })}
+                value={playType}
+                onChange={e => onChangePlayType(e as PlayType)}
+                type="radio"
+              >
+                <MenuItemOption value="flv">
+                  <FormattedMessage id="live.player.settings.type.flv" />
+                </MenuItemOption>
+                <MenuItemOption value="hls">
+                  <FormattedMessage id="live.player.settings.type.hls" />
+                </MenuItemOption>
+                {/*
+                <MenuItemOption value="mp3">
+                  <FormattedMessage id="live.player.settings.type.mp3" />
+                </MenuItemOption>
+                */}
+              </MenuOptionGroup>
+            </MenuList>
+          </Menu>
 
           {isDesktop && (
             <Tooltip label={intl.formatMessage({ id: 'live.player.wide' })}>

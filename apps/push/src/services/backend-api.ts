@@ -93,15 +93,15 @@ export class BackendApi {
 
   static async checkToken(
     liveId: number,
-    token: string,
-    ignoreEndedAtCheck: boolean
+    pushToken: string,
+    watchToken: string
   ) {
     const response = await fetch(`${LIVE_API}/v1/internals/push/check-token`, {
       method: 'POST',
       body: JSON.stringify({
         liveId,
-        token,
-        ignoreEndedAtCheck
+        pushToken,
+        watchToken
       }),
       headers: {
         'Content-Type': 'application/json'

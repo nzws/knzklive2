@@ -18,7 +18,7 @@ export const getV1StreamsUrl: APIRoute<
   ctx.body = {
     rtmp: {
       url: getPushUrl(),
-      streamKey: getPushStreamKey(live.id, token)
+      streamKey: getPushStreamKey(live.id, token, live.watchToken || undefined)
     }
   };
 };

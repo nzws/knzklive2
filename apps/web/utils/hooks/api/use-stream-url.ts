@@ -40,7 +40,11 @@ export const useStreamUrl = (liveId?: number) => {
   }, [token, liveId]);
 
   useEffect(() => {
-    if (url || !liveId) {
+    if (!liveId) {
+      setUrl(undefined);
+      return;
+    }
+    if (url) {
       return;
     }
 

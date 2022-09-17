@@ -2,7 +2,8 @@ import { AuthorizationHeader } from '../../../../../common/types';
 
 export type PlayUrl = {
   wsFlv: string;
-  hls: string;
+  hls?: string;
+  mp3?: string;
 };
 
 export type Methods = {

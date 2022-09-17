@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Live, LivePrivacy, PrismaClient } from '@prisma/client';
 import { lives } from '.';
 
@@ -14,6 +15,7 @@ export type LivePublic = {
   privacy: 'Public' | 'Private';
   hashtag?: string;
   watchingSumCount?: number;
+  isPushing: boolean;
 };
 
 export const Lives = (client: PrismaClient['live']) =>
@@ -30,7 +32,8 @@ export const Lives = (client: PrismaClient['live']) =>
       privacy: live.privacy,
       sensitive: live.sensitive,
       hashtag: live.hashtag || undefined,
-      watchingSumCount: live.watchingSumCount || undefined
+      watchingSumCount: live.watchingSumCount || undefined,
+      isPushing: !live.pushLastEndedAt
     }),
     get: async (id: number) => {
       const live = await client.findUnique({
@@ -116,6 +119,7 @@ export const Lives = (client: PrismaClient['live']) =>
       description?: string,
       hashtag?: string
     ) => {
+      const watchToken = crypto.randomBytes(48).toString('hex');
       const lastLive = await client.findFirst({
         where: {
           tenantId
@@ -133,7 +137,8 @@ export const Lives = (client: PrismaClient['live']) =>
           title,
           description,
           privacy,
-          hashtag
+          hashtag,
+          watchToken
         }
       });
     },

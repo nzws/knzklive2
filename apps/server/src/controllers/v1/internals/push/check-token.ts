@@ -6,8 +6,8 @@ import { validateWithType } from '../../../../utils/validate';
 
 type Request = {
   liveId: number;
-  token: string;
-  ignoreEndedAtCheck?: boolean;
+  pushToken: string;
+  watchToken: string;
 };
 
 const reqBodySchema: JSONSchemaType<Request> = {
@@ -17,15 +17,14 @@ const reqBodySchema: JSONSchemaType<Request> = {
       type: 'number',
       minimum: 1
     },
-    token: {
+    pushToken: {
       type: 'string'
     },
-    ignoreEndedAtCheck: {
-      type: 'boolean',
-      nullable: true
+    watchToken: {
+      type: 'string'
     }
   },
-  required: ['liveId', 'token'],
+  required: ['liveId', 'pushToken', 'watchToken'],
   additionalProperties: false
 };
 
@@ -38,11 +37,12 @@ export const getV1InternalsPushCheckToken: Middleware = async ctx => {
     return;
   }
 
-  const valid = await jwtEdge.verify(ctx.request.body.token);
+  const valid = await jwtEdge.verify(ctx.request.body.pushToken);
   if (!valid) {
     ctx.status = 400;
     ctx.body = {
-      errorCode: 'invalid_request'
+      errorCode: 'invalid_request',
+      message: 'Invalid pushToken'
     };
     return;
   }
@@ -56,7 +56,16 @@ export const getV1InternalsPushCheckToken: Middleware = async ctx => {
     return;
   }
 
-  if (live.endedAt && !ctx.request.body.ignoreEndedAtCheck) {
+  if (live.watchToken !== ctx.request.body.watchToken) {
+    ctx.status = 400;
+    ctx.body = {
+      errorCode: 'invalid_request',
+      message: 'Invalid watch token'
+    };
+    return;
+  }
+
+  if (live.endedAt) {
     ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'

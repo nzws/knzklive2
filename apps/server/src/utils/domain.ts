@@ -36,11 +36,21 @@ export const getStreamUrl = (liveId: number, token: string) =>
   `${
     process.env.EDGE_ENDPOINT || ''
   }/streaming/${liveId}/stream?token=${token}`;
-export const getHlsStreamUrl = (liveId: number, token: string) =>
+export const getHlsStreamUrl = (liveId: number, watchToken: string) =>
   `http${process.env.USE_HTTP ? '' : 's'}://${
     process.env.PUSH_DOMAIN || ''
-  }/live/${liveId}.m3u8?token=${token}`;
+  }/live/${liveId}_${watchToken}.m3u8`;
+export const getMp3StreamUrl = (liveId: number, watchToken: string) =>
+  `http${process.env.USE_HTTP ? '' : 's'}://${
+    process.env.PUSH_DOMAIN || ''
+  }/live/${liveId}_${watchToken}.mp3`;
 
 export const getPushUrl = () => `rtmp://${process.env.PUSH_DOMAIN || ''}/live`;
-export const getPushStreamKey = (liveId: number, token: string) =>
-  `${liveId}?token=${token}`;
+export const getPushStreamKey = (
+  liveId: number,
+  pushToken: string,
+  watchToken?: string
+) =>
+  watchToken
+    ? `${liveId}_${watchToken}?token=${pushToken}`
+    : `${liveId}?token=${pushToken}`;
