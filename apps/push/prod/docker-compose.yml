@@ -9,14 +9,24 @@ services:
       - 8080
       - 1985
     ports:
-      - 80:8080
-      - 443:8081
       - 1935:1935
     volumes:
       - ./srs.conf:/usr/local/srs/conf/knzklive.conf:ro
-      - /etc/letsencrypt/:/usr/local/srs/conf/ssl:ro
-      - ./web/.well-known:/usr/local/srs/objs/nginx/html/.well-known:ro
+      - ./live:/usr/local/srs/objs/nginx/html/live
     command: ./objs/srs -c conf/knzklive.conf
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./live:/srv/live
+      - caddy_data:/data
+      - caddy_config:/config
 
   agent:
     image: ghcr.io/nzws/knzklive2-push:latest
@@ -27,3 +37,8 @@ services:
       - 8000
     env_file:
       - .env
+
+volumes:
+  caddy_data:
+    external: true
+  caddy_config:

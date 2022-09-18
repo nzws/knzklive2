@@ -1,0 +1,11 @@
+(cors) {
+@origin header Origin {args.0}
+header @origin Access-Control-Allow-Origin "{args.0}"
+header @origin Access-Control-Allow-Methods "OPTIONS,HEAD,GET,POST,PUT,PATCH,DELETE"
+}
+
+push.knzk.live {
+root * /srv
+import cors *
+file_server
+}
