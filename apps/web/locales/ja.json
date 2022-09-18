@@ -77,5 +77,10 @@
   "live.player.seek-latest": "最新までシーク",
   "live.player.reload": "配信を開き直す",
   "live.player.wide": "ウインドウ内ワイド",
-  "live.player.maximize": "最大化"
+  "live.player.maximize": "最大化",
+  "page.account-settings.title": "アカウント設定",
+  "page.account-settings.profile.title": "プロフィール",
+  "page.account-settings.profile.note": "プロフィールは元のアカウントで変更した後、再ログインすると反映されます。",
+  "page.account-settings.tenant.title": "テナント（配信者アカウント）の作成",
+  "page.account-settings.tenant.note": "現在は一部のユーザーに手動で対応しております。詳細は管理者までお問い合わせください。"
 }
