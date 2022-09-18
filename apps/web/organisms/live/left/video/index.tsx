@@ -153,7 +153,7 @@ export const Video: FC<Props> = ({
       }}
     >
       <AspectRatio ratio={16 / 9}>
-        <video ref={videoRef} autoPlay controls={false} />
+        <video ref={videoRef} autoPlay playsInline controls={false} />
       </AspectRatio>
 
       {isBlocking && <Blocking onClick={autoSeek} />}
