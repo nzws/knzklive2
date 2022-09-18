@@ -13,8 +13,9 @@ services:
       - 443:8081
       - 1935:1935
     volumes:
-      - ./srs.conf:/usr/local/srs/conf/knzklive.conf
-      - /etc/letsencrypt/live/push.knzk.live:/usr/local/srs/conf/ssl
+      - ./srs.conf:/usr/local/srs/conf/knzklive.conf:ro
+      - /etc/letsencrypt/:/usr/local/srs/conf/ssl:ro
+      - ./web/.well-known:/usr/local/srs/objs/nginx/html/.well-known:ro
     command: ./objs/srs -c conf/knzklive.conf
 
   agent:
