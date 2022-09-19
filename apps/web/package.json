@@ -15,8 +15,8 @@
   "dependencies": {
     "@aspida/fetch": "1.11.0",
     "@aspida/swr": "1.11.0",
-    "@chakra-ui/icons": "2.0.9",
-    "@chakra-ui/react": "2.3.2",
+    "@chakra-ui/icons": "2.0.10",
+    "@chakra-ui/react": "2.3.3",
     "@emotion/react": "11.10.4",
     "@emotion/styled": "11.10.4",
     "api-types": "*",
