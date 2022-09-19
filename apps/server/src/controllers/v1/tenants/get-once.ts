@@ -1,4 +1,4 @@
-import { Methods } from 'api-types/api/v1/tenants/_tenantDomain';
+import { Methods } from 'api-types/api/v1/tenants/find/_key';
 import { tenants } from '../../../models';
 import { checkDomain, getSlugOrCustomDomain } from '../../../utils/domain';
 import type { APIRoute } from '../../../utils/types';

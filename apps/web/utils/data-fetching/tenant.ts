@@ -12,7 +12,7 @@ export type Props = {
 export const tenantFetcher = async (pathProps: PathProps): Promise<Props> => {
   const { tenantDomain } = pathProps;
 
-  const tenant = await client.v1.tenants._tenantDomain(tenantDomain).$get();
+  const tenant = await client.v1.tenants.find._key(tenantDomain).$get();
 
   return {
     tenant

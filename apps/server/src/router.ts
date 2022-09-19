@@ -31,6 +31,8 @@ import { middlewareMyTenant } from './middlewares/my-tenant';
 import { getV1TenantStreamStatus } from './controllers/v1/tenants/get-stream-status';
 import { getV1InternalsPushCheckToken } from './controllers/v1/internals/push/check-token';
 import { getV1LivesCount } from './controllers/v1/lives/get-count';
+import { getV1TenantsMeOnce } from './controllers/v1/tenants/get-me-once';
+import { patchV1Tenants } from './controllers/v1/tenants/patch';
 
 export const router = (): Router => {
   const route = new Router();
@@ -49,10 +51,23 @@ export const router = (): Router => {
   route.post('/v1/auth/mastodon/refresh', v1AuthMastodonRefresh);
   route.post('/v1/auth/mastodon/revoke', v1AuthMastodonRevoke);
 
-  route.get('/v1/tenants/:key', getV1TenantsOnce);
+  route.get('/v1/tenants/find/:key', getV1TenantsOnce);
   route.get('/v1/tenants', middlewareAuthorizeUser, getV1TenantsMe);
   // route.post('/v1/tenants', middlewareAuthorizeUser);
-  // route.patch('/v1/tenants/:id', middlewareAuthorizeUser);
+  route.patch(
+    '/v1/tenants/:tenantId',
+    middlewareAuthorizeUser,
+    middlewareTenant,
+    middlewareMyTenant,
+    patchV1Tenants
+  );
+  route.get(
+    '/v1/tenants/:tenantId',
+    middlewareAuthorizeUser,
+    middlewareTenant,
+    middlewareMyTenant,
+    getV1TenantsMeOnce
+  );
   route.get(
     '/v1/tenants/:tenantId/stream-status',
     middlewareAuthorizeUser,

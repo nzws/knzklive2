@@ -174,7 +174,7 @@ export const CreateLive: FC<Props> = ({
 
             <FormControl>
               <Checkbox
-                checked={sensitive}
+                isChecked={sensitive}
                 onChange={e => setSensitive(e.target.checked)}
               >
                 <FormattedMessage id="create-live.sensitive" />

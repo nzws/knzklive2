@@ -1,6 +1,11 @@
 import type { PrismaClient, Tenant, User } from '@prisma/client';
 import { checkDomain, getTenantPrimaryDomain } from '../utils/domain';
 
+export type TenantConfig = {
+  autoRedirectInTopPage?: boolean;
+  exploreInOtherTenants?: boolean;
+};
+
 export type TenantPublic = {
   id: number;
   slug: string;
@@ -35,6 +40,14 @@ export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
       customDomain: tenant.customDomain || undefined,
       domain: getTenantPrimaryDomain(tenant)
     }),
+    getConfig: (tenant: Tenant): TenantConfig => {
+      const config = (tenant.config || {}) as TenantConfig;
+
+      return {
+        autoRedirectInTopPage: config.autoRedirectInTopPage ?? true,
+        exploreInOtherTenants: config.exploreInOtherTenants ?? true
+      };
+    },
     createTenant: async (slug: string, owner: User): Promise<Tenant> => {
       const tenant = await prismaTenant.create({
         data: {

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Live, LivePrivacy, PrismaClient } from '@prisma/client';
-import { lives } from '.';
+import { lives, tenants } from '.';
 
 export type LivePublic = {
   id: number;
@@ -68,10 +68,15 @@ export const Lives = (client: PrismaClient['live']) =>
         orderBy: {
           startedAt: 'desc'
         },
+        include: {
+          tenant: true
+        },
         take: 10
       });
 
-      return lives;
+      return lives.filter(
+        live => tenants.getConfig(live.tenant).exploreInOtherTenants
+      );
     },
     isAccessibleInformationByUser: (live: Live, userId?: number) => {
       // live owner
