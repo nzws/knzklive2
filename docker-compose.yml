@@ -19,6 +19,8 @@ services:
       - 6379
     ports:
       - 6379:6379
+    volumes:
+      - redis_volume:/data
 
   #  srs:
   #    image: ossrs/srs:4
@@ -72,3 +74,4 @@ services:
 
 volumes:
   postgres_volume:
+  redis_volume:
