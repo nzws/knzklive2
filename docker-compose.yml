@@ -35,7 +35,7 @@ services:
   #    command: ./objs/srs -c conf/knzklive.conf
 
   srs:
-    image: ossrs/srs:4
+    image: ossrs/srs:v5
     container_name: srs
     expose:
       - 8080

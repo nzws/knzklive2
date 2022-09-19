@@ -2,7 +2,7 @@ version: '3'
 
 services:
   srs:
-    image: ossrs/srs:4
+    image: ossrs/srs:v5
     restart: unless-stopped
     container_name: srs
     expose:
