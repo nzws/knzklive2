@@ -14,7 +14,6 @@ jobs:
     outputs:
       server: ${{ steps.filter.outputs.server }}
       push: ${{ steps.filter.outputs.push }}
-      edge: ${{ steps.filter.outputs.edge }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -28,19 +27,6 @@ jobs:
               - 'apps/server/**'
             push:
               - 'apps/push/**'
-            edge:
-              - 'apps/edge/**'
-
-  deploy:
-    name: Deploy Edge Network
-    needs: [check, changes]
-    if: ${{ needs.changes.outputs.edge == 'true' }}
-    uses: ./.github/workflows/_edge.yml
-    with:
-      environment: staging
-    secrets:
-      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
 
   build-server:
     name: Build/Deploy server

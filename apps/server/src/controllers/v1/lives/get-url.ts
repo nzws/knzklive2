@@ -1,11 +1,7 @@
 import { Methods } from 'api-types/api/v1/lives/_liveId@number/url';
 import { lives } from '../../../models';
 import { jwtEdge } from '../../../services/jwt';
-import {
-  getHlsStreamUrl,
-  getMp3StreamUrl,
-  getStreamUrl
-} from '../../../utils/domain';
+import { basePushStream } from '../../../utils/constants';
 import { APIRoute, LiveState } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];
@@ -18,6 +14,13 @@ export const getV1LivesUrl: APIRoute<
   LiveState
 > = async ctx => {
   const live = ctx.state.live;
+  if (!live.watchToken) {
+    ctx.status = 404;
+    ctx.body = {
+      errorCode: 'live_not_found'
+    };
+    return;
+  }
 
   const isAccessible = lives.isAccessibleStreamByUser(live, ctx.state.userId);
   if (!isAccessible) {
@@ -31,10 +34,8 @@ export const getV1LivesUrl: APIRoute<
   const token = await jwtEdge.generateTokenAsStream(live.id);
 
   ctx.body = {
-    wsFlv: getStreamUrl(live.id, token),
-    hls: live.watchToken
-      ? getHlsStreamUrl(live.id, live.watchToken)
-      : undefined,
-    mp3: live.watchToken ? getMp3StreamUrl(live.id, live.watchToken) : undefined
+    flv: `${basePushStream}/streaming/live/${live.id}_${live.watchToken}.flv?token=${token}`,
+    hls: `${basePushStream}/static/live/${live.id}_${live.watchToken}.m3u8?token=${token}`,
+    aac: `${basePushStream}/streaming/live/${live.id}_${live.watchToken}.aac?token=${token}`
   };
 };

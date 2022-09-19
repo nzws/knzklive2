@@ -5,16 +5,13 @@ import logger from 'koa-logger';
 import { BackendApi } from './services/backend-api';
 import { Jwt } from './services/jwt';
 import { kickoffClient } from './services/srs-api';
-import { FlvStream } from './services/stream';
 import { SRSCallback, SRSPublishCallback, SRSUnPublishCallback } from './types';
 
 const LIVE_API = process.env.SERVER_ENDPOINT || '';
-const LOCAL_FLV = process.env.LOCAL_FLV_ENDPOINT || 'http://srs:8080';
 
 let sessions: {
   clientId: string;
   liveId: number;
-  stream: FlvStream;
 }[] = [];
 
 const jwt = new Jwt(`${LIVE_API}/v1/internals/edge/jwt`, 'edge');
@@ -32,7 +29,6 @@ const rejectSession = async (liveId: number) => {
   }
 
   try {
-    session.stream.disconnectAll();
     await kickoffClient(session.clientId);
   } catch (e) {
     console.warn('kickoff client failed', e);
@@ -88,15 +84,9 @@ route.post('/api/v1/on_publish', async ctx => {
     await rejectSession(liveId);
   }
 
-  const session = new FlvStream(
-    liveId,
-    token,
-    `${LOCAL_FLV}/live/${liveId}_${watchToken}.flv?token=${token}`
-  );
   sessions.push({
     clientId: body.client_id,
-    liveId,
-    stream: session
+    liveId
   });
 
   backend.send({

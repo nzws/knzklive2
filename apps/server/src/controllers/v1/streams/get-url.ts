@@ -1,6 +1,6 @@
 import { Methods } from 'api-types/api/v1/streams/_liveId@number/url';
 import { jwtEdge } from '../../../services/jwt';
-import { getPushStreamKey, getPushUrl } from '../../../utils/domain';
+import { getPushStreamKey, getPushUrl } from '../../../utils/constants';
 import { APIRoute, LiveState } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];

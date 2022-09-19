@@ -9,8 +9,7 @@
 ## Packages
 
 - apps
-  - [edge](./apps/edge/README.md) - KnzkLive Edge Network: Publish live streams to the world in real time, powered by Cloudflare Workers.
-  - [push](./apps/push/README.md) - KnzkLive Push Server: A server that receives RTMP and publish to Edge Network and converts videos.
+  - [push](./apps/push/README.md) - KnzkLive Push Agent: A server that manage video authentication and convert video.
   - [server](./apps/server/README.md) - KnzkLive Server: A server that provides API.
   - [web](./apps/web/README.md) - KnzkLive Web: A web client built with Next.js.
 - packages

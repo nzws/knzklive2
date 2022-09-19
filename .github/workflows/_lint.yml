@@ -114,33 +114,6 @@ jobs:
       - run: yarn workspace server prisma generate
       - run: yarn workspace web test
 
-  test-edge:
-    needs: install
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node-version: [16.x, 18.x]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - uses: actions/cache@v3.0.8
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
-
-      - run: yarn install --immutable
-      - run: yarn workspace edge test
-
   test-push:
     needs: install
     strategy:

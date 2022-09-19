@@ -7,7 +7,7 @@ import { useAPIError } from './api/use-api-error';
 export enum PlayType {
   Flv = 'flv',
   Hls = 'hls',
-  Mp3 = 'mp3'
+  Aac = 'aac'
 }
 
 export const useVideoStream = (
@@ -22,15 +22,20 @@ export const useVideoStream = (
   useAPIError(error);
 
   const play = useCallback(async () => {
-    if (mpegtsPlayerRef.current) {
-      await mpegtsPlayerRef.current.play();
-    } else {
-      await videoTagRef.current?.play();
+    try {
+      if (mpegtsPlayerRef.current) {
+        await mpegtsPlayerRef.current.play();
+      } else {
+        await videoTagRef.current?.play();
+      }
+    } catch (e) {
+      console.warn(e);
+      onMaybeBlocked();
     }
-  }, [videoTagRef]);
+  }, [videoTagRef, onMaybeBlocked]);
 
   const handleFlv = useCallback(async () => {
-    if (!videoTagRef.current || !url?.wsFlv) {
+    if (!videoTagRef.current || !url?.flv) {
       return;
     }
 
@@ -44,9 +49,9 @@ export const useVideoStream = (
 
       const player = Mpegts.createPlayer(
         {
-          type: 'mse',
+          type: 'flv',
           isLive: true,
-          url: url.wsFlv
+          url: url.flv
         },
         {
           enableStashBuffer: false,
@@ -110,13 +115,13 @@ export const useVideoStream = (
     }
   }, [url, videoTagRef, onMaybeBlocked]);
 
-  const handleMp3 = useCallback(async () => {
-    if (!videoTagRef.current || !url?.mp3) {
+  const handleAac = useCallback(async () => {
+    if (!videoTagRef.current || !url?.aac) {
       return;
     }
 
     try {
-      videoTagRef.current.src = url.mp3;
+      videoTagRef.current.src = url.aac;
     } catch (e) {
       setError(e);
     }
@@ -139,8 +144,8 @@ export const useVideoStream = (
       void handleFlv();
     } else if (playType === PlayType.Hls) {
       void handleHls();
-    } else if (playType === PlayType.Mp3) {
-      void handleMp3();
+    } else if (playType === PlayType.Aac) {
+      void handleAac();
     }
 
     return () => {
@@ -157,7 +162,7 @@ export const useVideoStream = (
         video.src = '';
       }
     };
-  }, [videoTagRef, url, playType, handleFlv, handleHls, handleMp3]);
+  }, [videoTagRef, url, playType, handleFlv, handleHls, handleAac]);
 
   return {
     playType,

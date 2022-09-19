@@ -12,12 +12,63 @@ services:
       - 5432:5432
     volumes:
       - postgres_volume:/var/lib/postgresql/data
+
   redis:
     image: redis:7
     expose:
       - 6379
     ports:
       - 6379:6379
+
+  #  srs:
+  #    image: ossrs/srs:4
+  #    container_name: srs
+  #    expose:
+  #      - 8080
+  #      - 1985
+  #    ports:
+  #      - 8081:8080
+  #      - 1935:1935
+  #    volumes:
+  #      - ./infra/push/srs.conf:/usr/local/srs/conf/knzklive.conf
+  #      - ./push-web:/usr/local/srs/objs/nginx/html
+  #    command: ./objs/srs -c conf/knzklive.conf
+
+  srs:
+    image: ossrs/srs:4
+    container_name: srs
+    expose:
+      - 8080
+      - 1985
+    ports:
+      - 1935:1935
+    volumes:
+      - ./infra/push/srs.conf:/usr/local/srs/conf/knzklive.conf:ro
+      - ./push-web:/usr/local/srs/objs/nginx/html
+    command: ./objs/srs -c conf/knzklive.conf
+
+  caddy:
+    image: caddy:2
+    ports:
+      - '8081:80'
+    volumes:
+      - ./infra/push/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./push-web/static:/srv/static:ro
+    environment:
+      PUSH_DOMAIN: http://
+
+  agent:
+    build:
+      context: ./
+      dockerfile: ./apps/push/Dockerfile
+    container_name: push
+    expose:
+      - 8000
+    environment:
+      SERVER_ENDPOINT: http://host.docker.internal:8080
+      EDGE_ENDPOINT: ws://host.docker.internal:8787
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
 
 volumes:
   postgres_volume:

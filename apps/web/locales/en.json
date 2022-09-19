@@ -78,6 +78,7 @@
   "live.player.reload": "Reload the stream",
   "live.player.wide": "Wide in window",
   "live.player.maximize": "Maximize",
+  "page.account-settings.title": "Account settings",
   "page.account-settings.profile.title": "Profile",
   "page.account-settings.profile.note": "プロフィールは元のアカウントで変更した後、再ログインすると反映されます。",
   "page.account-settings.tenant.title": "Create a tenant (streamer account)",

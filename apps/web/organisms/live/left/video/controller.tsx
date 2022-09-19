@@ -156,8 +156,8 @@ export const Controller: FC<Props> = ({
                   <FormattedMessage id="live.player.settings.type.hls" />
                 </MenuItemOption>
                 {/*
-                <MenuItemOption value="mp3">
-                  <FormattedMessage id="live.player.settings.type.mp3" />
+                <MenuItemOption value="aac">
+                  <FormattedMessage id="live.player.settings.type.aac" />
                 </MenuItemOption>
                 */}
               </MenuOptionGroup>

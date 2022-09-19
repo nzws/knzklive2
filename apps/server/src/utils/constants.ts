@@ -6,3 +6,16 @@ export const REDIS_CONNECTION = {
   host: process.env.REDIS_HOST || 'localhost',
   port: process.env.REDIS_PORT || 6379
 };
+
+export const basePushStream = `http${process.env.USE_HTTP ? '' : 's'}://${
+  process.env.PUSH_DOMAIN || ''
+}`;
+export const getPushUrl = () => `rtmp://${process.env.PUSH_DOMAIN || ''}/live`;
+export const getPushStreamKey = (
+  liveId: number,
+  pushToken: string,
+  watchToken?: string
+) =>
+  watchToken
+    ? `${liveId}_${watchToken}?token=${pushToken}`
+    : `${liveId}?token=${pushToken}`;

@@ -14,7 +14,8 @@
   "scripts": {
     "prettier:lint": "prettier --check .",
     "prettier:format": "prettier --write .",
-    "dev": "docker compose up -d && dotenv -- yarn workspaces foreach --verbose --parallel -j unlimited --interlaced --exclude knzklive2 run dev",
+    "dev-all": "docker compose up -d db redis && dotenv -- yarn workspaces foreach --verbose --parallel -j unlimited --interlaced run dev",
+    "dev": "docker compose up",
     "dev:migrate": "dotenv -- yarn workspace server prisma migrate dev",
     "lint": "yarn prettier:lint && yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run lint",
     "format": "yarn prettier:format && yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run format",
