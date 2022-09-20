@@ -2,40 +2,10 @@ import Router from '@koa/router';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import logger from 'koa-logger';
-import { BackendApi } from './services/backend-api';
-import { Jwt } from './services/jwt';
-import { kickoffClient } from './services/srs-api';
-import { SRSCallback, SRSPublishCallback, SRSUnPublishCallback } from './types';
-
-const LIVE_API = process.env.SERVER_ENDPOINT || '';
-
-let sessions: {
-  clientId: string;
-  liveId: number;
-}[] = [];
-
-const jwt = new Jwt(`${LIVE_API}/v1/internals/edge/jwt`, 'edge');
-const backend = new BackendApi(msg => {
-  if (msg.action === 'end') {
-    void rejectSession(msg.liveId);
-  }
-});
-
-const rejectSession = async (liveId: number) => {
-  const session = sessions.find(s => s.liveId === liveId);
-  if (!session) {
-    console.warn('session not found', liveId);
-    return;
-  }
-
-  try {
-    await kickoffClient(session.clientId);
-  } catch (e) {
-    console.warn('kickoff client failed', e);
-  }
-
-  sessions = sessions.filter(s => s.liveId !== liveId);
-};
+import { apiExternalAction } from './controllers/externals/action';
+import { apiInternalOnPlay } from './controllers/internal/on_play';
+import { apiInternalOnPublish } from './controllers/internal/on_publish';
+import { apiInternalOnUnPublish } from './controllers/internal/on_unpublish';
 
 const app = new Koa();
 app.use(bodyParser());
@@ -43,158 +13,11 @@ app.use(logger());
 
 const route = new Router();
 
-route.post('/api/v1/on_publish', async ctx => {
-  const body = ctx.request.body as SRSPublishCallback;
-  console.log('on_publish', body);
-  if (body.action !== 'on_publish') {
-    ctx.status = 400;
-    ctx.body = {
-      code: 400,
-      message: 'Invalid action'
-    };
-    return;
-  }
+route.post('/api/v1/on_publish', apiInternalOnPublish);
+route.post('/api/v1/on_unpublish', apiInternalOnUnPublish);
+route.post('/api/v1/on_play', apiInternalOnPlay);
 
-  const [LiveId, watchToken] = body.stream.split('_');
-  const liveId = parseInt(LiveId, 10);
-  // todo: 仮
-  const token = body.param.replace('?token=', '');
-  if (!liveId || !token) {
-    ctx.status = 400;
-    ctx.body = {
-      code: 400,
-      message: 'Invalid liveId or token'
-    };
-    return;
-  }
-
-  try {
-    await BackendApi.checkToken(liveId, token, watchToken);
-  } catch (e) {
-    console.warn(e);
-    ctx.status = 401;
-    ctx.body = {
-      code: 401,
-      message: 'Invalid token'
-    };
-    return;
-  }
-
-  if (sessions.find(s => s.liveId === liveId)) {
-    await rejectSession(liveId);
-  }
-
-  sessions.push({
-    clientId: body.client_id,
-    liveId
-  });
-
-  backend.send({
-    action: 'start',
-    liveId,
-    token
-  });
-
-  ctx.status = 200;
-  ctx.body = {
-    code: 0,
-    message: 'OK'
-  };
-});
-
-route.post('/api/v1/on_unpublish', async ctx => {
-  const body = ctx.request.body as SRSUnPublishCallback;
-  console.log('on_unpublish', body);
-  if (body.action !== 'on_unpublish') {
-    ctx.status = 400;
-    ctx.body = {
-      code: 400,
-      message: 'Invalid action'
-    };
-    return;
-  }
-
-  const liveId = parseInt(body.stream.split('_')[0], 10);
-  const token = body.param.replace('?token=', '');
-  if (!liveId || !token) {
-    ctx.status = 400;
-    ctx.body = {
-      code: 400,
-      message: 'Invalid liveId or token'
-    };
-    return;
-  }
-
-  const verify = await jwt.verify(token);
-  if (
-    !verify ||
-    !verify.liveId ||
-    verify.liveId !== liveId ||
-    verify.type !== 'push'
-  ) {
-    ctx.status = 401;
-    ctx.body = {
-      code: 401,
-      message: 'Invalid token'
-    };
-    return;
-  }
-
-  await rejectSession(liveId);
-
-  backend.send({
-    action: 'stop',
-    liveId,
-    token
-  });
-
-  ctx.status = 200;
-  ctx.body = {
-    code: 0,
-    message: 'OK'
-  };
-});
-
-route.post('/api/v1/on_play', async ctx => {
-  const body = ctx.request.body as SRSCallback;
-  console.log('play', body);
-
-  const liveId = parseInt(body.stream.split('_')[0], 10);
-  const token = body.param.replace('?token=', '');
-  if (!liveId || !token) {
-    ctx.status = 400;
-    ctx.body = {
-      code: 400,
-      message: 'Invalid liveId or token'
-    };
-    return;
-  }
-
-  const verify = await jwt.verify(token);
-  if (!verify || !verify.liveId || verify.liveId !== liveId) {
-    ctx.status = 401;
-    ctx.body = {
-      code: 401,
-      message: 'Invalid token'
-    };
-    return;
-  }
-
-  if (!sessions.find(s => s.liveId === liveId)) {
-    ctx.status = 404;
-    ctx.body = {
-      code: 404,
-      message: 'Live not found'
-    };
-    return;
-  }
-
-  ctx.status = 200;
-  ctx.body = {
-    code: 0,
-    message: 'OK'
-  };
-});
+route.post('/api/externals/v1/action', apiExternalAction);
 
 app.use(route.routes()).use(route.allowedMethods());
 

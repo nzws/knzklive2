@@ -1,17 +1,8 @@
 import type { Comment, PrismaClient } from '@prisma/client';
+import { CommentPublic } from 'api-types/common/types';
 import { comments } from '.';
 import { pubsub } from '../redis/pubsub/client';
 import { getCommentKey } from '../redis/pubsub/keys';
-
-export type CommentPublic = {
-  id: number;
-  liveId: number;
-  userId: number;
-  createdAt: Date;
-  content: string;
-  sourceUrl?: string;
-  isDeleted: boolean;
-};
 
 export const Comments = (client: PrismaClient['comment']) =>
   Object.assign(client, {

@@ -1,4 +1,4 @@
-import { TenantPublic } from 'server/src/models/tenant';
+import { TenantPublic } from 'api-types/common/types';
 import { client } from '../api/client';
 
 export type PathProps = {

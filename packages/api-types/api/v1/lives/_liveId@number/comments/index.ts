@@ -1,5 +1,7 @@
-import { CommentPublic } from 'server/src/models/comment';
-import { AuthorizationHeader } from '../../../../../common/types';
+import {
+  AuthorizationHeader,
+  CommentPublic
+} from '../../../../../common/types';
 
 export type Methods = {
   get: {

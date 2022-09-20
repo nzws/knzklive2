@@ -15,8 +15,7 @@ import { useUsersMe } from '~/utils/hooks/api/use-users-me';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useMyTenants } from '~/utils/hooks/api/use-my-tenant';
 import Link from 'next/link';
-import { TenantPublic } from 'server/src/models/tenant';
-import { LivePublic } from 'server/src/models/live';
+import { LivePublic, TenantPublic } from 'api-types/common/types';
 
 type Props = {
   tenant?: TenantPublic;

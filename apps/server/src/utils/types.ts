@@ -1,7 +1,6 @@
-import { Live, Tenant } from '@prisma/client';
+import { Live, Tenant, User } from '@prisma/client';
 import { APIError } from 'api-types/common/types';
 import type { DefaultContext, DefaultState, Middleware } from 'koa';
-import { UserPrivate } from '../models/user';
 
 export type APIRoute<
   Params = never,
@@ -22,7 +21,7 @@ export type APIRoute<
 >;
 
 export type UserState = {
-  user: UserPrivate;
+  user: User;
 };
 
 export type TenantState = {

@@ -1,22 +1,7 @@
 import crypto from 'crypto';
 import { Live, LivePrivacy, PrismaClient } from '@prisma/client';
 import { lives, tenants } from '.';
-
-export type LivePublic = {
-  id: number;
-  idInTenant: number;
-  userId: number;
-  tenantId: number;
-  startedAt?: Date;
-  endedAt?: Date;
-  title: string;
-  description?: string;
-  sensitive: boolean;
-  privacy: 'Public' | 'Private';
-  hashtag?: string;
-  watchingSumCount?: number;
-  isPushing: boolean;
-};
+import { LivePublic } from 'api-types/common/types';
 
 export const Lives = (client: PrismaClient['live']) =>
   Object.assign(client, {

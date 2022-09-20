@@ -19,3 +19,5 @@ export const getPushStreamKey = (
   watchToken
     ? `${liveId}_${watchToken}?token=${pushToken}`
     : `${liveId}?token=${pushToken}`;
+
+export const serverToken = process.env.SERVER_TOKEN || '';

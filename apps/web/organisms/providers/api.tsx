@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from 'react';
-import { TenantPublic } from '~/../server/src/models/tenant';
+import { TenantPublic } from 'api-types/common/types';
 import { AuthContext, useAuthInProvider } from '~/utils/contexts/auth';
 
 type Props = {

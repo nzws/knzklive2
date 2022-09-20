@@ -22,7 +22,7 @@ import {
   Alert,
   AlertIcon
 } from '@chakra-ui/react';
-import { LivePublic } from 'server/src/models/live';
+import { LivePublic } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { useAuth } from '~/utils/hooks/use-auth';

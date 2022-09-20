@@ -3,9 +3,10 @@ import { Methods } from 'api-types/api/v1/streams/_liveId@number/action';
 import { lives } from '../../../models';
 import { LiveWatching } from '../../../redis/live-watching';
 import { pubsub } from '../../../redis/pubsub/client';
-import { getPushKey } from '../../../redis/pubsub/keys';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
+import { pushApi } from '../../../services/push-api';
+import { basePushStream, serverToken } from '../../../utils/constants';
 
 type Request = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
@@ -65,14 +66,6 @@ export const postV1StreamsAction: APIRoute<
     await lives.endLive(ctx.state.live, sum);
 
     await pubsub.publish(
-      getPushKey(ctx.state.live.id),
-      JSON.stringify({
-        action: 'end',
-        liveId: ctx.state.live.id
-      })
-    );
-
-    await pubsub.publish(
       'update:hashtag',
       JSON.stringify({
         type: 'add',
@@ -81,6 +74,18 @@ export const postV1StreamsAction: APIRoute<
     );
 
     await liveWatching.stopLive(ctx.state.live.id);
+
+    try {
+      await pushApi(basePushStream).api.externals.v1.action.$post({
+        body: {
+          liveId: ctx.state.live.id,
+          action: 'end',
+          serverToken
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   ctx.body = {

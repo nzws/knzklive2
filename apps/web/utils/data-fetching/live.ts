@@ -1,5 +1,5 @@
 import { HTTPError } from '@aspida/fetch';
-import { LivePublic } from '~/../server/src/models/live';
+import { LivePublic } from 'api-types/common/types';
 import { client } from '../api/client';
 
 export type PathProps = {

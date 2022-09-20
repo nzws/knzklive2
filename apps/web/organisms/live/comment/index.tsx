@@ -8,8 +8,7 @@ import {
   useState
 } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { CommentPublic } from '~/../server/src/models/comment';
-import { LivePublic } from '~/../server/src/models/live';
+import { LivePublic, CommentPublic } from 'api-types/common/types';
 import { client, wsURL } from '~/utils/api/client';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { Comment } from './comment';

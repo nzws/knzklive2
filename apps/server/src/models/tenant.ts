@@ -1,19 +1,6 @@
 import type { PrismaClient, Tenant, User } from '@prisma/client';
+import { TenantConfig, TenantPublic } from 'api-types/common/types';
 import { checkDomain, getTenantPrimaryDomain } from '../utils/domain';
-
-export type TenantConfig = {
-  autoRedirectInTopPage?: boolean;
-  exploreInOtherTenants?: boolean;
-};
-
-export type TenantPublic = {
-  id: number;
-  slug: string;
-  ownerId: number;
-  displayName?: string;
-  customDomain?: string;
-  domain: string;
-};
 
 export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
   Object.assign(prismaTenant, {

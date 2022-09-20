@@ -1,5 +1,4 @@
-import { UserPublic } from 'server/src/models/user';
-import { AuthorizationHeader } from '../../../../common/types';
+import { AuthorizationHeader, UserPublic } from '../../../../common/types';
 
 export type Methods = {
   get: {

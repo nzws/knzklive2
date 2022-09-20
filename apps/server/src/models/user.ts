@@ -1,19 +1,7 @@
 import type { PrismaClient, User } from '@prisma/client';
+import { UserConfig, UserPrivate, UserPublic } from 'api-types/common/types';
 import { USERNAME_REGEX } from '../utils/constants';
 import { checkDomain } from '../utils/domain';
-
-export type UserConfig = {
-  //
-};
-
-export type UserPrivate = User;
-
-export type UserPublic = {
-  id: number;
-  account: string;
-  displayName?: string;
-  avatarUrl?: string;
-};
 
 export const Users = (prismaUser: PrismaClient['user']) =>
   Object.assign(prismaUser, {
@@ -22,6 +10,13 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       account: user.account,
       displayName: user.displayName || undefined,
       avatarUrl: user.avatarUrl || undefined
+    }),
+    getPrivate: (user: User): UserPrivate => ({
+      id: user.id,
+      account: user.account,
+      displayName: user.displayName || undefined,
+      avatarUrl: user.avatarUrl || undefined,
+      config: user.config as UserConfig
     }),
     createAccount: async (account: string) => {
       const acct = account.toLowerCase();

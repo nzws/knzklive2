@@ -1,5 +1,4 @@
-import { TenantPublic } from 'server/src/models/tenant';
-import { AuthorizationHeader } from '../../../common/types';
+import { AuthorizationHeader, TenantPublic } from '../../../common/types';
 
 export type Methods = {
   get: {

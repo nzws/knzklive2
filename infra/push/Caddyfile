@@ -10,4 +10,8 @@
   handle /streaming/* {
     reverse_proxy http://srs:8080
   }
+
+  handle /api/externals/* {
+    reverse_proxy http://push:8000
+  }
 }

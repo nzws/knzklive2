@@ -66,6 +66,8 @@ services:
     container_name: push
     expose:
       - 8000
+    env_file:
+      - .env
     environment:
       SERVER_ENDPOINT: http://host.docker.internal:8080
       EDGE_ENDPOINT: ws://host.docker.internal:8787

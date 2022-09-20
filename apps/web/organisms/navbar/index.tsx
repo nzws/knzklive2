@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 import { FC, Fragment } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { TenantPublic } from 'server/src/models/tenant';
+import { TenantPublic } from 'api-types/common/types';
 import { useStreamStatus } from '~/utils/hooks/api/use-stream-status';
 import { useUsersMe } from '~/utils/hooks/api/use-users-me';
 import { useAuth } from '~/utils/hooks/use-auth';

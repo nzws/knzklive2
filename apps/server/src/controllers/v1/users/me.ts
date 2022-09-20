@@ -1,7 +1,8 @@
-import type { User } from '@prisma/client';
+import { Methods } from 'api-types/api/v1/users/me';
+import { users } from '../../../models';
 import type { APIRoute, UserState } from '../../../utils/types';
 
-export type Response = User;
+export type Response = Methods['get']['resBody'];
 
 export const getV1UsersMe: APIRoute<
   never,
@@ -10,5 +11,5 @@ export const getV1UsersMe: APIRoute<
   Response,
   UserState
 > = ctx => {
-  ctx.body = ctx.state.user;
+  ctx.body = users.getPrivate(ctx.state.user);
 };

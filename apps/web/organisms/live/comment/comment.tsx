@@ -1,6 +1,6 @@
 import { Avatar, Flex, Skeleton, Text, VStack } from '@chakra-ui/react';
 import { FC } from 'react';
-import { CommentPublic } from '~/../server/src/models/comment';
+import { CommentPublic } from 'api-types/common/types';
 import { useUser } from '~/utils/hooks/api/use-user';
 
 type Props = {

@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { FC, useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { LivePublic } from '~/../server/src/models/live';
+import { LivePublic } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { useLive } from '~/utils/hooks/api/use-live';

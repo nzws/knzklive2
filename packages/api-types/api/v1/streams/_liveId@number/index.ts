@@ -1,4 +1,4 @@
-import { LivePublic } from 'server/src/models/live';
+import { LivePublic } from 'api-types/common/types';
 import { AuthorizationHeader } from '../../../../common/types';
 import { LiveSetting } from '../index';
 

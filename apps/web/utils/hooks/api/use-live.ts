@@ -1,5 +1,5 @@
 import useAspidaSWR from '@aspida/swr';
-import { LivePublic } from '~/../server/src/models/live';
+import { LivePublic } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAuth } from '../use-auth';
 import { useAPIError } from './use-api-error';

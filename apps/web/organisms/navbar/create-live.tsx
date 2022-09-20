@@ -24,10 +24,10 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getDocsUrl } from '~/utils/constants';
-import { LivePublic } from 'server/src/models/live';
+import { LivePublic } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
-import { TenantPublic } from '~/../server/src/models/tenant';
+import { TenantPublic } from 'api-types/common/types';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { useRouter } from 'next/router';
 

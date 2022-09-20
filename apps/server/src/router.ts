@@ -29,10 +29,12 @@ import { getV1LivesTop } from './controllers/v1/lives/get-top';
 import { getV1Lives } from './controllers/v1/lives/get';
 import { middlewareMyTenant } from './middlewares/my-tenant';
 import { getV1TenantStreamStatus } from './controllers/v1/tenants/get-stream-status';
-import { getV1InternalsPushCheckToken } from './controllers/v1/internals/push/check-token';
+import { postV1InternalsPushCheckToken } from './controllers/v1/internals/push/check-token';
 import { getV1LivesCount } from './controllers/v1/lives/get-count';
 import { getV1TenantsMeOnce } from './controllers/v1/tenants/get-me-once';
 import { patchV1Tenants } from './controllers/v1/tenants/patch';
+import { middlewareAuthorizeServer } from './middlewares/server-token';
+import { postV1InternalsPushAction } from './controllers/v1/internals/push/action';
 
 export const router = (): Router => {
   const route = new Router();
@@ -130,7 +132,16 @@ export const router = (): Router => {
   );
 
   route.get('/v1/internals/edge/jwt', getV1InternalsEdgeJwt);
-  route.post('/v1/internals/push/check-token', getV1InternalsPushCheckToken);
+  route.post(
+    '/v1/internals/push/check-token',
+    middlewareAuthorizeServer,
+    postV1InternalsPushCheckToken
+  );
+  route.post(
+    '/v1/internals/push/action',
+    middlewareAuthorizeServer,
+    postV1InternalsPushAction
+  );
 
   return route;
 };

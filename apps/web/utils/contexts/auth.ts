@@ -3,7 +3,7 @@ import { useToast } from '@chakra-ui/react';
 import { useCallback, useEffect, useState, createContext } from 'react';
 import { useIntl } from 'react-intl';
 import { useLocalStorage } from 'react-use';
-import { UserPrivate } from '~/../server/src/models/user';
+import { UserPrivate } from 'api-types/common/types';
 import { NewWindow } from '../../utils/new-window';
 import { client } from '../api/client';
 import { useAPIError } from '../hooks/api/use-api-error';

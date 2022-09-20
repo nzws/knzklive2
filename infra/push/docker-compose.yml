@@ -27,8 +27,8 @@ services:
       - ./push-web/static:/srv/static:ro
       - caddy_data:/data
       - caddy_config:/config
-    environment:
-      PUSH_DOMAIN: push.knzk.live
+    env_file:
+      - .env
 
   #  srs:
   #    image: ossrs/srs:4
@@ -54,8 +54,8 @@ services:
     container_name: push
     expose:
       - 8000
-    environment:
-      SERVER_ENDPOINT: https://api.knzk.live
+    env_file:
+      - .env
 
 volumes:
   caddy_data:

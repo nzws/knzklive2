@@ -1,5 +1,5 @@
 import useAspidaSWR from '@aspida/swr';
-import { TenantPublic } from '~/../server/src/models/tenant';
+import { TenantPublic } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAPIError } from './use-api-error';
 

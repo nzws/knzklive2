@@ -1,6 +1,6 @@
 import { Methods } from 'api-types/api/v1/lives/_liveId@number/comments';
+import { CommentPublic } from 'api-types/common/types';
 import { comments } from '../../../models';
-import { CommentPublic } from '../../../models/comment';
 import { APIRoute, LiveState } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];

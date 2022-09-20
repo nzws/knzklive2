@@ -1,14 +1,12 @@
 import { JSONSchemaType } from 'ajv';
-import { Middleware } from 'koa';
+import { Methods } from 'api-types/api/v1/internals/push/check-token';
 import { lives } from '../../../../models';
 import { jwtEdge } from '../../../../services/jwt';
+import { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
 
-type Request = {
-  liveId: number;
-  pushToken: string;
-  watchToken: string;
-};
+type Request = Methods['post']['reqBody'];
+type Response = Methods['post']['resBody'];
 
 const reqBodySchema: JSONSchemaType<Request> = {
   type: 'object',
@@ -22,13 +20,21 @@ const reqBodySchema: JSONSchemaType<Request> = {
     },
     watchToken: {
       type: 'string'
+    },
+    serverToken: {
+      type: 'string'
     }
   },
-  required: ['liveId', 'pushToken', 'watchToken'],
+  required: ['liveId', 'pushToken', 'watchToken', 'serverToken'],
   additionalProperties: false
 };
 
-export const getV1InternalsPushCheckToken: Middleware = async ctx => {
+export const postV1InternalsPushCheckToken: APIRoute<
+  never,
+  never,
+  Request,
+  Response
+> = async ctx => {
   if (!validateWithType(reqBodySchema, ctx.request.body)) {
     ctx.status = 400;
     ctx.body = {
@@ -74,5 +80,7 @@ export const getV1InternalsPushCheckToken: Middleware = async ctx => {
   }
 
   ctx.status = 200;
-  ctx.body = 'ok';
+  ctx.body = {
+    success: true
+  };
 };

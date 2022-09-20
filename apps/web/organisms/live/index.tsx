@@ -11,8 +11,7 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { LivePublic } from '~/../server/src/models/live';
-import { UserPublic } from '~/../server/src/models/user';
+import { LivePublic, UserPublic } from 'api-types/common/types';
 import { useLiveRealtimeCount } from '~/utils/hooks/api/use-live-realtime-count';
 import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
 import { useAuth } from '~/utils/hooks/use-auth';

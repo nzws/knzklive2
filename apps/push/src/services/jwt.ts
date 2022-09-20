@@ -1,4 +1,5 @@
 import { importJWK, JWK, jwtVerify } from 'jose';
+import { baseURL } from '../utils/api';
 
 const expire = 60 * 60 * 24 * 7 * 1000; // 7 days
 
@@ -70,3 +71,5 @@ export class Jwt {
     return json;
   }
 }
+
+export const jwt = new Jwt(`${baseURL}/v1/internals/edge/jwt`, 'edge');
