@@ -1,5 +1,5 @@
 import aspida from '@aspida/fetch';
-import types from 'api-types/push/$api';
+import { push } from 'api-types';
 
 export const pushApi = (baseURL: string) =>
-  types(aspida(fetch, { baseURL, throwHttpErrors: true }));
+  push(aspida(fetch, { baseURL, throwHttpErrors: true }));
