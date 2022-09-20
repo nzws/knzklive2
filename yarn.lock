@@ -22,7 +22,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aspida/fetch@npm:1.11.0, @aspida/fetch@npm:^1.11.0":
+"@aspida/fetch@npm:1.11.0":
   version: 1.11.0
   resolution: "@aspida/fetch@npm:1.11.0"
   dependencies:
@@ -3463,7 +3463,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:8.11.0, ajv@npm:^8.11.0":
+"ajv@npm:8.11.0":
   version: 8.11.0
   resolution: "ajv@npm:8.11.0"
   dependencies:
@@ -8400,7 +8400,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "push@workspace:apps/push"
   dependencies:
-    "@aspida/fetch": ^1.11.0
+    "@aspida/fetch": 1.11.0
     "@koa/router": 12.0.0
     "@tsconfig/node18": 1.0.1
     "@types/koa": 2.13.5
@@ -8412,7 +8412,7 @@ __metadata:
     "@types/ws": 8.5.3
     "@typescript-eslint/eslint-plugin": 5.38.0
     "@typescript-eslint/parser": 5.38.0
-    ajv: ^8.11.0
+    ajv: 8.11.0
     api-types: "workspace:^"
     eslint: 8.23.1
     eslint-config-prettier: 8.5.0
@@ -8996,7 +8996,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "server@workspace:apps/server"
   dependencies:
-    "@aspida/fetch": ^1.11.0
+    "@aspida/fetch": 1.11.0
     "@dotplants/cli": 0.2.3
     "@koa/cors": 3.4.1
     "@koa/router": 12.0.0
