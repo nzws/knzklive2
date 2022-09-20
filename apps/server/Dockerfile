@@ -23,6 +23,7 @@ COPY --chown=node:node ./*.json ./*.yml ./yarn.lock ./
 COPY --chown=node:node ./.yarn ./.yarn
 COPY --chown=node:node ./apps/server/prisma ./apps/server/prisma
 COPY --chown=node:node ./apps/server/*.json ./apps/server/
+COPY --chown=node:node ./packages/api-types ./packages/api-types
 RUN yarn workspaces focus server --production
 
 COPY --chown=node:node --from=builder /home/node/app/packages/api-types ./packages/api-types
