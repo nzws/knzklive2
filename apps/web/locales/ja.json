@@ -1,5 +1,6 @@
 {
   "common.coming-soon": "近日中(~数年)に実装予定",
+  "common.relative-time.a-few-seconds-ago": "数秒前",
   "navbar.login": "ログイン",
   "navbar.logout": "ログアウト",
   "auth.toast.login": "ログインしました",

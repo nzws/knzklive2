@@ -1,5 +1,6 @@
 {
   "common.coming-soon": "Coming Soon",
+  "common.relative-time.a-few-seconds-ago": "A few seconds ago",
   "navbar.login": "Login",
   "navbar.logout": "Logout",
   "auth.toast.login": "Successfully logged in",

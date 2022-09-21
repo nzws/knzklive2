@@ -1,8 +1,9 @@
 import { Box, Icon, Stack, Text } from '@chakra-ui/react';
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { FiLock } from 'react-icons/fi';
 import { FormattedMessage } from 'react-intl';
 import { FormattedDateTime } from '~/atoms/formatted-date-time';
+import { RelativeTime } from '~/atoms/relative-time';
 
 type Props = {
   startedAt?: Date;
@@ -27,11 +28,20 @@ export const PublicStats: FC<Props> = ({
   >
     <Box>
       {startedAt ? (
-        <FormattedDateTime value={startedAt} />
+        <Fragment>
+          <FormattedDateTime value={startedAt} />
+          <Text as="span" ml="1">
+            (<RelativeTime date={startedAt} />)
+          </Text>
+        </Fragment>
       ) : (
         <FormattedMessage id="live.not-started" />
       )}
-      {' - '}
+
+      <Text as="span" mx="2">
+        -
+      </Text>
+
       {endedAt && <FormattedDateTime value={endedAt} />}
     </Box>
 
