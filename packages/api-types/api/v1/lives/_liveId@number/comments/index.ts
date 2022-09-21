@@ -7,6 +7,10 @@ export type Methods = {
   get: {
     reqHeaders?: AuthorizationHeader;
 
+    query?: {
+      viewerToken?: string;
+    };
+
     resBody: CommentPublic[];
   };
 

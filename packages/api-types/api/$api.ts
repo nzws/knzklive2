@@ -18,13 +18,14 @@ import type { Methods as Methods14 } from './v1/lives/find/_tenantId@number/top'
 import type { Methods as Methods15 } from './v1/streams';
 import type { Methods as Methods16 } from './v1/streams/_liveId@number';
 import type { Methods as Methods17 } from './v1/streams/_liveId@number/action';
-import type { Methods as Methods18 } from './v1/streams/_liveId@number/url';
-import type { Methods as Methods19 } from './v1/tenants';
-import type { Methods as Methods20 } from './v1/tenants/_tenantId@number';
-import type { Methods as Methods21 } from './v1/tenants/_tenantId@number/stream-status';
-import type { Methods as Methods22 } from './v1/tenants/find/_key';
-import type { Methods as Methods23 } from './v1/users/_userId@number';
-import type { Methods as Methods24 } from './v1/users/me';
+import type { Methods as Methods18 } from './v1/streams/_liveId@number/comment-viewer-url';
+import type { Methods as Methods19 } from './v1/streams/_liveId@number/url';
+import type { Methods as Methods20 } from './v1/tenants';
+import type { Methods as Methods21 } from './v1/tenants/_tenantId@number';
+import type { Methods as Methods22 } from './v1/tenants/_tenantId@number/stream-status';
+import type { Methods as Methods23 } from './v1/tenants/find/_key';
+import type { Methods as Methods24 } from './v1/users/_userId@number';
+import type { Methods as Methods25 } from './v1/users/me';
 
 const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
   const prefix = (baseURL === undefined ? '' : baseURL).replace(/\/$/, '');
@@ -45,11 +46,12 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
   const PATH14 = '/top';
   const PATH15 = '/v1/streams';
   const PATH16 = '/action';
-  const PATH17 = '/v1/tenants';
-  const PATH18 = '/stream-status';
-  const PATH19 = '/v1/tenants/find';
-  const PATH20 = '/v1/users';
-  const PATH21 = '/v1/users/me';
+  const PATH17 = '/comment-viewer-url';
+  const PATH18 = '/v1/tenants';
+  const PATH19 = '/stream-status';
+  const PATH20 = '/v1/tenants/find';
+  const PATH21 = '/v1/users';
+  const PATH22 = '/v1/users/me';
   const GET = 'GET';
   const POST = 'POST';
   const DELETE = 'DELETE';
@@ -249,6 +251,7 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
               get: (
                 option?:
                   | {
+                      query?: Methods9['get']['query'] | undefined;
                       headers?: Methods9['get']['reqHeaders'] | undefined;
                       config?: T | undefined;
                     }
@@ -263,6 +266,7 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
               $get: (
                 option?:
                   | {
+                      query?: Methods9['get']['query'] | undefined;
                       headers?: Methods9['get']['reqHeaders'] | undefined;
                       config?: T | undefined;
                     }
@@ -324,7 +328,19 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                 )
                   .json()
                   .then(r => r.body),
-              $path: () => `${prefix}${prefix2}${PATH9}`
+              $path: (
+                option?:
+                  | {
+                      method?: 'get' | undefined;
+                      query: Methods9['get']['query'];
+                    }
+                  | undefined
+              ) =>
+                `${prefix}${prefix2}${PATH9}${
+                  option && option.query
+                    ? `?${dataToURLString(option.query)}`
+                    : ''
+                }`
             },
             count: {
               get: (
@@ -565,14 +581,14 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                   .then(r => r.body),
               $path: () => `${prefix}${prefix2}${PATH16}`
             },
-            url: {
+            comment_viewer_url: {
               get: (option: {
                 headers: Methods18['get']['reqHeaders'];
                 config?: T | undefined;
               }) =>
                 fetch<Methods18['get']['resBody']>(
                   prefix,
-                  `${prefix2}${PATH11}`,
+                  `${prefix2}${PATH17}`,
                   GET,
                   option
                 ).json(),
@@ -581,6 +597,31 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                 config?: T | undefined;
               }) =>
                 fetch<Methods18['get']['resBody']>(
+                  prefix,
+                  `${prefix2}${PATH17}`,
+                  GET,
+                  option
+                )
+                  .json()
+                  .then(r => r.body),
+              $path: () => `${prefix}${prefix2}${PATH17}`
+            },
+            url: {
+              get: (option: {
+                headers: Methods19['get']['reqHeaders'];
+                config?: T | undefined;
+              }) =>
+                fetch<Methods19['get']['resBody']>(
+                  prefix,
+                  `${prefix2}${PATH11}`,
+                  GET,
+                  option
+                ).json(),
+              $get: (option: {
+                headers: Methods19['get']['reqHeaders'];
+                config?: T | undefined;
+              }) =>
+                fetch<Methods19['get']['resBody']>(
                   prefix,
                   `${prefix2}${PATH11}`,
                   GET,
@@ -657,51 +698,51 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
       },
       tenants: {
         _tenantId: (val2: number) => {
-          const prefix2 = `${PATH17}/${val2}`;
+          const prefix2 = `${PATH18}/${val2}`;
 
           return {
             stream_status: {
               get: (option: {
-                headers: Methods21['get']['reqHeaders'];
+                headers: Methods22['get']['reqHeaders'];
                 config?: T | undefined;
               }) =>
-                fetch<Methods21['get']['resBody']>(
+                fetch<Methods22['get']['resBody']>(
                   prefix,
-                  `${prefix2}${PATH18}`,
+                  `${prefix2}${PATH19}`,
                   GET,
                   option
                 ).json(),
               $get: (option: {
-                headers: Methods21['get']['reqHeaders'];
+                headers: Methods22['get']['reqHeaders'];
                 config?: T | undefined;
               }) =>
-                fetch<Methods21['get']['resBody']>(
+                fetch<Methods22['get']['resBody']>(
                   prefix,
-                  `${prefix2}${PATH18}`,
+                  `${prefix2}${PATH19}`,
                   GET,
                   option
                 )
                   .json()
                   .then(r => r.body),
-              $path: () => `${prefix}${prefix2}${PATH18}`
+              $path: () => `${prefix}${prefix2}${PATH19}`
             },
             patch: (option: {
-              body: Methods20['patch']['reqBody'];
-              headers: Methods20['patch']['reqHeaders'];
+              body: Methods21['patch']['reqBody'];
+              headers: Methods21['patch']['reqHeaders'];
               config?: T | undefined;
             }) =>
-              fetch<Methods20['patch']['resBody']>(
+              fetch<Methods21['patch']['resBody']>(
                 prefix,
                 prefix2,
                 PATCH,
                 option
               ).json(),
             $patch: (option: {
-              body: Methods20['patch']['reqBody'];
-              headers: Methods20['patch']['reqHeaders'];
+              body: Methods21['patch']['reqBody'];
+              headers: Methods21['patch']['reqHeaders'];
               config?: T | undefined;
             }) =>
-              fetch<Methods20['patch']['resBody']>(
+              fetch<Methods21['patch']['resBody']>(
                 prefix,
                 prefix2,
                 PATCH,
@@ -710,20 +751,20 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                 .json()
                 .then(r => r.body),
             get: (option: {
-              headers: Methods20['get']['reqHeaders'];
+              headers: Methods21['get']['reqHeaders'];
               config?: T | undefined;
             }) =>
-              fetch<Methods20['get']['resBody']>(
+              fetch<Methods21['get']['resBody']>(
                 prefix,
                 prefix2,
                 GET,
                 option
               ).json(),
             $get: (option: {
-              headers: Methods20['get']['reqHeaders'];
+              headers: Methods21['get']['reqHeaders'];
               config?: T | undefined;
             }) =>
-              fetch<Methods20['get']['resBody']>(prefix, prefix2, GET, option)
+              fetch<Methods21['get']['resBody']>(prefix, prefix2, GET, option)
                 .json()
                 .then(r => r.body),
             $path: () => `${prefix}${prefix2}`
@@ -731,18 +772,18 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
         },
         find: {
           _key: (val3: number | string) => {
-            const prefix3 = `${PATH19}/${val3}`;
+            const prefix3 = `${PATH20}/${val3}`;
 
             return {
               get: (
                 option?:
                   | {
-                      headers?: Methods22['get']['reqHeaders'] | undefined;
+                      headers?: Methods23['get']['reqHeaders'] | undefined;
                       config?: T | undefined;
                     }
                   | undefined
               ) =>
-                fetch<Methods22['get']['resBody']>(
+                fetch<Methods23['get']['resBody']>(
                   prefix,
                   prefix3,
                   GET,
@@ -751,12 +792,12 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
               $get: (
                 option?:
                   | {
-                      headers?: Methods22['get']['reqHeaders'] | undefined;
+                      headers?: Methods23['get']['reqHeaders'] | undefined;
                       config?: T | undefined;
                     }
                   | undefined
               ) =>
-                fetch<Methods22['get']['resBody']>(prefix, prefix3, GET, option)
+                fetch<Methods23['get']['resBody']>(prefix, prefix3, GET, option)
                   .json()
                   .then(r => r.body),
               $path: () => `${prefix}${prefix3}`
@@ -764,38 +805,38 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
           }
         },
         get: (option: {
-          headers: Methods19['get']['reqHeaders'];
+          headers: Methods20['get']['reqHeaders'];
           config?: T | undefined;
         }) =>
-          fetch<Methods19['get']['resBody']>(
+          fetch<Methods20['get']['resBody']>(
             prefix,
-            PATH17,
+            PATH18,
             GET,
             option
           ).json(),
         $get: (option: {
-          headers: Methods19['get']['reqHeaders'];
+          headers: Methods20['get']['reqHeaders'];
           config?: T | undefined;
         }) =>
-          fetch<Methods19['get']['resBody']>(prefix, PATH17, GET, option)
+          fetch<Methods20['get']['resBody']>(prefix, PATH18, GET, option)
             .json()
             .then(r => r.body),
-        $path: () => `${prefix}${PATH17}`
+        $path: () => `${prefix}${PATH18}`
       },
       users: {
         _userId: (val2: number) => {
-          const prefix2 = `${PATH20}/${val2}`;
+          const prefix2 = `${PATH21}/${val2}`;
 
           return {
             get: (
               option?:
                 | {
-                    headers?: Methods23['get']['reqHeaders'] | undefined;
+                    headers?: Methods24['get']['reqHeaders'] | undefined;
                     config?: T | undefined;
                   }
                 | undefined
             ) =>
-              fetch<Methods23['get']['resBody']>(
+              fetch<Methods24['get']['resBody']>(
                 prefix,
                 prefix2,
                 GET,
@@ -804,12 +845,12 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
             $get: (
               option?:
                 | {
-                    headers?: Methods23['get']['reqHeaders'] | undefined;
+                    headers?: Methods24['get']['reqHeaders'] | undefined;
                     config?: T | undefined;
                   }
                 | undefined
             ) =>
-              fetch<Methods23['get']['resBody']>(prefix, prefix2, GET, option)
+              fetch<Methods24['get']['resBody']>(prefix, prefix2, GET, option)
                 .json()
                 .then(r => r.body),
             $path: () => `${prefix}${prefix2}`
@@ -817,23 +858,23 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
         },
         me: {
           get: (option: {
-            headers: Methods24['get']['reqHeaders'];
+            headers: Methods25['get']['reqHeaders'];
             config?: T | undefined;
           }) =>
-            fetch<Methods24['get']['resBody']>(
+            fetch<Methods25['get']['resBody']>(
               prefix,
-              PATH21,
+              PATH22,
               GET,
               option
             ).json(),
           $get: (option: {
-            headers: Methods24['get']['reqHeaders'];
+            headers: Methods25['get']['reqHeaders'];
             config?: T | undefined;
           }) =>
-            fetch<Methods24['get']['resBody']>(prefix, PATH21, GET, option)
+            fetch<Methods25['get']['resBody']>(prefix, PATH22, GET, option)
               .json()
               .then(r => r.body),
-          $path: () => `${prefix}${PATH21}`
+          $path: () => `${prefix}${PATH22}`
         }
       }
     }

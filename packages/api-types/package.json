@@ -9,7 +9,7 @@
     "lint:type": "tsc --noEmit",
     "lint:js": "eslint --cache '**/*.{ts,tsx}'",
     "lint": "npm-run-all -p 'lint:*'",
-    "build": "aspida && tsc --project tsconfig.build.json"
+    "build": "rm -rf ./dist && aspida && tsc --project tsconfig.build.json"
   },
   "prettier": "@knzk/prettier-config",
   "devDependencies": {

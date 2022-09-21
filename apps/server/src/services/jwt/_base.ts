@@ -10,28 +10,37 @@ export class JWT {
 
   constructor(
     private readonly subject: string,
-    private privateKeyStr: string,
-    private publicKeyStr: string
+    private privateKeyStr?: string,
+    private publicKeyStr?: string
   ) {}
 
   async getKey(): Promise<{ publicKey: KeyLike; privateKey: KeyLike }> {
     if (!this.publicKey || !this.privateKey) {
-      const privateKey = (await jose.importJWK(
-        JSON.parse(
-          Buffer.from(this.privateKeyStr, 'base64').toString()
-        ) as jose.JWK,
-        alg
-      )) as KeyLike;
-      const publicKey = (await jose.importJWK(
-        JSON.parse(
-          Buffer.from(this.publicKeyStr, 'base64').toString()
-        ) as jose.JWK,
-        alg
-      )) as KeyLike;
-      this.privateKey = privateKey;
-      this.publicKey = publicKey;
+      if (this.publicKeyStr && this.privateKeyStr) {
+        const privateKey = (await jose.importJWK(
+          JSON.parse(
+            Buffer.from(this.privateKeyStr, 'base64').toString()
+          ) as jose.JWK,
+          alg
+        )) as KeyLike;
+        const publicKey = (await jose.importJWK(
+          JSON.parse(
+            Buffer.from(this.publicKeyStr, 'base64').toString()
+          ) as jose.JWK,
+          alg
+        )) as KeyLike;
+        this.privateKey = privateKey;
+        this.publicKey = publicKey;
 
-      return { publicKey, privateKey };
+        return { publicKey, privateKey };
+      } else {
+        const { publicKey, privateKey } = await jose.generateKeyPair(alg);
+        console.log('generated key pair');
+        this.privateKey = privateKey;
+        this.publicKey = publicKey;
+
+        return { publicKey, privateKey };
+      }
     }
 
     return { publicKey: this.publicKey, privateKey: this.privateKey };

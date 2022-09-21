@@ -7,9 +7,8 @@ export const REDIS_CONNECTION = {
   port: process.env.REDIS_PORT || 6379
 };
 
-export const basePushStream = `http${process.env.USE_HTTP ? '' : 's'}://${
-  process.env.PUSH_DOMAIN || ''
-}`;
+export const PROTOCOL = `http${process.env.USE_HTTP ? '' : 's'}`;
+export const basePushStream = `${PROTOCOL}://${process.env.PUSH_DOMAIN || ''}`;
 export const getPushUrl = () => `rtmp://${process.env.PUSH_DOMAIN || ''}/live`;
 export const getPushStreamKey = (
   liveId: number,

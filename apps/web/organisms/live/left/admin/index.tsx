@@ -29,6 +29,7 @@ import { useAuth } from '~/utils/hooks/use-auth';
 import { Dialog } from './dialog';
 import { EditLiveModal } from './edit-live-modal';
 import { PushKey } from './push-key';
+import { CommentViewer } from './comment-viewer';
 
 type Props = {
   live: LivePublic;
@@ -180,6 +181,8 @@ export const Admin: FC<Props> = ({ live }) => {
                     配信中/システム準備中は表示できません
                   </Alert>
                 )}
+
+                <CommentViewer liveId={live.id} />
 
                 <Heading size="sm">推奨の配信ソフトウェア設定</Heading>
                 <UnorderedList>

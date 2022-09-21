@@ -35,6 +35,7 @@ import { getV1TenantsMeOnce } from './controllers/v1/tenants/get-me-once';
 import { patchV1Tenants } from './controllers/v1/tenants/patch';
 import { middlewareAuthorizeServer } from './middlewares/server-token';
 import { postV1InternalsPushAction } from './controllers/v1/internals/push/action';
+import { getV1StreamsCommentViewerUrl } from './controllers/v1/streams/get-comment-viewer-url';
 
 export const router = (): Router => {
   const route = new Router();
@@ -87,7 +88,7 @@ export const router = (): Router => {
   route.get('/v1/lives/:liveId', middlewareLive, getV1Lives);
   route.get('/v1/lives/:liveId/url', middlewareLive, getV1LivesUrl);
   route.get('/v1/lives/:liveId/count', middlewareLive, getV1LivesCount);
-  route.get('/v1/lives/:liveId/comments', middlewareLive, getV1LivesComment);
+  route.get('/v1/lives/:liveId/comments', getV1LivesComment);
   route.post(
     '/v1/lives/:liveId/comments',
     middlewareAuthorizeUser,
@@ -122,6 +123,13 @@ export const router = (): Router => {
     middlewareLive,
     middlewareMyStream,
     getV1StreamsUrl
+  );
+  route.get(
+    '/v1/streams/:liveId/comment-viewer-url',
+    middlewareAuthorizeUser,
+    middlewareLive,
+    middlewareMyStream,
+    getV1StreamsCommentViewerUrl
   );
   route.post(
     '/v1/streams/:liveId/action',

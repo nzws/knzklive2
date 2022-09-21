@@ -5,6 +5,7 @@ import { lives } from '../models';
 import { pubsub } from '../redis/pubsub/client';
 import { getCommentKey } from '../redis/pubsub/keys';
 import { UserToken } from '../redis/user-token';
+import { jwtCommentViewer } from '../services/jwt';
 
 const userToken = new UserToken();
 
@@ -53,25 +54,31 @@ export class Streaming {
     liveId: number,
     token?: string
   ) {
-    let userId: number | undefined;
-    if (token) {
-      userId = await userToken.get(token);
-      if (!userId) {
-        return this.closeConnection(socket, 'invalid_token');
+    const verifyAsStreamer =
+      token && (await jwtCommentViewer.verifyToken(token, liveId));
+    console.log(token, verifyAsStreamer);
+
+    if (!verifyAsStreamer) {
+      let userId: number | undefined;
+      if (token) {
+        userId = await userToken.get(token);
+        if (!userId) {
+          return this.closeConnection(socket, 'invalid_token');
+        }
+      }
+      const live = await lives.get(liveId);
+      if (!live) {
+        return this.closeConnection(socket, 'live_not_found');
+      }
+      if (!lives.isAccessibleInformationByUser(live, userId)) {
+        return this.closeConnection(socket, 'forbidden_live');
+      }
+      if (live.endedAt) {
+        return this.closeConnection(socket, 'ended_live');
       }
     }
-    const live = await lives.get(liveId);
-    if (!live) {
-      return this.closeConnection(socket, 'live_not_found');
-    }
-    if (!lives.isAccessibleInformationByUser(live, userId)) {
-      return this.closeConnection(socket, 'forbidden_live');
-    }
-    if (live.endedAt) {
-      return this.closeConnection(socket, 'ended_live');
-    }
 
-    console.log('websocket connected', liveId, userId);
+    console.log('websocket connected', liveId);
 
     const handle = {
       event: getCommentKey(liveId),
