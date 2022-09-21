@@ -7,12 +7,6 @@
     file_server
   }
 
-  handle /encoding/* {
-    header Access-Control-Allow-Origin *
-    header Access-Control-Allow-Methods *
-    file_server
-  }
-
   handle /streaming/* {
     reverse_proxy http://srs:8080
   }
