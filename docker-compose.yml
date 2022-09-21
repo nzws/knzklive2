@@ -70,7 +70,6 @@ services:
       - .env
     environment:
       SERVER_ENDPOINT: http://host.docker.internal:8080
-      EDGE_ENDPOINT: ws://host.docker.internal:8787
     extra_hosts:
       - 'host.docker.internal:host-gateway'
 

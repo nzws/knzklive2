@@ -108,7 +108,8 @@ export class MastodonStreaming {
         account: {
           acct: string;
           username: string;
-          display_name: string;
+          display_name?: string;
+          avatar_static?: string;
         };
         tags?: {
           name: string;
@@ -132,8 +133,9 @@ export class MastodonStreaming {
             : payload.account.acct;
 
         const user = await users.getOrCreateForRemote(
+          acct.toLowerCase(),
           payload.account.display_name,
-          acct.toLowerCase()
+          payload.account.avatar_static
         );
         const content = striptags(payload.content);
 

@@ -53,14 +53,13 @@ export const deleteV1LivesComment: APIRoute<
   ) {
     ctx.status = 403;
     ctx.body = {
-      errorCode: 'forbidden'
+      errorCode: 'forbidden',
+      message: 'コメントは配信者かコメントしたユーザーのみ削除できます'
     };
     return;
   }
 
   await comments.markAsDelete(ctx.request.body.id);
-
-  // todo: websocket
 
   ctx.body = { success: true };
 };

@@ -67,7 +67,11 @@ export const Users = (prismaUser: PrismaClient['user']) =>
 
       return updatedUser;
     },
-    getOrCreateForRemote: async (displayName: string, account: string) => {
+    getOrCreateForRemote: async (
+      account: string,
+      displayName?: string,
+      avatarUrl?: string
+    ) => {
       account = account.toLowerCase();
 
       const user = await prismaUser.findUnique({
@@ -77,12 +81,21 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       });
 
       if (user) {
-        return user;
+        const updatedUser = await prismaUser.update({
+          where: { id: user.id },
+          data: {
+            displayName,
+            avatarUrl
+          }
+        });
+
+        return updatedUser;
       }
 
       const newUser = await prismaUser.create({
         data: {
           displayName,
+          avatarUrl,
           account,
           config: {}
         }
