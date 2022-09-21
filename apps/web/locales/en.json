@@ -73,7 +73,7 @@
   "live.player.settings.type.flv": "FLV: Low latency, recommended",
   "live.player.settings.type.hls": "HLS: High quality, For iOS",
   "live.player.settings.type.mp3": "MP3: Audio only",
-  "live.player.autoplay-blocked": "Auto-play has been blocked, please click the player to play.",
+  "live.player.autoplay-blocked": "Click/tap to play",
   "live.player.seek-latest": "Seek to the latest",
   "live.player.reload": "Reload the stream",
   "live.player.wide": "Wide in window",

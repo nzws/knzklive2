@@ -1,4 +1,4 @@
-import { Box, Grid, Hide, Image, Text } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -9,35 +9,10 @@ type Props = {
 
 export const Blocking: FC<Props> = ({ onClick }) => (
   <Container onClick={onClick}>
-    <Box
-      bg="pink.500"
-      borderRadius={8}
-      flexDirection={{ base: 'column', lg: 'row' }}
-      maxW="60%"
-      width={600}
-    >
-      <Grid
-        gridTemplateColumns={{ base: '1fr', lg: '160px 1fr' }}
-        alignItems="end"
-        position="relative"
-        minH="120px"
-      >
-        <Hide below="lg">
-          <Box>
-            <Knzk
-              src="/static/surprized_knzk.png"
-              alt="Surprized knzk"
-              width="160px"
-            />
-          </Box>
-        </Hide>
-
-        <Box p={4}>
-          <Text size="md">
-            <FormattedMessage id="live.player.autoplay-blocked" />
-          </Text>
-        </Box>
-      </Grid>
+    <Box bg="black" borderRadius={8} p={4}>
+      <Text size="md" as="b">
+        <FormattedMessage id="live.player.autoplay-blocked" />
+      </Text>
     </Box>
   </Container>
 );
@@ -53,9 +28,5 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   cursor: pointer;
-`;
-
-const Knzk = styled(Image)`
-  position: absolute;
-  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
 `;

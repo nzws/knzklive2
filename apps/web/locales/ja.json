@@ -73,7 +73,7 @@
   "live.player.settings.type.flv": "FLV: 低遅延、推奨",
   "live.player.settings.type.hls": "HLS: 高遅延、iOS 用",
   "live.player.settings.type.aac": "AAC: 音声のみ",
-  "live.player.autoplay-blocked": "ブラウザが自動再生をブロックしたため、再生するにはプレイヤーのどこかをクリックしてください。",
+  "live.player.autoplay-blocked": "クリック/タップして再生",
   "live.player.seek-latest": "最新までシーク",
   "live.player.reload": "配信を開き直す",
   "live.player.wide": "ウインドウ内ワイド",

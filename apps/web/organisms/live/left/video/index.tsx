@@ -121,28 +121,22 @@ export const Video: FC<Props> = ({
       setIsBlocking(false);
     };
 
-    const handleCanPlay = () => {
-      //
-    };
-
     const handleLoadedMetadata = () => {
-      //
+      autoSeek();
     };
 
     video.addEventListener('error', handleError);
     video.addEventListener('ended', handleEnded);
     video.addEventListener('playing', handlePlaying);
-    video.addEventListener('canplay', handleCanPlay);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener('loadeddata', handleLoadedMetadata);
 
     return () => {
       video.removeEventListener('error', handleError);
       video.removeEventListener('ended', handleEnded);
       video.removeEventListener('playing', handlePlaying);
-      video.removeEventListener('canplay', handleCanPlay);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener('loadeddata', handleLoadedMetadata);
     };
-  }, [updateUrl]);
+  }, [updateUrl, autoSeek]);
 
   return (
     <Container
