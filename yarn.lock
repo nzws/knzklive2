@@ -3860,13 +3860,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bitwise@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "bitwise@npm:0.2.0"
-  checksum: b1db1007775de2ac45fdcfaeeb9633eeeba127a249908a348761bf755abac4c765ffd19499e9ea817be65dbc474c2f0771519205969446e1d7d4e8f340611398
-  languageName: node
-  linkType: hard
-
 "bl@npm:^4.0.3":
   version: 4.1.0
   resolution: "bl@npm:4.1.0"
@@ -4501,15 +4494,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:2, debug@npm:^2.6.9":
-  version: 2.6.9
-  resolution: "debug@npm:2.6.9"
-  dependencies:
-    ms: 2.0.0
-  checksum: d2f51589ca66df60bf36e1fa6e4386b318c3f1e06772280eea5b1ae9fd3d05e9c2b7fd8a7d862457d00853c75b00451aa2d7459b924629ee385287a650f58fe6
-  languageName: node
-  linkType: hard
-
 "debug@npm:4, debug@npm:4.3.4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
@@ -4519,6 +4503,15 @@ __metadata:
     supports-color:
       optional: true
   checksum: 3dbad3f94ea64f34431a9cbf0bafb61853eda57bff2880036153438f50fb5a84f27683ba0d8e5426bf41a8c6ff03879488120cf5b3a761e77953169c0600a708
+  languageName: node
+  linkType: hard
+
+"debug@npm:^2.6.9":
+  version: 2.6.9
+  resolution: "debug@npm:2.6.9"
+  dependencies:
+    ms: 2.0.0
+  checksum: d2f51589ca66df60bf36e1fa6e4386b318c3f1e06772280eea5b1ae9fd3d05e9c2b7fd8a7d862457d00853c75b00451aa2d7459b924629ee385287a650f58fe6
   languageName: node
   linkType: hard
 
@@ -6039,15 +6032,6 @@ __metadata:
   version: 0.0.2
   resolution: "humanize-number@npm:0.0.2"
   checksum: 9c98c9d06b0f3d801960be3957199232a5df52377e2502acae92e4f71de633fa62c315a83f24bf96bef76f47b2e3e0e1e4f4157c891e27074fd3272cad6724bb
-  languageName: node
-  linkType: hard
-
-"husky@npm:8.0.1":
-  version: 8.0.1
-  resolution: "husky@npm:8.0.1"
-  bin:
-    husky: lib/bin.js
-  checksum: 943a73a13d0201318fd30e83d299bb81d866bd245b69e6277804c3b462638dc1921694cb94c2b8c920a4a187060f7d6058d3365152865406352e934c5fff70dc
   languageName: node
   linkType: hard
 
@@ -7793,17 +7777,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-flv@npm:0.9.11":
-  version: 0.9.11
-  resolution: "node-flv@npm:0.9.11"
-  dependencies:
-    bitwise: ^0.2.0
-    lodash: ^4.17.20
-    stream-parser: ^0.3.1
-  checksum: 61a2dcde9b9c00344d5b5a42b5bcb7a262da09c2c4a107bd28b30c84b0a3251249a3f312da1e49105f6ca1495cc7160b4314f9a895c548eecbe31f216ce4e2d8
-  languageName: node
-  linkType: hard
-
 "node-gyp@npm:latest":
   version: 9.1.0
   resolution: "node-gyp@npm:9.1.0"
@@ -8502,7 +8475,6 @@ __metadata:
     "@types/koa__router": 12.0.0
     "@types/node": 18.7.18
     "@types/whatwg-fetch": 0.0.33
-    "@types/ws": 8.5.3
     "@typescript-eslint/eslint-plugin": 5.38.0
     "@typescript-eslint/parser": 5.38.0
     ajv: 8.11.0
@@ -8516,11 +8488,9 @@ __metadata:
     koa: 2.13.4
     koa-bodyparser: 4.3.0
     koa-logger: 3.2.1
-    node-flv: 0.9.11
     npm-run-all: 4.1.5
     ts-node: 10.9.1
     typescript: 4.8.3
-    ws: 8.8.1
   languageName: unknown
   linkType: soft
 
@@ -9439,15 +9409,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stream-parser@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "stream-parser@npm:0.3.1"
-  dependencies:
-    debug: 2
-  checksum: 4d86ff8cffe7c7587dc91433fff9dce38a93ea7e9f47560055addc81eae6b6befab22b75643ce539faf325fe2b17d371778242566bed086e75f6cffb1e76c06c
-  languageName: node
-  linkType: hard
-
 "string-length@npm:^4.0.1":
   version: 4.0.2
   resolution: "string-length@npm:4.0.2"
@@ -10319,7 +10280,6 @@ __metadata:
     eslint-plugin-testing-library: 5.6.4
     framer-motion: 7.3.6
     hls.js: 1.2.3
-    husky: 8.0.1
     jest: 29.0.3
     jest-environment-jsdom: 29.0.3
     mpegts.js: 1.6.10

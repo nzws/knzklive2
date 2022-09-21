@@ -18,7 +18,6 @@
     "@types/koa__router": "12.0.0",
     "@types/node": "18.7.18",
     "@types/whatwg-fetch": "0.0.33",
-    "@types/ws": "8.5.3",
     "@typescript-eslint/eslint-plugin": "5.38.0",
     "@typescript-eslint/parser": "5.38.0",
     "eslint": "8.23.1",
@@ -38,8 +37,6 @@
     "jose": "4.9.3",
     "koa": "2.13.4",
     "koa-bodyparser": "4.3.0",
-    "koa-logger": "3.2.1",
-    "node-flv": "0.9.11",
-    "ws": "8.8.1"
+    "koa-logger": "3.2.1"
   }
 }
