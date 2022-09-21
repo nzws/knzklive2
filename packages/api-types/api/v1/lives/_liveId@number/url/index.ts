@@ -2,8 +2,9 @@ import { AuthorizationHeader } from '../../../../../common/types';
 
 export type PlayUrl = {
   flv: string;
-  hls: string;
-  aac: string;
+  hlsHq: string;
+  hlsLq: string;
+  audio: string;
 };
 
 export type Methods = {

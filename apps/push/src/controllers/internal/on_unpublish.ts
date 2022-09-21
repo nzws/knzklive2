@@ -2,7 +2,7 @@ import { Middleware } from 'koa';
 import { jwt } from '../../services/jwt';
 import { SRSUnPublishCallback } from '../../types';
 import { client, serverToken } from '../../utils/api';
-import { rejectSession } from '../../utils/sessions';
+import { rejectSession, sessions } from '../../utils/sessions';
 
 export const apiInternalOnUnPublish: Middleware = async ctx => {
   const body = ctx.request.body as SRSUnPublishCallback;
@@ -50,6 +50,7 @@ export const apiInternalOnUnPublish: Middleware = async ctx => {
     }
   });
 
+  void sessions.get(liveId)?.encoder.cleanup();
   await rejectSession(liveId);
 
   ctx.status = 200;

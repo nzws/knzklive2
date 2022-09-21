@@ -35,7 +35,8 @@ export const getV1LivesUrl: APIRoute<
 
   ctx.body = {
     flv: `${basePushStream}/streaming/live/${live.id}_${live.watchToken}.flv?token=${token}`,
-    hls: `${basePushStream}/static/live/${live.id}_${live.watchToken}.m3u8?token=${token}`,
-    aac: `${basePushStream}/streaming/live/${live.id}_${live.watchToken}.aac?token=${token}`
+    hlsHq: `${basePushStream}/static/live/${live.id}_${live.watchToken}/source/stream.m3u8?token=${token}`,
+    hlsLq: `${basePushStream}/static/live/${live.id}_${live.watchToken}/low/stream.m3u8?token=${token}`,
+    audio: `${basePushStream}/static/live/${live.id}_${live.watchToken}/audio/stream.m3u8?token=${token}`
   };
 };

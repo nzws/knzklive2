@@ -1,4 +1,5 @@
 import { Middleware } from 'koa';
+import { Encoder } from '../../services/encoder';
 import { SRSPublishCallback } from '../../types';
 import { client, serverToken } from '../../utils/api';
 import { rejectSession, sessions } from '../../utils/sessions';
@@ -59,9 +60,11 @@ export const apiInternalOnPublish: Middleware = async ctx => {
       serverToken
     }
   });
+  const encoder = new Encoder(liveId, watchToken, token);
 
   sessions.set(liveId, {
-    clientId: body.client_id
+    clientId: body.client_id,
+    encoder
   });
 
   ctx.status = 200;
@@ -69,4 +72,10 @@ export const apiInternalOnPublish: Middleware = async ctx => {
     code: 0,
     message: 'OK'
   };
+
+  setTimeout(() => {
+    // todo: 公開開始
+    void encoder.encodeToLowQualityHls();
+    void encoder.encodeAudio();
+  }, 1000);
 };

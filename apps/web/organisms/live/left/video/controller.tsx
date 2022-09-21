@@ -13,7 +13,9 @@ import {
   MenuButton,
   MenuList,
   MenuItemOption,
-  MenuOptionGroup
+  MenuOptionGroup,
+  Badge,
+  Text
 } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { FC, RefObject, useEffect, useState } from 'react';
@@ -21,7 +23,6 @@ import {
   FiChevronsUp,
   FiMaximize,
   FiRefreshCw,
-  FiSettings,
   FiVolume2,
   FiVolumeX
 } from 'react-icons/fi';
@@ -140,7 +141,9 @@ export const Controller: FC<Props> = ({
 
           <Menu>
             <MenuButton as={Button} variant="ghost" size="sm">
-              <FiSettings />
+              <FormattedMessage
+                id={`live.player.settings.type.${playType}.title`}
+              />
             </MenuButton>
             <MenuList>
               <MenuOptionGroup
@@ -150,16 +153,37 @@ export const Controller: FC<Props> = ({
                 type="radio"
               >
                 <MenuItemOption value="flv">
-                  <FormattedMessage id="live.player.settings.type.flv" />
+                  <Badge mr="1">FLV</Badge>
+                  <FormattedMessage id="live.player.settings.type.flv.title" />
+
+                  <Text fontSize="xs" color="gray.500">
+                    <FormattedMessage id="live.player.settings.type.flv.note" />
+                  </Text>
                 </MenuItemOption>
-                <MenuItemOption value="hls">
-                  <FormattedMessage id="live.player.settings.type.hls" />
+                <MenuItemOption value="hlsHq">
+                  <Badge mr="1">HLS</Badge>
+                  <FormattedMessage id="live.player.settings.type.hlsHq.title" />
+
+                  <Text fontSize="xs" color="gray.500">
+                    <FormattedMessage id="live.player.settings.type.hlsHq.note" />
+                  </Text>
                 </MenuItemOption>
-                {/*
-                <MenuItemOption value="aac">
-                  <FormattedMessage id="live.player.settings.type.aac" />
+                <MenuItemOption value="hlsLq">
+                  <Badge mr="1">HLS</Badge>
+                  <FormattedMessage id="live.player.settings.type.hlsLq.title" />
+
+                  <Text fontSize="xs" color="gray.500">
+                    <FormattedMessage id="live.player.settings.type.hlsLq.note" />
+                  </Text>
                 </MenuItemOption>
-                */}
+                <MenuItemOption value="audio">
+                  <Badge mr="1">HLS</Badge>
+                  <FormattedMessage id="live.player.settings.type.audio.title" />
+
+                  <Text fontSize="xs" color="gray.500">
+                    <FormattedMessage id="live.player.settings.type.audio.note" />
+                  </Text>
+                </MenuItemOption>
               </MenuOptionGroup>
             </MenuList>
           </Menu>

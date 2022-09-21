@@ -6,8 +6,9 @@ import { useAPIError } from './api/use-api-error';
 
 export enum PlayType {
   Flv = 'flv',
-  Hls = 'hls',
-  Aac = 'aac'
+  HlsHq = 'hlsHq',
+  HlsLq = 'hlsLq',
+  Audio = 'audio'
 }
 
 export const useVideoStream = (
@@ -43,7 +44,7 @@ export const useVideoStream = (
       const Mpegts = (await import('mpegts.js')).default;
 
       if (!Mpegts.getFeatureList().mseLivePlayback) {
-        setPlayType(PlayType.Hls);
+        setPlayType(PlayType.HlsHq);
         return;
       }
 
@@ -58,7 +59,9 @@ export const useVideoStream = (
           stashInitialSize: 1024 * 64,
           enableWorker: true,
           autoCleanupSourceBuffer: true,
-          liveBufferLatencyChasing: true
+          liveBufferLatencyChasing: true,
+          liveBufferLatencyMaxLatency: 2,
+          liveBufferLatencyMinRemain: 0.5
         }
       );
       mpegtsPlayerRef.current = player;
@@ -77,62 +80,60 @@ export const useVideoStream = (
     }
   }, [url, videoTagRef, onMaybeBlocked]);
 
-  const handleHls = useCallback(async () => {
-    if (!videoTagRef.current || !url?.hls) {
-      return;
-    }
-
-    let player;
-    try {
-      const Hls = (await import('hls.js')).default;
-
-      if (Hls.isSupported()) {
-        player = new Hls({
-          enableWorker: true,
-          lowLatencyMode: true
-        });
-        hlsPlayerRef.current = player;
-
-        player.loadSource(url.hls);
-        player.attachMedia(videoTagRef.current);
-      } else if (
-        videoTagRef.current.canPlayType('application/vnd.apple.mpegurl')
+  const handleHls = useCallback(
+    async (type: PlayType) => {
+      if (
+        !videoTagRef.current ||
+        (type !== PlayType.HlsHq &&
+          type !== PlayType.HlsLq &&
+          type !== PlayType.Audio)
       ) {
-        videoTagRef.current.src = url.hls;
         return;
-      } else {
-        throw new Error('HLS is not supported');
       }
-    } catch (e) {
-      setError(e);
-    }
+      const hlsUrl = url?.[type];
+      if (!hlsUrl) {
+        return;
+      }
 
-    try {
-      await videoTagRef.current.play();
-    } catch (e) {
-      console.warn(e);
-      onMaybeBlocked();
-    }
-  }, [url, videoTagRef, onMaybeBlocked]);
+      let player;
+      try {
+        const Hls = (await import('hls.js')).default;
 
-  const handleAac = useCallback(async () => {
-    if (!videoTagRef.current || !url?.aac) {
-      return;
-    }
+        if (Hls.isSupported()) {
+          player = new Hls({
+            enableWorker: true,
+            maxBufferLength: 1,
+            liveBackBufferLength: 0,
+            liveSyncDuration: 0,
+            liveMaxLatencyDuration: 5,
+            liveDurationInfinity: true,
+            highBufferWatchdogPeriod: 1
+          });
+          hlsPlayerRef.current = player;
 
-    try {
-      videoTagRef.current.src = url.aac;
-    } catch (e) {
-      setError(e);
-    }
+          player.loadSource(hlsUrl);
+          player.attachMedia(videoTagRef.current);
+        } else if (
+          videoTagRef.current.canPlayType('application/vnd.apple.mpegurl')
+        ) {
+          videoTagRef.current.src = hlsUrl;
+          return;
+        } else {
+          throw new Error('HLS is not supported');
+        }
+      } catch (e) {
+        setError(e);
+      }
 
-    try {
-      await videoTagRef.current.play();
-    } catch (e) {
-      console.warn(e);
-      onMaybeBlocked();
-    }
-  }, [url, videoTagRef, onMaybeBlocked]);
+      try {
+        await videoTagRef.current.play();
+      } catch (e) {
+        console.warn(e);
+        onMaybeBlocked();
+      }
+    },
+    [url, videoTagRef, onMaybeBlocked]
+  );
 
   useEffect(() => {
     const video = videoTagRef.current;
@@ -142,10 +143,12 @@ export const useVideoStream = (
 
     if (playType === PlayType.Flv) {
       void handleFlv();
-    } else if (playType === PlayType.Hls) {
-      void handleHls();
-    } else if (playType === PlayType.Aac) {
-      void handleAac();
+    } else if (playType === PlayType.HlsHq) {
+      void handleHls(PlayType.HlsHq);
+    } else if (playType === PlayType.HlsLq) {
+      void handleHls(PlayType.HlsLq);
+    } else if (playType === PlayType.Audio) {
+      void handleHls(PlayType.Audio);
     }
 
     return () => {
@@ -162,7 +165,7 @@ export const useVideoStream = (
         video.src = '';
       }
     };
-  }, [videoTagRef, url, playType, handleFlv, handleHls, handleAac]);
+  }, [videoTagRef, url, playType, handleFlv, handleHls]);
 
   return {
     playType,

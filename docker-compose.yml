@@ -42,6 +42,7 @@ services:
     expose:
       - 8080
       - 1985
+      - 1935
     ports:
       - 1935:1935
     volumes:
@@ -68,6 +69,8 @@ services:
       - 8000
     env_file:
       - .env
+    volumes:
+      - ./push-web/static:/home/node/static
     environment:
       SERVER_ENDPOINT: http://host.docker.internal:8080
     extra_hosts:

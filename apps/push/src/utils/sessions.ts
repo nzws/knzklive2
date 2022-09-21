@@ -1,9 +1,11 @@
+import { Encoder } from '../services/encoder';
 import { kickoffClient } from '../services/srs-api';
 
 export const sessions = new Map<
   number,
   {
     clientId: string;
+    encoder: Encoder;
   }
 >();
 
