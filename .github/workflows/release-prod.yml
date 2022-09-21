@@ -9,40 +9,17 @@ jobs:
   check:
     uses: ./.github/workflows/_lint.yml
 
-  changes:
-    runs-on: ubuntu-latest
-    outputs:
-      server: ${{ steps.filter.outputs.server }}
-      push: ${{ steps.filter.outputs.push }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 20
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            server:
-              - 'apps/server/**'
-            push:
-              - 'apps/push/**'
-
   build-server:
-    name: Build/Deploy server
-    needs: [check, changes]
-    if: ${{ needs.changes.outputs.server == 'true' }}
+    name: Build server
+    needs: check
     uses: ./.github/workflows/_build_server.yml
     with:
       tag: latest
       environment: production
-    secrets:
-      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
   build-push:
     name: Build push
-    needs: [check, changes]
-    if: ${{ needs.changes.outputs.push == 'true' }}
+    needs: check
     uses: ./.github/workflows/_build_push.yml
     with:
       tag: latest

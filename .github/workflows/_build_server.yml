@@ -9,9 +9,6 @@ on:
       environment:
         required: true
         type: string
-    secrets:
-      FLY_API_TOKEN:
-        required: true
   workflow_dispatch:
     inputs:
       environment:
