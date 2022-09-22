@@ -12,7 +12,7 @@ import {
   LinkBox
 } from '@chakra-ui/react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { CommentPublic, UserPublic } from 'api-types/dist/common/types';
+import { CommentPublic, UserPublic } from 'api-types/common/types';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { useAuth } from '~/utils/hooks/use-auth';
