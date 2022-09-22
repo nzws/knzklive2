@@ -15,7 +15,8 @@ import {
   MenuItemOption,
   MenuOptionGroup,
   Badge,
-  Text
+  Text,
+  Portal
 } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { FC, RefObject, useEffect, useState } from 'react';
@@ -41,6 +42,25 @@ type Props = {
   playType: PlayType;
   onChangePlayType: (type: PlayType) => void;
 };
+
+const playTypes: { id: PlayType; badge: string }[] = [
+  {
+    id: PlayType.Flv,
+    badge: 'FLV'
+  },
+  {
+    id: PlayType.HlsHq,
+    badge: 'HLS'
+  },
+  {
+    id: PlayType.HlsLq,
+    badge: 'HLS'
+  },
+  {
+    id: PlayType.Audio,
+    badge: 'HLS'
+  }
+];
 
 export const Controller: FC<Props> = ({
   onLive,
@@ -145,47 +165,34 @@ export const Controller: FC<Props> = ({
                 id={`live.player.settings.type.${playType}.title`}
               />
             </MenuButton>
-            <MenuList>
-              <MenuOptionGroup
-                title={intl.formatMessage({ id: 'live.player.settings.type' })}
-                value={playType}
-                onChange={e => onChangePlayType(e as PlayType)}
-                type="radio"
-              >
-                <MenuItemOption value="flv">
-                  <Badge mr="1">FLV</Badge>
-                  <FormattedMessage id="live.player.settings.type.flv.title" />
 
-                  <Text fontSize="xs" color="gray.500">
-                    <FormattedMessage id="live.player.settings.type.flv.note" />
-                  </Text>
-                </MenuItemOption>
-                <MenuItemOption value="hlsHq">
-                  <Badge mr="1">HLS</Badge>
-                  <FormattedMessage id="live.player.settings.type.hlsHq.title" />
+            <Portal>
+              <MenuList zIndex={99999}>
+                <MenuOptionGroup
+                  title={intl.formatMessage({
+                    id: 'live.player.settings.type'
+                  })}
+                  value={playType}
+                  onChange={e => onChangePlayType(e as PlayType)}
+                  type="radio"
+                >
+                  {playTypes.map(playType => (
+                    <MenuItemOption value={playType.id} key={playType.id}>
+                      <Badge mr="1">{playType.badge}</Badge>
+                      <FormattedMessage
+                        id={`live.player.settings.type.${playType.id}.title`}
+                      />
 
-                  <Text fontSize="xs" color="gray.500">
-                    <FormattedMessage id="live.player.settings.type.hlsHq.note" />
-                  </Text>
-                </MenuItemOption>
-                <MenuItemOption value="hlsLq">
-                  <Badge mr="1">HLS</Badge>
-                  <FormattedMessage id="live.player.settings.type.hlsLq.title" />
-
-                  <Text fontSize="xs" color="gray.500">
-                    <FormattedMessage id="live.player.settings.type.hlsLq.note" />
-                  </Text>
-                </MenuItemOption>
-                <MenuItemOption value="audio">
-                  <Badge mr="1">HLS</Badge>
-                  <FormattedMessage id="live.player.settings.type.audio.title" />
-
-                  <Text fontSize="xs" color="gray.500">
-                    <FormattedMessage id="live.player.settings.type.audio.note" />
-                  </Text>
-                </MenuItemOption>
-              </MenuOptionGroup>
-            </MenuList>
+                      <Text fontSize="xs" color="gray.500">
+                        <FormattedMessage
+                          id={`live.player.settings.type.${playType.id}.note`}
+                        />
+                      </Text>
+                    </MenuItemOption>
+                  ))}
+                </MenuOptionGroup>
+              </MenuList>
+            </Portal>
           </Menu>
 
           {isDesktop && (

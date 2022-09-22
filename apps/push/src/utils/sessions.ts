@@ -17,6 +17,12 @@ export const rejectSession = async (liveId: number) => {
   }
 
   try {
+    await session.encoder.cleanup();
+  } catch (e) {
+    console.warn('cleanup error', liveId, e);
+  }
+
+  try {
     await kickoffClient(session.clientId);
   } catch (e) {
     console.warn('kickoff client failed', e);
