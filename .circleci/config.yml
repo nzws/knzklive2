@@ -1,0 +1,96 @@
+version: 2.1
+
+executors:
+  arm:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: arm.medium
+
+orbs:
+  node: circleci/node@5.0.2
+
+jobs:
+  setup:
+    executor: arm
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+      - run: PUPPETEER_SKIP_DOWNLOAD=1 yarn install --immutable
+      - run: yarn workspace server prisma generate
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
+  lint:
+    executor: arm
+    steps:
+      - node/install:
+          install-yarn: true
+      - attach_workspace:
+          at: ~/project
+      - run: yarn lint
+
+  test-push:
+    executor: arm
+    steps:
+      - node/install:
+          install-yarn: true
+      - attach_workspace:
+          at: ~/project
+      - run: yarn workspace push test
+
+  build-and-publish:
+    executor: arm
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: docker build -t ghcr.io/nzws/knzklive2-push:$TAG -f ./apps/push/Dockerfile .
+      - run: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
+      - run: docker push ghcr.io/nzws/knzklive2-push:$TAG
+
+workflows:
+  staging:
+    jobs:
+      - setup:
+          filters:
+            branches:
+              only: main
+
+      - lint:
+          requires:
+            - setup
+
+      - test-push:
+          requires:
+            - setup
+
+      - build-and-publish:
+          pre-steps:
+            - run: echo 'export TAG=staging' >> "$BASH_ENV"
+          requires:
+            - lint
+            - test-push
+
+  production:
+    jobs:
+      - setup:
+          filters:
+            branches:
+              only: production
+
+      - lint:
+          requires:
+            - setup
+
+      - test-push:
+          requires:
+            - setup
+
+      - build-and-publish:
+          pre-steps:
+            - run: echo 'export TAG=latest' >> "$BASH_ENV"
+          requires:
+            - lint
+            - test-push
