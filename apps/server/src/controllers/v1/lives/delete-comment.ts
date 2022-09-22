@@ -1,42 +1,29 @@
-import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/lives/_liveId@number/comments';
 import { comments } from '../../../models';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
-import { validateWithType } from '../../../utils/validate';
 
-type Request = Methods['delete']['reqBody'];
+type Request = Methods['delete']['query'];
 type Response = Methods['delete']['resBody'];
-
-const reqBodySchema: JSONSchemaType<Request> = {
-  type: 'object',
-  properties: {
-    id: {
-      type: 'number',
-      minLength: 1
-    }
-  },
-  required: ['id'],
-  additionalProperties: false
-};
 
 export const deleteV1LivesComment: APIRoute<
   never,
-  never,
   Request,
+  never,
   Response,
   UserState & LiveState
 > = async ctx => {
-  if (!validateWithType(reqBodySchema, ctx.request.body)) {
-    ctx.status = 400;
+  const commentId = parseInt(ctx.query.commentId as string, 10);
+  if (!commentId || isNaN(commentId) || commentId <= 0) {
+    ctx.status = 404;
     ctx.body = {
-      errorCode: 'invalid_request'
+      errorCode: 'not_found'
     };
     return;
   }
 
   const comment = await comments.findUnique({
     where: {
-      id: ctx.request.body.id
+      id: commentId
     }
   });
   if (!comment || comment.liveId !== ctx.state.live.id) {
@@ -59,7 +46,7 @@ export const deleteV1LivesComment: APIRoute<
     return;
   }
 
-  await comments.markAsDelete(ctx.request.body.id);
+  await comments.markAsDelete(commentId);
 
   ctx.body = { success: true };
 };

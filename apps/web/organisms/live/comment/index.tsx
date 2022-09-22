@@ -7,9 +7,10 @@ import { useComments } from '~/utils/hooks/api/use-comments';
 
 type Props = {
   live: LivePublic;
+  isStreamer?: boolean;
 };
 
-export const Comments: FC<Props> = ({ live }) => {
+export const Comments: FC<Props> = ({ live, isStreamer }) => {
   const { comments } = useComments(!live.endedAt, live.id);
 
   return (
@@ -30,7 +31,11 @@ export const Comments: FC<Props> = ({ live }) => {
       <Box overflowY="auto">
         <VStack spacing={2} p={2} align="stretch">
           {comments.map(comment => (
-            <Comment key={comment.id} comment={comment} />
+            <Comment
+              key={comment.id}
+              comment={comment}
+              isStreamer={isStreamer}
+            />
           ))}
         </VStack>
       </Box>

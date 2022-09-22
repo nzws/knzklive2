@@ -143,7 +143,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
         <Spacer />
 
         <Box width={{ lg: '400px' }}>
-          <Comments live={live} />
+          <Comments live={live} isStreamer={isStreamer} />
         </Box>
       </Flex>
 

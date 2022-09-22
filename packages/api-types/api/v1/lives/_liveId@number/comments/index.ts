@@ -27,8 +27,8 @@ export type Methods = {
   delete: {
     reqHeaders: AuthorizationHeader;
 
-    reqBody: {
-      id: number;
+    query: {
+      commentId: string;
     };
 
     resBody: {

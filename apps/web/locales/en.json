@@ -88,5 +88,9 @@
   "page.account-settings.profile.title": "Profile",
   "page.account-settings.profile.note": "プロフィールは元のアカウントで変更した後、再ログインすると反映されます。",
   "page.account-settings.tenant.title": "Create a tenant (streamer account)",
-  "page.account-settings.tenant.note": "現在は一部のユーザーに手動で対応しております。詳細は管理者までお問い合わせください。"
+  "page.account-settings.tenant.note": "現在は一部のユーザーに手動で対応しております。詳細は管理者までお問い合わせください。",
+  "live.comment.note.local": "Posted locally {relative}",
+  "live.comment.note.remote": "Posted remotely {relative}",
+  "live.comment.delete": "Delete comment",
+  "live.comment.account-page": "Go to the account page"
 }

@@ -305,7 +305,7 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                   .json()
                   .then(r => r.body),
               delete: (option: {
-                body: Methods9['delete']['reqBody'];
+                query: Methods9['delete']['query'];
                 headers: Methods9['delete']['reqHeaders'];
                 config?: T | undefined;
               }) =>
@@ -316,7 +316,7 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                   option
                 ).json(),
               $delete: (option: {
-                body: Methods9['delete']['reqBody'];
+                query: Methods9['delete']['query'];
                 headers: Methods9['delete']['reqHeaders'];
                 config?: T | undefined;
               }) =>
@@ -334,6 +334,7 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                       method?: 'get' | undefined;
                       query: Methods9['get']['query'];
                     }
+                  | { method: 'delete'; query: Methods9['delete']['query'] }
                   | undefined
               ) =>
                 `${prefix}${prefix2}${PATH9}${
