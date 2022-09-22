@@ -1,4 +1,4 @@
-name: Release - production
+name: Release - production/x64
 
 on:
   push:

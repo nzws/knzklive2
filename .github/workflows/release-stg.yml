@@ -1,4 +1,4 @@
-name: Release - staging
+name: Release - staging/x64
 
 on:
   push:
