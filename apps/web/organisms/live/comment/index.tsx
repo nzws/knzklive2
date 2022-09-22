@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, VStack } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, VStack } from '@chakra-ui/react';
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { LivePublic } from 'api-types/common/types';
@@ -11,7 +11,10 @@ type Props = {
 };
 
 export const Comments: FC<Props> = ({ live, isStreamer }) => {
-  const { comments } = useComments(!live.endedAt, live.id);
+  const { comments, hasApiError, reconnect } = useComments(
+    !live.endedAt,
+    live.id
+  );
 
   return (
     <Flex flexDirection="column" height={{ base: '700px', lg: '100%' }}>
@@ -30,6 +33,17 @@ export const Comments: FC<Props> = ({ live, isStreamer }) => {
 
       <Box overflowY="auto">
         <VStack spacing={2} p={2} align="stretch">
+          {hasApiError && (
+            <Button
+              colorScheme="blue"
+              variant="outline"
+              width="100%"
+              onClick={reconnect}
+            >
+              <FormattedMessage id="live.comment.reconnect" />
+            </Button>
+          )}
+
           {comments.map(comment => (
             <Comment
               key={comment.id}

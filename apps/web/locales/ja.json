@@ -92,5 +92,6 @@
   "live.comment.note.local": "{relative} にローカルで投稿",
   "live.comment.note.remote": "{relative} にリモートで投稿",
   "live.comment.delete": "コメントを削除",
-  "live.comment.account-page": "アカウントページ"
+  "live.comment.account-page": "アカウントページ",
+  "live.comment.reconnect": "コメントサーバーに再接続"
 }

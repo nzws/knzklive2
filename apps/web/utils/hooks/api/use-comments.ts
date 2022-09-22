@@ -47,12 +47,16 @@ export const useComments = (
 ) => {
   const { token, headers } = useAuth();
   const socketRef = useRef<WebSocket>();
-  const isApiErrorRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [isConnecting, setIsConnecting] = useState(false);
   const [comments, setComment] = useReducer(commentReducer, []);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
+  const [hasApiError, setHasApiError] = useState(false);
+
+  const reconnect = useCallback(() => {
+    setHasApiError(false);
+  }, []);
 
   const connect = useCallback(() => {
     try {
@@ -92,7 +96,7 @@ export const useComments = (
         try {
           const data = JSON.parse(e.data as string) as Payload;
           if ('error' in data) {
-            isApiErrorRef.current = true;
+            setHasApiError(true);
             throw new Error(data.error);
           }
 
@@ -109,15 +113,16 @@ export const useComments = (
       };
     } catch (e) {
       console.warn(e);
+      setError(e);
     }
   }, [liveId, viewerToken, token]);
 
   useEffect(() => {
-    isApiErrorRef.current = false;
-  }, [liveId, streamEnabled, viewerToken]);
+    reconnect();
+  }, [liveId, streamEnabled, viewerToken, reconnect]);
 
   useEffect(() => {
-    if (isConnecting || !liveId || isApiErrorRef.current) {
+    if (isConnecting || !liveId || hasApiError) {
       return;
     }
 
@@ -150,7 +155,15 @@ export const useComments = (
         console.warn(e);
       }
     })();
-  }, [connect, isConnecting, liveId, streamEnabled, headers, viewerToken]);
+  }, [
+    connect,
+    isConnecting,
+    liveId,
+    streamEnabled,
+    headers,
+    viewerToken,
+    hasApiError
+  ]);
 
-  return { comments, isConnecting } as const;
+  return { comments, isConnecting, hasApiError, reconnect } as const;
 };
