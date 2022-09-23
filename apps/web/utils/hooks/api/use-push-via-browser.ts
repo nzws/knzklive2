@@ -11,7 +11,6 @@ export const usePushViaBrowser = (liveId?: number) => {
   const webSocketRef = useRef<WebSocket>();
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [audioStream, setAudioStream] = useState<MediaStream>();
-  const [videoStream, setVideoStream] = useState<MediaStream>();
   const [websocketError, setWebsocketError] = useState<unknown>();
   const requestConnectingRef = useRef(false);
   useAPIError(websocketError);
@@ -101,10 +100,17 @@ export const usePushViaBrowser = (liveId?: number) => {
   }, [liveId, disconnect, getPushUrl]);
 
   useEffect(() => {
-    if (isVoiceMuted) {
+    if (!audioStream) {
       return;
     }
 
+    const tracks = audioStream.getTracks();
+    tracks.forEach(track => {
+      track.enabled = !isVoiceMuted;
+    });
+  }, [audioStream, isVoiceMuted]);
+
+  useEffect(() => {
     let audioStream: MediaStream;
     void (async () => {
       try {
@@ -129,37 +135,10 @@ export const usePushViaBrowser = (liveId?: number) => {
       audioStream?.getTracks().forEach(track => track.stop());
       setAudioStream(undefined);
     };
-  }, [isVoiceMuted]);
-
-  useEffect(() => {
-    /*
-    let videoStream: MediaStream;
-    void (async () => {
-      try {
-        const media = await navigator.mediaDevices.getUserMedia({
-          video: true
-        });
-
-        videoStream = new MediaStream();
-        const tracks = media.getVideoTracks();
-        tracks.forEach(track => {
-          videoStream.addTrack(track);
-        });
-        setVideoStream(videoStream);
-      } catch (e) {
-        console.error(e);
-        setError(e);
-      }
-    })();
-
-    return () => {
-      videoStream?.getTracks().forEach(track => track.stop());
-    };
-    */
   }, []);
 
   useEffect(() => {
-    if ((!audioStream && !videoStream) || !isConnectedWs) {
+    if (!isConnectedWs || !audioStream) {
       return;
     }
 
@@ -168,16 +147,9 @@ export const usePushViaBrowser = (liveId?: number) => {
     try {
       const stream = new MediaStream();
 
-      if (audioStream) {
-        audioStream.getTracks().forEach(track => {
-          stream.addTrack(track);
-        });
-      }
-      if (videoStream) {
-        videoStream.getTracks().forEach(track => {
-          stream.addTrack(track);
-        });
-      }
+      audioStream.getTracks().forEach(track => {
+        stream.addTrack(track);
+      });
 
       recorder = new MediaRecorder(stream);
       recorder.ondataavailable = event => {
@@ -199,7 +171,7 @@ export const usePushViaBrowser = (liveId?: number) => {
         console.warn(e);
       }
     };
-  }, [audioStream, videoStream, isConnectedWs]);
+  }, [audioStream, isConnectedWs]);
 
   return {
     isConnectingWs,

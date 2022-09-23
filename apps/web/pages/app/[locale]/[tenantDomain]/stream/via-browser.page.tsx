@@ -65,7 +65,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
     <Container py={4}>
       <Head>
         <title>
-          {['ブラウザーから配信', tenant?.displayName || tenant?.domain].join(
+          {['ブラウザから配信', tenant?.displayName || tenant?.domain].join(
             ' - '
           )}
         </title>

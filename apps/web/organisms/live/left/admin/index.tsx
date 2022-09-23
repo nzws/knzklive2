@@ -10,7 +10,7 @@ import {
   Alert,
   AlertIcon,
   Badge,
-  Link as ChakraLink
+  Button
 } from '@chakra-ui/react';
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -89,13 +89,8 @@ export const Admin: FC<Props> = ({ live }) => {
                 <Stack spacing={4}>
                   <Heading size="sm">ブラウザから配信</Heading>
 
-                  <Alert status="info">
-                    <AlertIcon />
-                    試験的機能、モバイル向けです。
-                  </Alert>
-
                   <Link href="/stream/via-browser" passHref>
-                    <ChakraLink>配信ページへ移動</ChakraLink>
+                    <Button as="a">ブラウザ配信ページへ移動</Button>
                   </Link>
                 </Stack>
               </Stack>
