@@ -46,9 +46,9 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run: docker build -t ghcr.io/nzws/knzklive2-push:$TAG -f ./apps/push/Dockerfile .
+      - run: docker build -t ghcr.io/nzws/knzklive2-push:$TAG-arm64 -f ./apps/push/Dockerfile .
       - run: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
-      - run: docker push ghcr.io/nzws/knzklive2-push:$TAG
+      - run: docker push ghcr.io/nzws/knzklive2-push:$TAG-arm64
 
 workflows:
   staging:

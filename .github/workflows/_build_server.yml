@@ -48,6 +48,6 @@ jobs:
           file: ./apps/server/Dockerfile
           push: true
           platforms: linux/amd64
-          tags: ghcr.io/nzws/knzklive2-server:${{ inputs.tag }}
-          cache-from: type=registry,ref=ghcr.io/nzws/knzklive2-server:${{ inputs.tag }}
+          tags: ghcr.io/nzws/knzklive2-server:${{ inputs.tag }}-amd64
+          cache-from: type=registry,ref=ghcr.io/nzws/knzklive2-server:${{ inputs.tag }}-amd64
           cache-to: type=inline
