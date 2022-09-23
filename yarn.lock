@@ -5126,14 +5126,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-testing-library@npm:5.6.4":
-  version: 5.6.4
-  resolution: "eslint-plugin-testing-library@npm:5.6.4"
+"eslint-plugin-testing-library@npm:5.7.0":
+  version: 5.7.0
+  resolution: "eslint-plugin-testing-library@npm:5.7.0"
   dependencies:
     "@typescript-eslint/utils": ^5.13.0
   peerDependencies:
     eslint: ^7.5.0 || ^8.0.0
-  checksum: dae759c3669fdb200699cfcf6e76d2839745aefd1eba2171ad4589047a4f2d95781b3f93384cb7f994c775e858c720698e2003237a232d8512009e382f410397
+  checksum: bd181266bb65692ce03283db0b15c20baca8a4673d046f89cda40e8dd987df686545593f26afd6dc73c3226af28e3dfa338e40ec6af351095c70c6384b33eba7
   languageName: node
   linkType: hard
 
@@ -10288,7 +10288,7 @@ __metadata:
     eslint-plugin-jest-dom: 4.0.2
     eslint-plugin-react: 7.31.8
     eslint-plugin-react-hooks: 4.6.0
-    eslint-plugin-testing-library: 5.6.4
+    eslint-plugin-testing-library: 5.7.0
     framer-motion: 7.3.6
     hls.js: 1.2.3
     jest: 29.0.3
