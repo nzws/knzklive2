@@ -1,6 +1,7 @@
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
-import { mkdir, rm, rmdir } from 'fs/promises';
+import { mkdir, rm } from 'fs/promises';
+import { Readable } from 'stream';
 
 if (!ffmpegPath) {
   throw new Error('ffmpeg-static path not found');
@@ -18,15 +19,17 @@ export class Encoder {
     this.dir = `/home/node/static/live/${liveId}_${watchToken}`;
   }
 
-  async cleanup() {
+  async cleanup(removeDir = true) {
     this.streams.forEach(stream => {
       stream.kill('SIGKILL');
     });
 
-    try {
-      await rmdir(this.dir, { recursive: true });
-    } catch (e) {
-      //
+    if (removeDir) {
+      try {
+        await rm(this.dir, { recursive: true });
+      } catch (e) {
+        //
+      }
     }
   }
 
@@ -107,6 +110,37 @@ export class Encoder {
 
     stream.on('end', () => {
       console.log('End Audio', this.liveId);
+      this.streams = this.streams.filter(s => s !== stream);
+    });
+
+    stream.run();
+    this.streams.push(stream);
+
+    return stream;
+  }
+
+  publishToRtmp(pipe: Readable) {
+    const stream = ffmpeg(pipe)
+      .audioCodec('aac')
+      .audioBitrate('128k')
+      .audioChannels(2)
+      .videoCodec('libx264')
+      .videoBitrate('1500k')
+      .format('flv')
+      .inputOptions(['-re'])
+      .outputOptions(['-preset', 'ultrafast', '-tune', 'zerolatency'])
+      .output(this.rtmp);
+
+    stream.on('start', (cmd: string) => {
+      console.log('Start RTMP', this.liveId, cmd);
+    });
+
+    stream.on('error', err => {
+      console.warn('Error RTMP', this.liveId, err);
+    });
+
+    stream.on('end', () => {
+      console.log('End RTMP', this.liveId);
       this.streams = this.streams.filter(s => s !== stream);
     });
 

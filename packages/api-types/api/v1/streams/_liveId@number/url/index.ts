@@ -9,6 +9,9 @@ export type Methods = {
         url: string;
         streamKey: string;
       };
+      websocket: {
+        url: string;
+      };
     };
   };
 };

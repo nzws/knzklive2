@@ -1,5 +1,5 @@
 import { Middleware } from 'koa';
-import { jwt } from '../../services/jwt';
+import { backendJwt } from '../../services/jwt';
 import { SRSUnPublishCallback } from '../../types';
 import { client, serverToken } from '../../utils/api';
 import { rejectSession } from '../../utils/sessions';
@@ -27,13 +27,8 @@ export const apiInternalOnUnPublish: Middleware = async ctx => {
     return;
   }
 
-  const verify = await jwt.verify(token);
-  if (
-    !verify ||
-    !verify.liveId ||
-    verify.liveId !== liveId ||
-    verify.type !== 'push'
-  ) {
+  const verify = await backendJwt.check(token, liveId, 'push');
+  if (!verify) {
     ctx.status = 401;
     ctx.body = {
       code: 401,

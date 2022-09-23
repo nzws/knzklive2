@@ -72,4 +72,23 @@ export class Jwt {
   }
 }
 
-export const jwt = new Jwt(`${baseURL}/v1/internals/edge/jwt`, 'edge');
+class BackendJwt extends Jwt {
+  constructor() {
+    super(`${baseURL}/v1/internals/edge/jwt`, 'edge');
+  }
+
+  async check(token: string, liveId: number, type?: 'stream' | 'push') {
+    const payload = await this.verify(token);
+    if (
+      !payload ||
+      payload.liveId !== liveId ||
+      (type && payload.type !== type)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+export const backendJwt = new BackendJwt();

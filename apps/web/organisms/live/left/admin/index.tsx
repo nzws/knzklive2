@@ -10,82 +10,27 @@ import {
   Alert,
   AlertIcon,
   Badge,
-  UnorderedList,
-  ListItem,
-  Wrap,
-  Button,
-  WrapItem,
-  useDisclosure,
-  Tooltip
+  Link as ChakraLink
 } from '@chakra-ui/react';
-import { FC, useCallback, useState } from 'react';
+import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { LivePublic } from 'api-types/common/types';
-import { client } from '~/utils/api/client';
-import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { useLive } from '~/utils/hooks/api/use-live';
 import { useStream } from '~/utils/hooks/api/use-stream';
-import { useAuth } from '~/utils/hooks/use-auth';
-import { Dialog } from './dialog';
-import { EditLiveModal } from './edit-live-modal';
 import { PushKey } from './push-key';
 import { CommentViewer } from './comment-viewer';
+import { GeneralSettings } from './general-settings';
+import Link from 'next/link';
 
 type Props = {
   live: LivePublic;
 };
 
 export const Admin: FC<Props> = ({ live }) => {
-  const { token } = useAuth();
   const [stream] = useStream(live.id);
   const [, mutate] = useLive(live.id, live);
-  const {
-    isOpen: isOpenStart,
-    onOpen: onOpenStart,
-    onClose: onCloseStart
-  } = useDisclosure();
-  const {
-    isOpen: isOpenStop,
-    onOpen: onOpenStop,
-    onClose: onCloseStop
-  } = useDisclosure();
-  const {
-    isOpen: isOpenLiveEdit,
-    onOpen: onOpenLiveEdit,
-    onClose: onCloseLiveEdit
-  } = useDisclosure();
-  const [error, setError] = useState<unknown>();
-  useAPIError(error);
 
   const notPushing = !!(stream?.pushLastEndedAt || !stream?.pushFirstStartedAt);
-
-  const handlePublish = useCallback(
-    (isStart: boolean) => {
-      void (async () => {
-        if (!token) {
-          return;
-        }
-
-        try {
-          await client.v1.streams._liveId(live.id).action.post({
-            body: {
-              command: isStart ? 'publish' : 'end'
-            },
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          void mutate();
-          onCloseStop();
-          onCloseStart();
-        } catch (e) {
-          console.warn(e);
-          setError(e);
-        }
-      })();
-    },
-    [live.id, token, mutate, onCloseStart, onCloseStop]
-  );
 
   return (
     <Box border="1px" borderColor="teal.900" p={4} borderRadius={8}>
@@ -115,81 +60,44 @@ export const Admin: FC<Props> = ({ live }) => {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <Stack spacing={6}>
-                <Wrap spacing={6}>
-                  <WrapItem>
-                    <Dialog
-                      isOpen={isOpenStart}
-                      onClose={onCloseStart}
-                      onSubmit={() => handlePublish(true)}
-                      title="配信を開始しますか？"
-                      submitText="配信を開始"
-                    />
-
-                    <Tooltip
-                      label={notPushing ? '先に映像をプッシュしてください' : ''}
-                      shouldWrapChildren
-                    >
-                      <Button
-                        size="lg"
-                        colorScheme="green"
-                        isDisabled={notPushing || !!live.startedAt}
-                        onClick={onOpenStart}
-                      >
-                        配信を開始
-                      </Button>
-                    </Tooltip>
-                  </WrapItem>
-
-                  <WrapItem>
-                    <Dialog
-                      isOpen={isOpenStop}
-                      onClose={onCloseStop}
-                      onSubmit={() => handlePublish(false)}
-                      title="配信を終了しますか？"
-                      submitText="配信を終了"
-                    />
-
-                    <Button size="lg" colorScheme="red" onClick={onOpenStop}>
-                      配信を終了
-                    </Button>
-                  </WrapItem>
-                </Wrap>
-
-                <Wrap>
-                  <WrapItem>
-                    <EditLiveModal
-                      isOpen={isOpenLiveEdit}
-                      onClose={onCloseLiveEdit}
-                      live={live}
-                    />
-
-                    <Button onClick={onOpenLiveEdit}>配信情報を編集</Button>
-                  </WrapItem>
-                </Wrap>
-              </Stack>
+              <GeneralSettings
+                live={live}
+                notPushing={notPushing}
+                onStartPublish={() => void mutate()}
+              />
             </TabPanel>
             <TabPanel>
               <Stack spacing={6}>
-                <Heading size="sm">配信サーバー設定</Heading>
+                <Stack spacing={4}>
+                  <Heading size="sm">配信サーバー設定</Heading>
 
-                {notPushing ? (
-                  <PushKey liveId={live.id} />
-                ) : (
-                  <Alert status="warning">
+                  {notPushing ? (
+                    <PushKey liveId={live.id} />
+                  ) : (
+                    <Alert status="warning">
+                      <AlertIcon />
+                      配信中/システム準備中は表示できません
+                    </Alert>
+                  )}
+                </Stack>
+
+                <Stack spacing={4}>
+                  <Heading size="sm">コメントビューワー</Heading>
+                  <CommentViewer liveId={live.id} />
+                </Stack>
+
+                <Stack spacing={4}>
+                  <Heading size="sm">ブラウザから配信</Heading>
+
+                  <Alert status="info">
                     <AlertIcon />
-                    配信中/システム準備中は表示できません
+                    試験的機能、モバイル向けです。
                   </Alert>
-                )}
 
-                <CommentViewer liveId={live.id} />
-
-                <Heading size="sm">推奨の配信ソフトウェア設定</Heading>
-                <UnorderedList>
-                  <ListItem>ビットレート: 3000 Kbps くらい（たぶん）</ListItem>
-                  <ListItem>キーフレーム間隔: 1</ListItem>
-                  <ListItem>プリセット: veryfast</ListItem>
-                </UnorderedList>
+                  <Link href="/stream/via-browser" passHref>
+                    <ChakraLink>配信ページへ移動</ChakraLink>
+                  </Link>
+                </Stack>
               </Stack>
             </TabPanel>
             <TabPanel>

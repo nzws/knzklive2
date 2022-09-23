@@ -8,7 +8,9 @@ export const useMyTenants = () => {
     headers: {
       Authorization: `Bearer ${token || ''}`
     },
-    key: token ? undefined : null
+    key: token ? undefined : null,
+    revalidateIfStale: false,
+    revalidateOnFocus: false
   });
 
   return [data];

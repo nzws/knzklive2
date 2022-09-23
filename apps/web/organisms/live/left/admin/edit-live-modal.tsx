@@ -100,7 +100,13 @@ export const EditLiveModal: FC<Props> = ({
   }, [live.title, live.description, live.privacy, live.sensitive]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      isCentered
+      size="xl"
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>配信を編集</ModalHeader>

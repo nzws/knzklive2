@@ -94,7 +94,13 @@ export const CreateLive: FC<Props> = ({
   }, [title, privacy, hashTag, sensitive, token, tenant.id, router, onClose]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      isCentered
+      size="xl"
+      scrollBehavior="inside"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

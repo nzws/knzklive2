@@ -18,7 +18,7 @@ export const Lives = (client: PrismaClient['live']) =>
       sensitive: live.sensitive,
       hashtag: live.hashtag || undefined,
       watchingSumCount: live.watchingSumCount || undefined,
-      isPushing: !live.pushLastEndedAt
+      isPushing: !live.pushLastEndedAt && !!live.pushLastStartedAt
     }),
     get: async (id: number) => {
       const live = await client.findUnique({

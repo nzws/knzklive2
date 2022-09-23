@@ -6,6 +6,7 @@ import { apiExternalAction } from './controllers/externals/action';
 import { apiInternalOnPlay } from './controllers/internal/on_play';
 import { apiInternalOnPublish } from './controllers/internal/on_publish';
 import { apiInternalOnUnPublish } from './controllers/internal/on_unpublish';
+import { Streaming } from './streaming';
 
 const app = new Koa();
 app.use(bodyParser());
@@ -25,6 +26,8 @@ const port = process.env.PORT || 8000;
 
 const server = app.listen(port);
 console.log(`Listening on port ${port}`);
+
+new Streaming(server);
 
 process.on('SIGTERM', () => {
   server.close();

@@ -1,7 +1,7 @@
 import { Middleware } from 'koa';
 import { Encoder } from '../../services/encoder';
 import { SRSPublishCallback } from '../../types';
-import { client, serverToken } from '../../utils/api';
+import { checkToken, client, serverToken } from '../../utils/api';
 import { rejectSession, sessions } from '../../utils/sessions';
 
 export const apiInternalOnPublish: Middleware = async ctx => {
@@ -29,17 +29,7 @@ export const apiInternalOnPublish: Middleware = async ctx => {
     return;
   }
 
-  try {
-    await client.v1.internals.push.check_token.$post({
-      body: {
-        liveId,
-        watchToken,
-        pushToken: token,
-        serverToken
-      }
-    });
-  } catch (e) {
-    console.warn(e);
+  if (!(await checkToken(liveId, watchToken, token))) {
     ctx.status = 401;
     ctx.body = {
       code: 401,
@@ -77,5 +67,5 @@ export const apiInternalOnPublish: Middleware = async ctx => {
     // todo: 公開開始
     void encoder.encodeToLowQualityHls();
     void encoder.encodeAudio();
-  }, 1000);
+  }, 500);
 };

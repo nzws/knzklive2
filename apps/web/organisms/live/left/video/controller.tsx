@@ -33,7 +33,7 @@ import { PlayType } from '~/utils/hooks/use-video-stream';
 type Props = {
   onLive: () => void;
   onReload: () => void;
-  onToggleContainerSize: () => void;
+  onToggleContainerSize?: () => void;
   onToggleMaximize: () => void;
   videoRef: RefObject<HTMLVideoElement>;
   isStreamer?: boolean;
@@ -195,7 +195,7 @@ export const Controller: FC<Props> = ({
             </Portal>
           </Menu>
 
-          {isDesktop && (
+          {isDesktop && onToggleContainerSize && (
             <Tooltip label={intl.formatMessage({ id: 'live.player.wide' })}>
               <Button variant="ghost" size="sm" onClick={onToggleContainerSize}>
                 <FiChevronsUp />

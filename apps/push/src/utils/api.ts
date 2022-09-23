@@ -10,3 +10,25 @@ const fetchConfig = {
 };
 
 export const client = api(aspida(fetch, fetchConfig));
+
+export const checkToken = async (
+  liveId: number,
+  watchToken: string,
+  pushToken: string
+) => {
+  try {
+    await client.v1.internals.push.check_token.$post({
+      body: {
+        liveId,
+        watchToken,
+        pushToken,
+        serverToken
+      }
+    });
+
+    return true;
+  } catch (e) {
+    console.warn(e);
+    return false;
+  }
+};

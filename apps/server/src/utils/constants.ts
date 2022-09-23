@@ -19,4 +19,15 @@ export const getPushStreamKey = (
     ? `${liveId}_${watchToken}?token=${pushToken}`
     : `${liveId}?token=${pushToken}`;
 
+export const getPushWebsocketUrl = (
+  liveId: number,
+  pushToken: string,
+  watchToken?: string
+) =>
+  `ws${process.env.USE_HTTP ? '' : 's'}://${
+    process.env.PUSH_DOMAIN || ''
+  }/api/externals/websocket/v1/stream-push/${liveId}?token=${pushToken}&watchToken=${
+    watchToken || ''
+  }`;
+
 export const serverToken = process.env.SERVER_TOKEN || '';

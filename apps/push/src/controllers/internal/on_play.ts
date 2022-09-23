@@ -1,5 +1,5 @@
 import { Middleware } from 'koa';
-import { jwt } from '../../services/jwt';
+import { backendJwt } from '../../services/jwt';
 import { SRSCallback } from '../../types';
 import { sessions } from '../../utils/sessions';
 
@@ -18,8 +18,8 @@ export const apiInternalOnPlay: Middleware = async ctx => {
     return;
   }
 
-  const verify = await jwt.verify(token);
-  if (!verify || !verify.liveId || verify.liveId !== liveId) {
+  const verify = await backendJwt.check(token, liveId);
+  if (!verify) {
     ctx.status = 401;
     ctx.body = {
       code: 401,
