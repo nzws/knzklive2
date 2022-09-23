@@ -7,7 +7,7 @@ export const usePushViaBrowser = (liveId?: number) => {
   const { token } = useAuth();
   const [isConnectingWs, setIsConnectingWs] = useState(false);
   const [isConnectedWs, setIsConnectedWs] = useState(false);
-  const [isVoiceMuted, setIsVoiceMuted] = useState(true);
+  const [isVoiceMuted, setIsVoiceMuted] = useState(false);
   const webSocketRef = useRef<WebSocket>();
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [audioStream, setAudioStream] = useState<MediaStream>();

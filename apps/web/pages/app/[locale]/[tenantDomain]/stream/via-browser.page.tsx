@@ -19,7 +19,8 @@ import {
   Heading,
   Icon,
   Stack,
-  Text
+  Text,
+  Tooltip
 } from '@chakra-ui/react';
 import { LivePreview } from '~/organisms/stream/via-browser/live-preview';
 import { FiMic, FiMicOff } from 'react-icons/fi';
@@ -112,13 +113,23 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
                 )}
               </Heading>
 
-              <Button
-                onClick={toggleConnect}
-                width="100%"
-                isLoading={isConnectingWs}
+              <Tooltip
+                label={
+                  !isConnectedWs && isVoiceMuted
+                    ? 'ミュート中は接続開始できません'
+                    : ''
+                }
+                shouldWrapChildren
               >
-                {isConnectedWs ? 'サーバーから切断' : 'サーバーに接続'}
-              </Button>
+                <Button
+                  onClick={toggleConnect}
+                  width="100%"
+                  isLoading={isConnectingWs}
+                  isDisabled={!isConnectedWs && isVoiceMuted}
+                >
+                  {isConnectedWs ? 'サーバーから切断' : 'サーバーに接続'}
+                </Button>
+              </Tooltip>
             </Stack>
 
             <Divider />
