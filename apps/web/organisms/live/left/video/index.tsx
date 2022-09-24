@@ -1,4 +1,4 @@
-import { AspectRatio } from '@chakra-ui/react';
+import { AspectRatio, Center, Spinner } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
@@ -27,13 +27,10 @@ export const Video: FC<Props> = ({
   const [latency, setLatency] = useState<number>(-1);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
-  const [isBlocking, setIsBlocking] = useState(false);
   const { show, events } = usePlayerTouch();
-  const { playType, setPlayType, play } = useVideoStream(
-    videoRef,
-    url,
-    useCallback(() => setIsBlocking(true), [])
-  );
+  const [canPlay, setCanPlay] = useState(false);
+  const [maybeBlocked, setMaybeBlocked] = useState(false);
+  const { playType, setPlayType, play } = useVideoStream(videoRef, url);
 
   const autoSeek = useCallback(() => {
     void (async () => {
@@ -46,7 +43,7 @@ export const Video: FC<Props> = ({
         await play();
       } catch (e) {
         console.warn(e);
-        setIsBlocking(true);
+        setMaybeBlocked(true);
         return;
       }
 
@@ -118,25 +115,37 @@ export const Video: FC<Props> = ({
     };
 
     const handlePlaying = () => {
-      setIsBlocking(false);
+      setMaybeBlocked(false);
     };
 
-    const handleLoadedMetadata = () => {
-      autoSeek();
+    const handleCanPlay = () => {
+      setCanPlay(true);
+    };
+
+    const handleProgress = () => {
+      //
     };
 
     video.addEventListener('error', handleError);
     video.addEventListener('ended', handleEnded);
     video.addEventListener('playing', handlePlaying);
-    video.addEventListener('loadeddata', handleLoadedMetadata);
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('progress', handleProgress);
 
     return () => {
       video.removeEventListener('error', handleError);
       video.removeEventListener('ended', handleEnded);
       video.removeEventListener('playing', handlePlaying);
-      video.removeEventListener('loadeddata', handleLoadedMetadata);
+      video.removeEventListener('canplay', handleCanPlay);
+      setCanPlay(false);
     };
-  }, [updateUrl, autoSeek]);
+  }, [updateUrl]);
+
+  useEffect(() => {
+    if (canPlay) {
+      void autoSeek();
+    }
+  }, [canPlay, autoSeek]);
 
   return (
     <Container
@@ -150,7 +159,13 @@ export const Video: FC<Props> = ({
         <video ref={videoRef} autoPlay playsInline controls={false} />
       </AspectRatio>
 
-      {isBlocking && <Blocking onClick={autoSeek} />}
+      {!canPlay && (
+        <LoadingContainer>
+          <Spinner size="xl" />
+        </LoadingContainer>
+      )}
+
+      {maybeBlocked && canPlay && <Blocking onClick={autoSeek} />}
 
       <Controller
         onLive={autoSeek}
@@ -170,4 +185,14 @@ export const Video: FC<Props> = ({
 
 const Container = styled.div`
   position: relative;
+`;
+
+const LoadingContainer = styled(Center)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `;

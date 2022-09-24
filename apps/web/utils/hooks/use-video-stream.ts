@@ -13,8 +13,7 @@ export enum PlayType {
 
 export const useVideoStream = (
   videoTagRef: RefObject<HTMLVideoElement>,
-  url: PlayUrl | undefined,
-  onMaybeBlocked: () => void
+  url: PlayUrl | undefined
 ) => {
   const mpegtsPlayerRef = useRef<Mpegts.Player>();
   const hlsPlayerRef = useRef<Hls>();
@@ -23,17 +22,12 @@ export const useVideoStream = (
   useAPIError(error);
 
   const play = useCallback(async () => {
-    try {
-      if (mpegtsPlayerRef.current) {
-        await mpegtsPlayerRef.current.play();
-      } else {
-        await videoTagRef.current?.play();
-      }
-    } catch (e) {
-      console.warn(e);
-      onMaybeBlocked();
+    if (mpegtsPlayerRef.current) {
+      await mpegtsPlayerRef.current.play();
+    } else {
+      await videoTagRef.current?.play();
     }
-  }, [videoTagRef, onMaybeBlocked]);
+  }, [videoTagRef]);
 
   const handleFlv = useCallback(async () => {
     if (!videoTagRef.current || !url?.flv) {
@@ -68,17 +62,10 @@ export const useVideoStream = (
 
       player.attachMediaElement(videoTagRef.current);
       player.load();
-
-      try {
-        await player.play();
-      } catch (e) {
-        console.warn(e);
-        onMaybeBlocked();
-      }
     } catch (e) {
       setError(e);
     }
-  }, [url, videoTagRef, onMaybeBlocked]);
+  }, [url, videoTagRef]);
 
   const handleHls = useCallback(
     async (type: PlayType) => {
@@ -113,6 +100,7 @@ export const useVideoStream = (
 
           player.loadSource(hlsUrl);
           player.attachMedia(videoTagRef.current);
+          player.startLoad();
         } else if (
           videoTagRef.current.canPlayType('application/vnd.apple.mpegurl')
         ) {
@@ -124,15 +112,8 @@ export const useVideoStream = (
       } catch (e) {
         setError(e);
       }
-
-      try {
-        await videoTagRef.current.play();
-      } catch (e) {
-        console.warn(e);
-        onMaybeBlocked();
-      }
     },
-    [url, videoTagRef, onMaybeBlocked]
+    [url, videoTagRef]
   );
 
   useEffect(() => {
