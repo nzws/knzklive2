@@ -34,6 +34,7 @@ import { usePushViaBrowser } from '~/utils/hooks/api/use-push-via-browser';
 import { useLiveRealtimeCount } from '~/utils/hooks/api/use-live-realtime-count';
 import { CommentPost } from '~/organisms/live/left/comment-post';
 import { WakeLock } from '~/organisms/stream/via-browser/wake-lock';
+import { OLEDScreen } from '~/organisms/stream/via-browser/oled-screen';
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback },
@@ -89,6 +90,8 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
               <Heading size="sm">画面制御</Heading>
 
               <WakeLock />
+
+              <OLEDScreen />
             </Stack>
 
             <Stack spacing={4}>
