@@ -6,6 +6,8 @@
 
 **This project is still in development and currently not designed for self-hosting.**
 
+![image](https://user-images.githubusercontent.com/14953122/192090145-cb30b24b-7fff-4397-9e46-7fd52c8c371a.png)
+
 ## Features
 
 ### Unlimited live-streaming
