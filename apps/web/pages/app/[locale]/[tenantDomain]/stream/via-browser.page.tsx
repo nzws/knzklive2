@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { Fragment, useCallback } from 'react';
+import { Fragment, useCallback, useEffect, useRef } from 'react';
 import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
 import {
   defaultStaticProps,
@@ -35,11 +35,13 @@ import { useLiveRealtimeCount } from '~/utils/hooks/api/use-live-realtime-count'
 import { CommentPost } from '~/organisms/live/left/comment-post';
 import { WakeLock } from '~/organisms/stream/via-browser/wake-lock';
 import { OLEDScreen } from '~/organisms/stream/via-browser/oled-screen';
+import { useFullScreen } from '~/utils/hooks/use-full-screen';
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback },
   pathProps: { tenantDomain }
 }) => {
+  const isInitializedRef = useRef(false);
   const [tenant] = useTenant(tenantDomain, tenantFallback);
   const [status] = useStreamStatus(tenant?.id);
   const liveId = status?.recently?.endedAt ? undefined : status?.recently?.id;
@@ -54,6 +56,8 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
     disconnect
   } = usePushViaBrowser(live?.id);
   const [count] = useLiveRealtimeCount(!live?.endedAt ? live?.id : undefined);
+  const { isEnabledFullScreen, handleEnterFullScreen, handleExitFullScreen } =
+    useFullScreen();
 
   const toggleMuted = useCallback(
     () => setIsVoiceMuted(prev => !prev),
@@ -64,6 +68,27 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
     [isConnectedWs, connect, disconnect]
   );
 
+  useEffect(() => {
+    if (!live) {
+      return;
+    }
+
+    if (!isInitializedRef.current) {
+      isInitializedRef.current = true;
+      return;
+    }
+
+    if (!live.isPushing && !live.endedAt) {
+      handleExitFullScreen();
+
+      try {
+        void navigator.vibrate(500);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [live, handleExitFullScreen]);
+
   return (
     <Container py={4}>
       <Head>
@@ -73,6 +98,8 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
           )}
         </title>
       </Head>
+
+      {isEnabledFullScreen && <OLEDScreen onClick={handleExitFullScreen} />}
 
       <StartedNote />
 
@@ -91,7 +118,9 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 
               <WakeLock />
 
-              <OLEDScreen />
+              <Button onClick={handleEnterFullScreen} width="100%">
+                有機EL向け: 画面を黒くする (タップして解除)
+              </Button>
             </Stack>
 
             <Stack spacing={4}>

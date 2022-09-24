@@ -1,43 +1,16 @@
-import { Button, Portal, Stack } from '@chakra-ui/react';
+import { Portal } from '@chakra-ui/react';
 import styled from '@emotion/styled';
-import { FC, useCallback, useState } from 'react';
+import { FC } from 'react';
 
-export const OLEDScreen: FC = () => {
-  const [isOn, setIsOn] = useState(false);
-
-  const handleOpen = useCallback(() => {
-    try {
-      void document.body.requestFullscreen();
-    } catch (e) {
-      console.error(e);
-    }
-    setIsOn(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    try {
-      void document.exitFullscreen();
-    } catch (e) {
-      console.error(e);
-    }
-
-    setIsOn(false);
-  }, []);
-
-  return (
-    <Stack spacing={4}>
-      <Button onClick={handleOpen} width="100%">
-        有機EL向け: 画面を黒くする (タップして解除)
-      </Button>
-
-      {isOn && (
-        <Portal>
-          <Screen onClick={handleClose} />
-        </Portal>
-      )}
-    </Stack>
-  );
+type Props = {
+  onClick: () => void;
 };
+
+export const OLEDScreen: FC<Props> = ({ onClick }) => (
+  <Portal>
+    <Screen onClick={onClick} />
+  </Portal>
+);
 
 const Screen = styled.div`
   position: fixed;
