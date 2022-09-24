@@ -33,6 +33,7 @@ import { PublicStats } from '~/organisms/live/left/public-stats';
 import { usePushViaBrowser } from '~/utils/hooks/api/use-push-via-browser';
 import { useLiveRealtimeCount } from '~/utils/hooks/api/use-live-realtime-count';
 import { CommentPost } from '~/organisms/live/left/comment-post';
+import { WakeLock } from '~/organisms/stream/via-browser/wake-lock';
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback },
@@ -83,6 +84,12 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
             {!live.startedAt && <NotStarted />}
 
             <LivePreview live={live} />
+
+            <Stack spacing={4}>
+              <Heading size="sm">画面制御</Heading>
+
+              <WakeLock />
+            </Stack>
 
             <Stack spacing={4}>
               <Heading size="sm">映像</Heading>
