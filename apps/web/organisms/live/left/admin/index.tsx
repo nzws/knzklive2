@@ -10,11 +10,12 @@ import {
   Alert,
   AlertIcon,
   Badge,
-  Button
+  Button,
+  Center,
+  Spinner
 } from '@chakra-ui/react';
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { LivePublic } from 'api-types/common/types';
 import { useLive } from '~/utils/hooks/api/use-live';
 import { useStream } from '~/utils/hooks/api/use-stream';
 import { PushKey } from './push-key';
@@ -23,14 +24,22 @@ import { GeneralSettings } from './general-settings';
 import Link from 'next/link';
 
 type Props = {
-  live: LivePublic;
+  liveId: number;
 };
 
-export const Admin: FC<Props> = ({ live }) => {
-  const [stream] = useStream(live.id);
-  const [, mutate] = useLive(live.id, live);
+export const Admin: FC<Props> = ({ liveId }) => {
+  const [stream] = useStream(liveId);
+  const [, mutate] = useLive(liveId);
 
-  const notPushing = !!(stream?.pushLastEndedAt || !stream?.pushFirstStartedAt);
+  const live = stream?.live;
+
+  if (!live) {
+    return (
+      <Center p={4}>
+        <Spinner size="lg" />
+      </Center>
+    );
+  }
 
   return (
     <Box border="1px" borderColor="teal.900" p={4} borderRadius={8}>
@@ -38,7 +47,7 @@ export const Admin: FC<Props> = ({ live }) => {
         <Heading size="md">配信者パネル</Heading>
 
         <Box>
-          {notPushing && (
+          {!stream?.live?.isPushing && (
             <Alert status="warning">
               <AlertIcon />
               映像がサーバーへプッシュされていません。「配信ソフトウェア設定」から設定を参照し、映像の送信を開始してください。
@@ -62,7 +71,7 @@ export const Admin: FC<Props> = ({ live }) => {
             <TabPanel>
               <GeneralSettings
                 live={live}
-                notPushing={notPushing}
+                notPushing={!stream?.live?.isPushing}
                 onStartPublish={() => void mutate()}
               />
             </TabPanel>
@@ -71,7 +80,7 @@ export const Admin: FC<Props> = ({ live }) => {
                 <Stack spacing={4}>
                   <Heading size="sm">配信サーバー設定</Heading>
 
-                  {notPushing ? (
+                  {!stream?.live?.isPushing ? (
                     <PushKey liveId={live.id} />
                   ) : (
                     <Alert status="warning">

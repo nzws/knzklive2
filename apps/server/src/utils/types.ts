@@ -1,4 +1,4 @@
-import { Live, Tenant, User } from '@prisma/client';
+import { Image, Live, Tenant, User } from '@prisma/client';
 import { APIError } from 'api-types/common/types';
 import type { DefaultContext, DefaultState, Middleware } from 'koa';
 
@@ -29,7 +29,9 @@ export type TenantState = {
 };
 
 export type LiveState = {
-  live: Live;
+  live: Live & {
+    thumbnail: Image | null;
+  };
 };
 
 export type UserIdState = {

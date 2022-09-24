@@ -12,9 +12,6 @@ export const getV1Streams: APIRoute<
   UserState & LiveState
 > = ctx => {
   ctx.body = {
-    live: lives.getPublic(ctx.state.live),
-    pushFirstStartedAt: ctx.state.live.pushFirstStartedAt || undefined,
-    pushLastEndedAt: ctx.state.live.pushLastEndedAt || undefined,
-    pushLastStartedAt: ctx.state.live.pushLastStartedAt || undefined
+    live: lives.getPrivate(ctx.state.live)
   };
 };

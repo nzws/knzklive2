@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams/_liveId@number';
-import { lives } from '../../../models';
+import { images, lives } from '../../../models';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
@@ -30,6 +30,21 @@ const reqBodySchema: JSONSchemaType<Request> = {
       type: 'string',
       enum: ['Public', 'Private'],
       nullable: true
+    },
+    config: {
+      type: 'object',
+      properties: {
+        preferThumbnailType: {
+          type: 'string',
+          enum: ['generate', 'custom'],
+          nullable: true
+        }
+      },
+      nullable: true
+    },
+    customThumbnailId: {
+      type: 'number',
+      nullable: true
     }
   },
   additionalProperties: false
@@ -51,6 +66,19 @@ export const patchV1Streams: APIRoute<
   }
   const body = ctx.request.body;
 
+  if (body.customThumbnailId !== undefined) {
+    const image = await images.get(body.customThumbnailId);
+    if (!image || ctx.state.live.tenantId !== image.tenantId) {
+      ctx.status = 400;
+      ctx.body = {
+        errorCode: 'not_found',
+        message:
+          '指定されたカスタムサムネイル ID は存在しません。詳しくは管理者にお問い合わせください。'
+      };
+      return;
+    }
+  }
+
   await lives.update({
     where: {
       id: ctx.state.live.id
@@ -59,7 +87,9 @@ export const patchV1Streams: APIRoute<
       title: body.title,
       description: body.description,
       sensitive: body.sensitive,
-      privacy: body.privacy
+      privacy: body.privacy,
+      config: body.config,
+      thumbnailId: body.customThumbnailId
     }
   });
 

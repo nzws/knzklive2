@@ -1,6 +1,9 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/internals/push/action';
-import { lives } from '../../../../models';
+import { images, lives } from '../../../../models';
+import { pushApi } from '../../../../services/push-api';
+import { thumbnailStorage } from '../../../../services/storage/thumbnail';
+import { basePushStream, serverToken } from '../../../../utils/constants';
 import { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
 
@@ -51,6 +54,31 @@ export const postV1InternalsPushAction: APIRoute<
 
   if (body.action === 'start') {
     await lives.startStream(live);
+
+    // todo: to worker
+    setTimeout(() => {
+      void (async () => {
+        try {
+          const { key, url } =
+            await thumbnailStorage.getUploadUrlFromPushServer(
+              live.tenantId,
+              live.id
+            );
+
+          await pushApi(basePushStream).api.externals.v1.thumbnail.$post({
+            body: {
+              liveId: live.id,
+              serverToken,
+              signedUploadUrl: url
+            }
+          });
+
+          await images.createForGeneratedLiveThumbnail(live, key);
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+    }, 1000);
   } else if (body.action === 'stop') {
     await lives.stopStream(live);
   } else {

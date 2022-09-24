@@ -1,4 +1,4 @@
-import { LivePublic } from 'api-types/common/types';
+import { LivePrivate } from 'api-types/common/types';
 import { AuthorizationHeader } from '../../../../common/types';
 import { LiveSetting } from '../index';
 
@@ -17,10 +17,7 @@ export type Methods = {
     reqHeaders: AuthorizationHeader;
 
     resBody: {
-      live: LivePublic;
-      pushFirstStartedAt?: Date;
-      pushLastStartedAt?: Date;
-      pushLastEndedAt?: Date;
+      live: LivePrivate;
     };
   };
 };

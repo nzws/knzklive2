@@ -1,9 +1,11 @@
 import type { AspidaClient } from 'aspida';
 import type { Methods as Methods0 } from './api/externals/v1/action';
+import type { Methods as Methods1 } from './api/externals/v1/thumbnail';
 
 const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
   const prefix = (baseURL === undefined ? '' : baseURL).replace(/\/$/, '');
   const PATH0 = '/api/externals/v1/action';
+  const PATH1 = '/api/externals/v1/thumbnail';
   const POST = 'POST';
 
   return {
@@ -29,6 +31,26 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                 .json()
                 .then(r => r.body),
             $path: () => `${prefix}${PATH0}`
+          },
+          thumbnail: {
+            post: (option: {
+              body: Methods1['post']['reqBody'];
+              config?: T | undefined;
+            }) =>
+              fetch<Methods1['post']['resBody']>(
+                prefix,
+                PATH1,
+                POST,
+                option
+              ).json(),
+            $post: (option: {
+              body: Methods1['post']['reqBody'];
+              config?: T | undefined;
+            }) =>
+              fetch<Methods1['post']['resBody']>(prefix, PATH1, POST, option)
+                .json()
+                .then(r => r.body),
+            $path: () => `${prefix}${PATH1}`
           }
         }
       }

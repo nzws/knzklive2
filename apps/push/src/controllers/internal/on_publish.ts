@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Middleware } from 'koa';
 import { Encoder } from '../../services/encoder';
 import { SRSPublishCallback } from '../../types';
@@ -50,11 +51,13 @@ export const apiInternalOnPublish: Middleware = async ctx => {
       serverToken
     }
   });
-  const encoder = new Encoder(liveId, watchToken, token);
+  const internalToken = crypto.randomBytes(32).toString('hex');
+  const encoder = new Encoder(liveId, watchToken, internalToken);
 
   sessions.set(liveId, {
     clientId: body.client_id,
-    encoder
+    encoder,
+    internalToken
   });
 
   ctx.status = 200;

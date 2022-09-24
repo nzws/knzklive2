@@ -19,10 +19,13 @@ export const getV1TenantStreamStatus: APIRoute<
     orderBy: {
       createdAt: 'desc'
     },
-    take: 1
+    take: 1,
+    include: {
+      thumbnail: true
+    }
   });
 
   ctx.body = {
-    recently: live ? lives.getPublic(live) : undefined
+    recently: live ? lives.getPrivate(live) : undefined
   };
 };

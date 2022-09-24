@@ -3,7 +3,7 @@
 ## 必要なもの
 
 - Docker / Docker Compose
-- Node.js v16.x~
+- Node.js v18.x~
 - Yarn
 
 ## 起動
@@ -29,7 +29,7 @@ yarn dev:migrate
 そのため、初回は CLI でテナントとアカウントを作成する必要があります。
 
 - `nzws@don.nzws.me` の部分は自分の Mastodon アカウントの id@domain に置き換えてください。
-- `localhost:3000` はカスタムドメインとして指定します。localhost に向いているドメインがあればそちらも使用できます。
+- `localhost:3000` はカスタムドメインとして指定します。開発サーバーに向いているドメインがあればそちらも使用できます。(ポート番号は Next.js 開発サーバーの 3000 を指定してください。NODE_ENV=development 時のみカスタムのポート番号が許容されます。)
 
 ```bash
 yarn workspace server cli addUser --account=nzws@don.nzws.me --create-tenant=localhost:3000

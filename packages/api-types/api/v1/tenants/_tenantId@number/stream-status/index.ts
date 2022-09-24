@@ -1,4 +1,4 @@
-import { LivePublic } from 'api-types/common/types';
+import { LivePrivate } from 'api-types/common/types';
 import { AuthorizationHeader } from '../../../../../common/types';
 
 export type Methods = {
@@ -6,7 +6,7 @@ export type Methods = {
     reqHeaders: AuthorizationHeader;
 
     resBody: {
-      recently?: LivePublic;
+      recently?: LivePrivate;
     };
   };
 };

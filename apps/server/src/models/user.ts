@@ -1,5 +1,6 @@
 import type { PrismaClient, User } from '@prisma/client';
 import { UserConfig, UserPrivate, UserPublic } from 'api-types/common/types';
+import { users } from '.';
 import { USERNAME_REGEX } from '../utils/constants';
 import { checkDomain } from '../utils/domain';
 
@@ -12,10 +13,7 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       avatarUrl: user.avatarUrl || undefined
     }),
     getPrivate: (user: User): UserPrivate => ({
-      id: user.id,
-      account: user.account,
-      displayName: user.displayName || undefined,
-      avatarUrl: user.avatarUrl || undefined,
+      ...users.getPublic(user),
       config: user.config as UserConfig
     }),
     createAccount: async (account: string) => {

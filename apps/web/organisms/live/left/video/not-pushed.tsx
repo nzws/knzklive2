@@ -1,12 +1,42 @@
-import { Alert, AlertIcon, AspectRatio } from '@chakra-ui/react';
+import { Alert, AlertIcon, AspectRatio, Center, Flex } from '@chakra-ui/react';
+import styled from '@emotion/styled';
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-export const NotPushed: FC = () => (
-  <AspectRatio ratio={16 / 9}>
-    <Alert status="info">
-      <AlertIcon />
-      <FormattedMessage id="live.not-pushed" />
-    </Alert>
-  </AspectRatio>
+type Props = {
+  thumbnailUrl?: string;
+};
+
+export const NotPushed: FC<Props> = ({ thumbnailUrl }) => (
+  <Container
+    ratio={16 / 9}
+    style={{
+      backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : undefined
+    }}
+  >
+    <Inner>
+      <Flex>
+        <Alert status="info" borderRadius={6}>
+          <AlertIcon />
+          <FormattedMessage id="live.not-pushed" />
+        </Alert>
+      </Flex>
+    </Inner>
+  </Container>
 );
+
+const Container = styled(AspectRatio)`
+  background-color: #000;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+`;
+
+const Inner = styled(Center)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+`;

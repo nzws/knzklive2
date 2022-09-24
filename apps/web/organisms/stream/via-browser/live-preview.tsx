@@ -24,9 +24,14 @@ export const LivePreview: FC<Props> = ({ live }) => {
       {isOpen && (
         <Fragment>
           {live.isPushing ? (
-            <Video url={url} updateUrl={updateUrl} isStreamer />
+            <Video
+              url={url}
+              updateUrl={updateUrl}
+              thumbnailUrl={live.thumbnail?.publicUrl}
+              isStreamer
+            />
           ) : (
-            <NotPushed />
+            <NotPushed thumbnailUrl={live.thumbnail?.publicUrl} />
           )}
         </Fragment>
       )}

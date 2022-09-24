@@ -28,6 +28,7 @@ model User {
   tenants  Tenant[]
   lives    Live[]
   comments Comment[]
+  Images   Image[]
 }
 
 model Tenant {
@@ -42,7 +43,8 @@ model Tenant {
 
   owner User @relation(fields: [ownerId], references: [id])
 
-  lives Live[]
+  lives  Live[]
+  Images Image[]
 }
 
 model AuthProvider {
@@ -74,11 +76,15 @@ model Live {
   sensitive          Boolean     @default(false)
   watchingSumCount   Int?
   watchToken         String?     @db.VarChar(100)
+  thumbnailId        Int?
+  config             Json        @default("{}")
 
-  user   User   @relation(fields: [userId], references: [id])
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  user      User   @relation(fields: [userId], references: [id])
+  tenant    Tenant @relation(fields: [tenantId], references: [id])
+  thumbnail Image? @relation(fields: [thumbnailId], references: [id])
 
-  comments Comment[]
+  comments      Comment[]
+  createdImages Image[]   @relation("LiveCreatedImages")
 
   @@unique([idInTenant, tenantId])
 }
@@ -86,6 +92,36 @@ model Live {
 enum LivePrivacy {
   Public
   Private
+}
+
+model Image {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  url           String      @db.VarChar(200)
+  userId        Int
+  tenantId      Int
+  type          ImageType
+  bucket        ImageBucket
+  isDeleted     Boolean     @default(false)
+  createdLiveId Int?
+
+  user        User   @relation(fields: [userId], references: [id])
+  tenant      Tenant @relation(fields: [tenantId], references: [id])
+  createdLive Live?  @relation(name: "LiveCreatedImages", fields: [createdLiveId], references: [id])
+
+  lives Live[]
+
+  @@index([type, tenantId, isDeleted, createdAt])
+}
+
+enum ImageType {
+  Thumbnail
+  CustomThumbnail
+}
+
+enum ImageBucket {
+  Static
 }
 
 model Comment {

@@ -1,4 +1,5 @@
 import Router from '@koa/router';
+import Multer from '@koa/multer';
 import { getV1TenantsOnce } from './controllers/v1/tenants/get-once';
 import { getV1UsersMe } from './controllers/v1/users/me';
 import { middlewareAuthorizeUser } from './middlewares/user-auth';
@@ -36,6 +37,13 @@ import { patchV1Tenants } from './controllers/v1/tenants/patch';
 import { middlewareAuthorizeServer } from './middlewares/server-token';
 import { postV1InternalsPushAction } from './controllers/v1/internals/push/action';
 import { getV1StreamsCommentViewerUrl } from './controllers/v1/streams/get-comment-viewer-url';
+import { postV1StreamsThumbnail } from './controllers/v1/streams/post-thumbnail';
+
+const multer = Multer({
+  limits: {
+    fileSize: 1024 * 1024 * 5 // 5MB
+  }
+});
 
 export const router = (): Router => {
   const route = new Router();
@@ -103,6 +111,12 @@ export const router = (): Router => {
   );
 
   route.post('/v1/streams', middlewareAuthorizeUser, postV1Streams);
+  route.post(
+    '/v1/streams/thumbnail',
+    middlewareAuthorizeUser,
+    multer.single('file'),
+    postV1StreamsThumbnail
+  );
   route.get(
     '/v1/streams/:liveId',
     middlewareAuthorizeUser,

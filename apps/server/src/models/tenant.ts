@@ -27,7 +27,7 @@ export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
       customDomain: tenant.customDomain || undefined,
       domain: getTenantPrimaryDomain(tenant)
     }),
-    getConfig: (tenant: Tenant): TenantConfig => {
+    getConfig: (tenant: Tenant): Required<TenantConfig> => {
       const config = (tenant.config || {}) as TenantConfig;
 
       return {

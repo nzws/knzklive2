@@ -99,11 +99,12 @@ export const Live: FC<Props> = ({ live, streamer }) => {
             <Video
               isStreamer={isStreamer}
               url={url}
+              thumbnailUrl={live.thumbnail?.publicUrl}
               updateUrl={updateUrl}
               onToggleContainerSize={toggleContainerSize}
             />
           ) : (
-            <NotPushed />
+            <NotPushed thumbnailUrl={live.thumbnail?.publicUrl} />
           )}
 
           <CommentPost liveId={live.id} hashtag={live.hashtag} />
@@ -133,7 +134,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
 
               <Text>{live.description}</Text>
 
-              {isStreamer && !live.endedAt && <Admin live={live} />}
+              {isStreamer && !live.endedAt && <Admin liveId={live.id} />}
             </Stack>
           </Collapse>
 

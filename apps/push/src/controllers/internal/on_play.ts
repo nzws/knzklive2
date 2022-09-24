@@ -5,7 +5,6 @@ import { sessions } from '../../utils/sessions';
 
 export const apiInternalOnPlay: Middleware = async ctx => {
   const body = ctx.request.body as SRSCallback;
-  console.log('play', body);
 
   const liveId = parseInt(body.stream.split('_')[0], 10);
   const token = body.param.replace('?token=', '');
@@ -18,23 +17,26 @@ export const apiInternalOnPlay: Middleware = async ctx => {
     return;
   }
 
-  const verify = await backendJwt.check(token, liveId);
-  if (!verify) {
-    ctx.status = 401;
-    ctx.body = {
-      code: 401,
-      message: 'Invalid token'
-    };
-    return;
-  }
-
-  if (!sessions.get(liveId)) {
+  const session = sessions.get(liveId);
+  if (!session) {
     ctx.status = 404;
     ctx.body = {
       code: 404,
       message: 'Live not found'
     };
     return;
+  }
+
+  if (session.internalToken !== token) {
+    const verify = await backendJwt.check(token, liveId);
+    if (!verify) {
+      ctx.status = 401;
+      ctx.body = {
+        code: 401,
+        message: 'Invalid token'
+      };
+      return;
+    }
   }
 
   ctx.status = 200;

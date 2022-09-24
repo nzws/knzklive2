@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -20,9 +20,11 @@ import {
   Badge,
   Textarea,
   Alert,
-  AlertIcon
+  AlertIcon,
+  Image,
+  AspectRatio
 } from '@chakra-ui/react';
-import { LivePublic } from 'api-types/common/types';
+import { ImagePublic, LivePrivate } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { useAuth } from '~/utils/hooks/use-auth';
@@ -31,7 +33,7 @@ import { FormattedMessage } from 'react-intl';
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  live: LivePublic;
+  live: LivePrivate;
   onSubmitted?: () => void;
 };
 
@@ -44,6 +46,7 @@ export const EditLiveModal: FC<Props> = ({
   onSubmitted
 }) => {
   const { token } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(live.title);
   const [description, setDescription] = useState(live.description || '');
   const [privacy, setPrivacy] = useState<string>(live.privacy || 'Public');
@@ -51,6 +54,12 @@ export const EditLiveModal: FC<Props> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
+  const [preferThumbnailType, setPreferThumbnailType] = useState(
+    live.config.preferThumbnailType || 'generate'
+  );
+  const [customThumbnail, setCustomThumbnail] = useState<
+    ImagePublic | undefined
+  >(live.config.preferThumbnailType === 'custom' ? live.thumbnail : undefined);
 
   const handleSubmit = useCallback(() => {
     void (async () => {
@@ -63,9 +72,16 @@ export const EditLiveModal: FC<Props> = ({
         await client.v1.streams._liveId(live.id).patch({
           body: {
             title,
-            privacy: privacy as LivePublic['privacy'],
+            privacy: privacy as LivePrivate['privacy'],
             sensitive,
-            description
+            description,
+            config: {
+              preferThumbnailType
+            },
+            ...(preferThumbnailType === 'custom' &&
+              !!customThumbnail?.id && {
+                customThumbnailId: customThumbnail.id
+              })
           },
           headers: {
             Authorization: `Bearer ${token}`
@@ -89,15 +105,73 @@ export const EditLiveModal: FC<Props> = ({
     onClose,
     onSubmitted,
     sensitive,
-    description
+    description,
+    customThumbnail?.id,
+    preferThumbnailType
   ]);
+
+  const handleOpenFile = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file || !token) {
+        return;
+      }
+
+      void (async () => {
+        try {
+          if (file.size > 5 * 1024 * 1024) {
+            throw new Error(
+              'ファイルサイズが大きすぎます: 5MB までの画像ファイルが使用できます。'
+            );
+          }
+
+          setIsLoading(true);
+          const { body } = await client.v1.streams.thumbnail.post({
+            body: {
+              tenantId: live.tenantId,
+              file
+            },
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+
+          setCustomThumbnail(body);
+        } catch (e) {
+          console.warn(e);
+          setError(e);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    },
+    [token, live.tenantId]
+  );
 
   useEffect(() => {
     setTitle(live.title);
     setDescription(live.description || '');
     setPrivacy(live.privacy || 'Public');
     setSensitive(live.sensitive || false);
-  }, [live.title, live.description, live.privacy, live.sensitive]);
+    setPreferThumbnailType(live.config.preferThumbnailType || 'generate');
+    setCustomThumbnail(
+      live.config.preferThumbnailType === 'custom' ? live.thumbnail : undefined
+    );
+  }, [
+    live.title,
+    live.description,
+    live.privacy,
+    live.sensitive,
+    live.config,
+    live.thumbnail
+  ]);
 
   return (
     <Modal
@@ -193,6 +267,54 @@ export const EditLiveModal: FC<Props> = ({
                 <FormattedMessage id="create-live.sensitive.note" />
               </FormHelperText>
             </FormControl>
+
+            <FormControl>
+              <Checkbox
+                isChecked={preferThumbnailType === 'custom'}
+                onChange={e =>
+                  setPreferThumbnailType(
+                    e.target.checked ? 'custom' : 'generate'
+                  )
+                }
+              >
+                カスタムのサムネイル画像を使用する
+              </Checkbox>
+
+              <FormHelperText>
+                デフォルトではプッシュ開始時に自動的にキャプチャされます。
+              </FormHelperText>
+            </FormControl>
+
+            <Collapse in={preferThumbnailType === 'custom'} animateOpacity>
+              <Stack spacing={4}>
+                <Button
+                  variant="outline"
+                  width="100%"
+                  onClick={handleOpenFile}
+                  isLoading={isLoading}
+                >
+                  新しくアップロード
+                </Button>
+                <input
+                  type="file"
+                  hidden
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                />
+
+                {customThumbnail && (
+                  <AspectRatio ratio={16 / 9}>
+                    <Image
+                      src={customThumbnail.publicUrl}
+                      style={{
+                        objectFit: 'contain'
+                      }}
+                      alt="image"
+                    />
+                  </AspectRatio>
+                )}
+              </Stack>
+            </Collapse>
           </Stack>
         </ModalBody>
 

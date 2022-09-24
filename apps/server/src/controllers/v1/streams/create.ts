@@ -1,6 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams';
-import { lives, tenants } from '../../../models';
+import { images, lives, tenants } from '../../../models';
 import { pubsub } from '../../../redis/pubsub/client';
 import { APIRoute, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
@@ -37,9 +37,23 @@ const reqBodySchema: JSONSchemaType<Request> = {
     },
     tenantId: {
       type: 'number'
+    },
+    config: {
+      type: 'object',
+      properties: {
+        preferThumbnailType: {
+          type: 'string',
+          enum: ['generate', 'custom'],
+          nullable: true
+        }
+      }
+    },
+    customThumbnailId: {
+      type: 'number',
+      nullable: true
     }
   },
-  required: ['title', 'privacy', 'sensitive', 'tenantId'],
+  required: ['title', 'privacy', 'sensitive', 'tenantId', 'config'],
   additionalProperties: false
 };
 
@@ -67,13 +81,28 @@ export const postV1Streams: APIRoute<
     return;
   }
 
+  if (body.customThumbnailId !== undefined) {
+    const image = await images.get(body.customThumbnailId);
+    if (!image || image.tenantId !== tenant.id) {
+      ctx.status = 400;
+      ctx.body = {
+        errorCode: 'not_found',
+        message:
+          '指定されたカスタムサムネイル ID は存在しません。詳しくは管理者にお問い合わせください。'
+      };
+      return;
+    }
+  }
+
   const live = await lives.createLive(
     tenant.id,
     ctx.state.user.id,
     body.title,
     body.privacy,
     body.description,
-    body.hashtag
+    body.hashtag,
+    body.config,
+    body.customThumbnailId
   );
   if (body.hashtag) {
     await pubsub.publish(

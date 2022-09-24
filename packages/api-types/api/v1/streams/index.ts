@@ -1,4 +1,4 @@
-import { LivePublic } from 'api-types/common/types';
+import { LiveConfig, LivePublic } from 'api-types/common/types';
 import { AuthorizationHeader } from '../../../common/types';
 
 export type LiveSetting = {
@@ -7,6 +7,8 @@ export type LiveSetting = {
   privacy: 'Public' | 'Private';
   sensitive: boolean;
   hashtag?: string;
+  config: LiveConfig;
+  customThumbnailId?: number;
 };
 
 export type Methods = {

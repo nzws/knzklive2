@@ -1,11 +1,15 @@
 import crypto from 'crypto';
-import { Live, LivePrivacy, PrismaClient } from '@prisma/client';
-import { lives, tenants } from '.';
-import { LivePublic } from 'api-types/common/types';
+import { Image, Live, LivePrivacy, PrismaClient } from '@prisma/client';
+import { images, lives, tenants } from '.';
+import { LiveConfig, LivePrivate, LivePublic } from 'api-types/common/types';
 
 export const Lives = (client: PrismaClient['live']) =>
   Object.assign(client, {
-    getPublic: (live: Live): LivePublic => ({
+    getPublic: (
+      live: Live & {
+        thumbnail?: Image | null;
+      }
+    ): LivePublic => ({
       id: live.id,
       idInTenant: live.idInTenant,
       userId: live.userId,
@@ -18,12 +22,31 @@ export const Lives = (client: PrismaClient['live']) =>
       sensitive: live.sensitive,
       hashtag: live.hashtag || undefined,
       watchingSumCount: live.watchingSumCount || undefined,
-      isPushing: !live.pushLastEndedAt && !!live.pushLastStartedAt
+      isPushing: !live.pushLastEndedAt && !!live.pushLastStartedAt,
+      thumbnail: live.thumbnail ? images.getPublic(live.thumbnail) : undefined
     }),
+    getPrivate: (
+      live: Live & {
+        thumbnail?: Image | null;
+      }
+    ): LivePrivate => ({
+      ...lives.getPublic(live),
+      config: lives.getConfig(live)
+    }),
+    getConfig: (live: Live): Required<LiveConfig> => {
+      const config = (live.config || {}) as LiveConfig;
+
+      return {
+        preferThumbnailType: config.preferThumbnailType ?? 'generate'
+      };
+    },
     get: async (id: number) => {
       const live = await client.findUnique({
         where: {
           id
+        },
+        include: {
+          thumbnail: true
         }
       });
 
@@ -36,6 +59,9 @@ export const Lives = (client: PrismaClient['live']) =>
             tenantId,
             idInTenant: liveIdInTenant
           }
+        },
+        include: {
+          thumbnail: true
         }
       });
 
@@ -54,7 +80,8 @@ export const Lives = (client: PrismaClient['live']) =>
           startedAt: 'desc'
         },
         include: {
-          tenant: true
+          tenant: true,
+          thumbnail: true
         },
         take: 10
       });
@@ -107,7 +134,9 @@ export const Lives = (client: PrismaClient['live']) =>
       title: string,
       privacy: LivePrivacy,
       description?: string,
-      hashtag?: string
+      hashtag?: string,
+      config: LiveConfig = {},
+      thumbnailId?: number
     ) => {
       const watchToken = crypto.randomBytes(48).toString('hex');
       const lastLive = await client.findFirst({
@@ -128,7 +157,9 @@ export const Lives = (client: PrismaClient['live']) =>
           description,
           privacy,
           hashtag,
-          watchToken
+          watchToken,
+          config,
+          thumbnailId
         }
       });
     },

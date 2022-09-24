@@ -7,7 +7,7 @@ import {
   WrapItem
 } from '@chakra-ui/react';
 import { FC, useCallback, useState } from 'react';
-import { LivePublic } from 'api-types/common/types';
+import { LivePrivate } from 'api-types/common/types';
 import { Dialog } from './dialog';
 import { EditLiveModal } from './edit-live-modal';
 import { useAuth } from '~/utils/hooks/use-auth';
@@ -15,7 +15,7 @@ import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
 
 type Props = {
-  live: LivePublic;
+  live: LivePrivate;
   notPushing: boolean;
   onStartPublish?: () => void;
 };

@@ -23,7 +23,7 @@ import {
   Tooltip
 } from '@chakra-ui/react';
 import { LivePreview } from '~/organisms/stream/via-browser/live-preview';
-import { FiMic, FiMicOff } from 'react-icons/fi';
+import { FiMic, FiMicOff, FiRefreshCw } from 'react-icons/fi';
 import { NotStarted } from '~/organisms/stream/via-browser/not-started';
 import { NotPushing } from '~/organisms/stream/via-browser/not-pushing';
 import { useStream } from '~/utils/hooks/api/use-stream';
@@ -45,7 +45,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
   const [tenant] = useTenant(tenantDomain, tenantFallback);
   const [status] = useStreamStatus(tenant?.id);
   const liveId = status?.recently?.endedAt ? undefined : status?.recently?.id;
-  const [stream] = useStream(liveId);
+  const [stream, mutate] = useStream(liveId);
   const live = stream?.live;
   const {
     isConnectingWs,
@@ -127,6 +127,10 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
               <Heading size="sm">映像</Heading>
 
               <Text>そのうち作成（現在は無映像）</Text>
+
+              <Text as="b">
+                （無映像状態に表示する画像は「配信情報を編集」→「サムネイル」からできます）
+              </Text>
             </Stack>
 
             <Stack spacing={4}>
@@ -174,6 +178,16 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
             <Divider />
 
             <Stack spacing={4}>
+              <Button
+                onClick={() => void mutate()}
+                width="100%"
+                variant="outline"
+                size="sm"
+                leftIcon={<FiRefreshCw />}
+              >
+                最新の状態に更新
+              </Button>
+
               <Heading size="md">{live.title}</Heading>
 
               <PublicStats

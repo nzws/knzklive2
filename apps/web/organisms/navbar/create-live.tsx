@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useRef, useState } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -19,12 +19,14 @@ import {
   RadioGroup,
   Radio,
   Checkbox,
-  Badge
+  Badge,
+  AspectRatio,
+  Image
 } from '@chakra-ui/react';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getDocsUrl } from '~/utils/constants';
-import { LivePublic } from 'api-types/common/types';
+import { ImagePublic, LivePrivate } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { TenantPublic } from 'api-types/common/types';
@@ -34,7 +36,7 @@ import { useRouter } from 'next/router';
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  recentLive?: LivePublic;
+  recentLive?: LivePrivate;
   tenant: TenantPublic;
 };
 
@@ -49,12 +51,23 @@ export const CreateLive: FC<Props> = ({
   const { token } = useAuth();
   const intl = useIntl();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(recentLive?.title || '');
   const [privacy, setPrivacy] = useState<string>(
     recentLive?.privacy || 'Public'
   );
   const [hashTag, setHashTag] = useState(recentLive?.hashtag || '');
   const [sensitive, setSensitive] = useState(recentLive?.sensitive || false);
+  const [preferThumbnailType, setPreferThumbnailType] = useState(
+    recentLive?.config.preferThumbnailType || 'generate'
+  );
+  const [customThumbnail, setCustomThumbnail] = useState<
+    ImagePublic | undefined
+  >(
+    recentLive?.config.preferThumbnailType === 'custom'
+      ? recentLive?.thumbnail
+      : undefined
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
@@ -72,10 +85,17 @@ export const CreateLive: FC<Props> = ({
         } = await client.v1.streams.post({
           body: {
             title,
-            privacy: privacy as LivePublic['privacy'],
+            privacy: privacy as LivePrivate['privacy'],
             hashtag: hashTag,
             sensitive,
-            tenantId: tenant.id
+            tenantId: tenant.id,
+            config: {
+              preferThumbnailType
+            },
+            ...(preferThumbnailType === 'custom' &&
+              !!customThumbnail?.id && {
+                customThumbnailId: customThumbnail.id
+              })
           },
           headers: {
             Authorization: `Bearer ${token}`
@@ -91,7 +111,63 @@ export const CreateLive: FC<Props> = ({
         setIsLoading(false);
       }
     })();
-  }, [title, privacy, hashTag, sensitive, token, tenant.id, router, onClose]);
+  }, [
+    title,
+    privacy,
+    hashTag,
+    sensitive,
+    token,
+    tenant.id,
+    router,
+    onClose,
+    preferThumbnailType,
+    customThumbnail?.id
+  ]);
+
+  const handleOpenFile = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file || !token) {
+        return;
+      }
+
+      void (async () => {
+        try {
+          if (file.size > 5 * 1024 * 1024) {
+            throw new Error(
+              'ファイルサイズが大きすぎます: 5MB までの画像ファイルが使用できます。'
+            );
+          }
+
+          setIsLoading(true);
+          const { body } = await client.v1.streams.thumbnail.post({
+            body: {
+              tenantId: tenant.id,
+              file
+            },
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+
+          setCustomThumbnail(body);
+        } catch (e) {
+          console.warn(e);
+          setError(e);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    },
+    [token, tenant.id]
+  );
 
   return (
     <Modal
@@ -121,7 +197,6 @@ export const CreateLive: FC<Props> = ({
                 onChange={e => setTitle(e.target.value)}
               />
             </FormControl>
-
             <FormControl isRequired>
               <FormLabel as="legend">
                 <FormattedMessage id="create-live.privacy" />
@@ -143,7 +218,6 @@ export const CreateLive: FC<Props> = ({
                 <FormattedMessage id="create-live.privacy.private.note" />
               </FormHelperText>
             </FormControl>
-
             <Collapse in={privacy === 'Private'} animateOpacity>
               <Badge>
                 <FormattedMessage id="common.coming-soon" />
@@ -158,7 +232,6 @@ export const CreateLive: FC<Props> = ({
                 </Checkbox>
               </Stack>
             </Collapse>
-
             <FormControl>
               <FormLabel>
                 <FormattedMessage id="create-live.hashtag" />
@@ -177,7 +250,6 @@ export const CreateLive: FC<Props> = ({
                 <FormattedMessage id="create-live.hashtag.note" />
               </FormHelperText>
             </FormControl>
-
             <FormControl>
               <Checkbox
                 isChecked={sensitive}
@@ -190,6 +262,54 @@ export const CreateLive: FC<Props> = ({
                 <FormattedMessage id="create-live.sensitive.note" />
               </FormHelperText>
             </FormControl>
+            <FormControl>
+              <Checkbox
+                isChecked={preferThumbnailType === 'custom'}
+                onChange={e =>
+                  setPreferThumbnailType(
+                    e.target.checked ? 'custom' : 'generate'
+                  )
+                }
+              >
+                カスタムのサムネイル画像を使用する
+              </Checkbox>
+
+              <FormHelperText>
+                デフォルトではプッシュ開始時に自動的にキャプチャされます。
+              </FormHelperText>
+            </FormControl>
+
+            <Collapse in={preferThumbnailType === 'custom'} animateOpacity>
+              <Stack spacing={4}>
+                <Button
+                  variant="outline"
+                  width="100%"
+                  onClick={handleOpenFile}
+                  isLoading={isLoading}
+                >
+                  新しくアップロード
+                </Button>
+                <input
+                  type="file"
+                  hidden
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                />
+
+                {customThumbnail && (
+                  <AspectRatio ratio={16 / 9}>
+                    <Image
+                      src={customThumbnail.publicUrl}
+                      objectFit="contain"
+                      style={{
+                        objectFit: 'contain'
+                      }}
+                      alt="image"
+                    />
+                  </AspectRatio>
+                )}
+              </Stack>
+            </Collapse>
           </Stack>
         </ModalBody>
 

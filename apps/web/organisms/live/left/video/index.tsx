@@ -9,6 +9,7 @@ import { PlayUrl } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useVideoStream } from '~/utils/hooks/use-video-stream';
 
 type Props = {
+  thumbnailUrl?: string;
   url?: PlayUrl;
   updateUrl: () => Promise<unknown | undefined>;
   onToggleContainerSize?: () => void;
@@ -16,6 +17,7 @@ type Props = {
 };
 
 export const Video: FC<Props> = ({
+  thumbnailUrl,
   url,
   updateUrl,
   onToggleContainerSize,
@@ -111,32 +113,35 @@ export const Video: FC<Props> = ({
     };
 
     const handleEnded = () => {
+      setCanPlay(false);
       void updateUrl();
     };
 
     const handlePlaying = () => {
       setMaybeBlocked(false);
+      setCanPlay(true);
     };
 
     const handleCanPlay = () => {
       setCanPlay(true);
     };
 
-    const handleProgress = () => {
-      //
+    const handleStopLoad = () => {
+      setCanPlay(false);
     };
 
     video.addEventListener('error', handleError);
     video.addEventListener('ended', handleEnded);
     video.addEventListener('playing', handlePlaying);
     video.addEventListener('canplay', handleCanPlay);
-    video.addEventListener('progress', handleProgress);
+    video.addEventListener('emptied', handleStopLoad);
 
     return () => {
       video.removeEventListener('error', handleError);
       video.removeEventListener('ended', handleEnded);
       video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('emptied', handleStopLoad);
       setCanPlay(false);
     };
   }, [updateUrl]);
@@ -155,9 +160,14 @@ export const Video: FC<Props> = ({
         cursor: show ? 'auto' : 'none'
       }}
     >
-      <AspectRatio ratio={16 / 9}>
+      <VideoContainer
+        ratio={16 / 9}
+        style={{
+          backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : undefined
+        }}
+      >
         <video ref={videoRef} autoPlay playsInline controls={false} />
-      </AspectRatio>
+      </VideoContainer>
 
       {!canPlay && (
         <LoadingContainer>
@@ -187,6 +197,13 @@ const Container = styled.div`
   position: relative;
 `;
 
+const VideoContainer = styled(AspectRatio)`
+  background-color: #000;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+`;
+
 const LoadingContainer = styled(Center)`
   position: absolute;
   width: 100%;
@@ -195,4 +212,5 @@ const LoadingContainer = styled(Center)`
   left: 0;
   right: 0;
   bottom: 0;
+  background-color: rgba(0, 0, 0, 0.15);
 `;

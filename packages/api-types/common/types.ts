@@ -33,6 +33,10 @@ export type CommentPublic = {
   isDeleted: boolean;
 };
 
+export type LiveConfig = {
+  preferThumbnailType?: 'generate' | 'custom';
+};
+
 export type LivePublic = {
   id: number;
   idInTenant: number;
@@ -47,6 +51,11 @@ export type LivePublic = {
   hashtag?: string;
   watchingSumCount?: number;
   isPushing: boolean;
+  thumbnail?: ImagePublic;
+};
+
+export type LivePrivate = LivePublic & {
+  config: Required<LiveConfig>;
 };
 
 export type TenantConfig = {
@@ -68,7 +77,7 @@ export type UserConfig = {
 };
 
 export type UserPrivate = UserPublic & {
-  config: UserConfig;
+  config: Required<UserConfig>;
 };
 
 export type UserPublic = {
@@ -76,4 +85,9 @@ export type UserPublic = {
   account: string;
   displayName?: string;
   avatarUrl?: string;
+};
+
+export type ImagePublic = {
+  id: number;
+  publicUrl: string;
 };

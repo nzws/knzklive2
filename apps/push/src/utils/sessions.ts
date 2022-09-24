@@ -6,6 +6,7 @@ export const sessions = new Map<
   {
     clientId: string;
     encoder: Encoder;
+    internalToken: string;
   }
 >();
 

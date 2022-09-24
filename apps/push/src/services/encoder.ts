@@ -33,13 +33,21 @@ export class Encoder {
     }
   }
 
-  async encodeToLowQualityHls() {
+  private async cleanupDirectory(name: string) {
+    const path = `${this.dir}/${name}`;
+
     try {
-      await rm(`${this.dir}/low`, { recursive: true });
+      await rm(path, { recursive: true });
     } catch (e) {
       //
     }
-    await mkdir(`${this.dir}/low`, { recursive: true });
+    await mkdir(path, { recursive: true });
+
+    return path;
+  }
+
+  async encodeToLowQualityHls() {
+    const path = await this.cleanupDirectory('low');
 
     const stream = ffmpeg(this.rtmp)
       .audioCodec('aac')
@@ -57,7 +65,7 @@ export class Encoder {
         '-hls_list_size 10',
         '-hls_flags delete_segments+omit_endlist'
       ])
-      .output(`${this.dir}/low/stream.m3u8`)
+      .output(`${path}/stream.m3u8`)
       .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency']);
 
     stream.on('start', (cmd: string) => {
@@ -80,12 +88,7 @@ export class Encoder {
   }
 
   async encodeAudio() {
-    try {
-      await rm(`${this.dir}/audio`, { recursive: true });
-    } catch (e) {
-      //
-    }
-    await mkdir(`${this.dir}/audio`, { recursive: true });
+    const path = await this.cleanupDirectory('audio');
 
     const stream = ffmpeg(this.rtmp)
       .audioCodec('copy')
@@ -97,7 +100,7 @@ export class Encoder {
         '-hls_list_size 10',
         '-hls_flags delete_segments+omit_endlist'
       ])
-      .output(`${this.dir}/audio/stream.m3u8`)
+      .output(`${path}/stream.m3u8`)
       .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency']);
 
     stream.on('start', (cmd: string) => {
@@ -148,5 +151,48 @@ export class Encoder {
     this.streams.push(stream);
 
     return stream;
+  }
+
+  async generateThumbnail() {
+    const path = await this.cleanupDirectory('thumbnails');
+
+    return new Promise<string>((resolve, reject) => {
+      const file = `${Math.round(Date.now() / 1000)}.png`;
+
+      const stream = ffmpeg(this.rtmp)
+        .noAudio()
+        // https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/352#issuecomment-136297117
+        .outputOptions([
+          '-f image2',
+          '-vframes 1',
+          '-vcodec png',
+          '-f rawvideo',
+          '-s 1920x1080',
+          '-ss 00:00:01'
+        ])
+        .output(`${path}/${file}`);
+
+      stream.on('start', (cmd: string) => {
+        console.log('Start Thumbnail', this.liveId, cmd);
+      });
+
+      stream.on('error', (err: Error) => {
+        console.warn('Error Thumbnail', this.liveId, err);
+
+        if (err.message.includes('does not contain any stream')) {
+          resolve('');
+        } else {
+          reject(err);
+        }
+      });
+
+      stream.on('end', () => {
+        console.log('End Thumbnail', this.liveId);
+
+        resolve(`${path}/${file}`);
+      });
+
+      stream.run();
+    });
   }
 }
