@@ -7,7 +7,7 @@ export const formatImage = async (buffer: Buffer) => {
     image.stats()
   ]);
 
-  const extension = stats.isOpaque ? 'png' : 'jpeg';
+  const extension = stats.isOpaque ? 'jpeg' : 'png';
   const newBuffer = await image
     .resize({
       width: 1920,
