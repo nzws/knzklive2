@@ -172,7 +172,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:^3.178.0":
+"@aws-sdk/client-s3@npm:3.178.0":
   version: 3.178.0
   resolution: "@aws-sdk/client-s3@npm:3.178.0"
   dependencies:
@@ -580,7 +580,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-endpoint@npm:^3.178.0":
+"@aws-sdk/middleware-endpoint@npm:3.178.0":
   version: 3.178.0
   resolution: "@aws-sdk/middleware-endpoint@npm:3.178.0"
   dependencies:
@@ -821,7 +821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:^3.178.0":
+"@aws-sdk/s3-request-presigner@npm:3.178.0":
   version: 3.178.0
   resolution: "@aws-sdk/s3-request-presigner@npm:3.178.0"
   dependencies:
@@ -3356,7 +3356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@koa/multer@npm:^3.0.0":
+"@koa/multer@npm:3.0.0":
   version: 3.0.0
   resolution: "@koa/multer@npm:3.0.0"
   peerDependencies:
@@ -4086,7 +4086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/koa__multer@npm:^2.0.4":
+"@types/koa__multer@npm:2.0.4":
   version: 2.0.4
   resolution: "@types/koa__multer@npm:2.0.4"
   dependencies:
@@ -4241,7 +4241,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sharp@npm:^0.31.0":
+"@types/sharp@npm:0.31.0":
   version: 0.31.0
   resolution: "@types/sharp@npm:0.31.0"
   dependencies:
@@ -8805,7 +8805,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multer@npm:^1.4.5-lts.1":
+"multer@npm:1.4.5-lts.1":
   version: 1.4.5-lts.1
   resolution: "multer@npm:1.4.5-lts.1"
   dependencies:
@@ -10284,12 +10284,12 @@ __metadata:
   resolution: "server@workspace:apps/server"
   dependencies:
     "@aspida/fetch": 1.11.0
-    "@aws-sdk/client-s3": ^3.178.0
-    "@aws-sdk/middleware-endpoint": ^3.178.0
-    "@aws-sdk/s3-request-presigner": ^3.178.0
+    "@aws-sdk/client-s3": 3.178.0
+    "@aws-sdk/middleware-endpoint": 3.178.0
+    "@aws-sdk/s3-request-presigner": 3.178.0
     "@dotplants/cli": 0.2.3
     "@koa/cors": 3.4.1
-    "@koa/multer": ^3.0.0
+    "@koa/multer": 3.0.0
     "@koa/router": 12.0.0
     "@prisma/client": 4.3.1
     "@tsconfig/node18": 1.0.1
@@ -10298,11 +10298,11 @@ __metadata:
     "@types/koa-bodyparser": 4.3.8
     "@types/koa-logger": 3.1.2
     "@types/koa__cors": 3.3.0
-    "@types/koa__multer": ^2.0.4
+    "@types/koa__multer": 2.0.4
     "@types/koa__router": 12.0.0
     "@types/node": 18.7.18
     "@types/node-fetch": 2.6.2
-    "@types/sharp": ^0.31.0
+    "@types/sharp": 0.31.0
     "@types/whatwg-fetch": 0.0.33
     "@types/ws": 8.5.3
     "@typescript-eslint/eslint-plugin": 5.38.0
@@ -10319,12 +10319,12 @@ __metadata:
     koa: 2.13.4
     koa-bodyparser: 4.3.0
     koa-logger: 3.2.1
-    multer: ^1.4.5-lts.1
+    multer: 1.4.5-lts.1
     node-fetch: 2.6.7
     npm-run-all: 4.1.5
     path-to-regexp: 6.2.1
     prisma: 4.3.1
-    sharp: ^0.31.0
+    sharp: 0.31.0
     striptags: 3.2.0
     ts-jest: 29.0.2
     ts-node: 10.9.1
@@ -10355,7 +10355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sharp@npm:^0.31.0":
+"sharp@npm:0.31.0":
   version: 0.31.0
   resolution: "sharp@npm:0.31.0"
   dependencies:
