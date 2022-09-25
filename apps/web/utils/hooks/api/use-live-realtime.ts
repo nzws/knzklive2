@@ -6,8 +6,7 @@ import { useAPIError } from './use-api-error';
 import {
   LiveUpdateCommentCreated,
   LiveUpdateCommentDeleted,
-  LiveUpdateMessage,
-  streamingUrl
+  LiveUpdateMessage
 } from 'api-types/streaming/live-update';
 
 type Payload = LiveUpdateMessage | { error?: string };
@@ -85,7 +84,7 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
 
     try {
       const Token = viewerToken || token || '';
-      const url = `${wsURL}${streamingUrl(liveId)}?token=${Token}`;
+      const url = `${wsURL}/websocket/v1/live/${liveId}?token=${Token}`;
       const ws = new WebSocket(url);
       socketRef.current = ws;
       setIsConnecting(true);

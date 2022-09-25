@@ -6,11 +6,10 @@ import { pubsub } from '../redis/pubsub/client';
 import { getLiveUpdateKey } from '../redis/pubsub/keys';
 import { UserToken } from '../redis/user-token';
 import { jwtCommentViewer } from '../services/jwt';
-import { streamingUrl } from 'api-types/streaming/live-update';
 
 const userToken = new UserToken();
 
-const liveUpdateRegexp = pathToRegexp(streamingUrl(':liveId'));
+const liveUpdateRegexp = pathToRegexp('/websocket/v1/live/:liveId');
 
 export class Streaming {
   constructor(server: Server) {

@@ -1,8 +1,5 @@
 import { CommentPublic, LivePublic } from '../common/types';
 
-export const streamingUrl = (liveId: number | string) =>
-  `/websocket/v1/live/${liveId}`;
-
 export interface LiveUpdateMessageBase {
   type: string;
   data: unknown;
