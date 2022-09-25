@@ -82,7 +82,7 @@ export const useVideoStream = (
         return;
       }
 
-      let player;
+      let player: Hls;
       try {
         const Hls = (await import('hls.js')).default;
 
@@ -94,13 +94,40 @@ export const useVideoStream = (
             liveSyncDuration: 0,
             liveMaxLatencyDuration: 5,
             liveDurationInfinity: true,
-            highBufferWatchdogPeriod: 1
+            highBufferWatchdogPeriod: 1,
+            manifestLoadingMaxRetry: 4,
+            progressive: true
           });
           hlsPlayerRef.current = player;
 
           player.loadSource(hlsUrl);
           player.attachMedia(videoTagRef.current);
           player.startLoad();
+
+          player.on(Hls.Events.ERROR, (event, data) => {
+            console.warn(event, data);
+            if (data.fatal) {
+              switch (data.type) {
+                case Hls.ErrorTypes.NETWORK_ERROR: {
+                  if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR) {
+                    setTimeout(() => {
+                      player.loadSource(hlsUrl);
+                      player.startLoad();
+                    }, 500);
+                  } else {
+                    player.startLoad();
+                  }
+                  break;
+                }
+                case Hls.ErrorTypes.MEDIA_ERROR:
+                  player.recoverMediaError();
+                  break;
+                default:
+                  player.destroy();
+                  break;
+              }
+            }
+          });
         } else if (
           videoTagRef.current.canPlayType('application/vnd.apple.mpegurl')
         ) {

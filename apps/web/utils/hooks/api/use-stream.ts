@@ -11,8 +11,7 @@ export const useStream = (liveId?: number) => {
         Authorization: `Bearer ${token || ''}`
       },
       key: token && liveId ? undefined : null,
-      refreshInterval: 5000,
-      refreshWhenHidden: true
+      refreshInterval: 10000
     }
   );
 

@@ -1,6 +1,10 @@
+import { Live } from '@prisma/client';
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/internals/push/action';
+import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
 import { images, lives } from '../../../../models';
+import { pubsub } from '../../../../redis/pubsub/client';
+import { getLiveUpdateKey } from '../../../../redis/pubsub/keys';
 import { pushApi } from '../../../../services/push-api';
 import { thumbnailStorage } from '../../../../services/storage/thumbnail';
 import { basePushStream, serverToken } from '../../../../utils/constants';
@@ -52,8 +56,9 @@ export const postV1InternalsPushAction: APIRoute<
     return;
   }
 
+  let newLive: Live;
   if (body.action === 'start') {
-    await lives.startStream(live);
+    newLive = await lives.startStream(live);
 
     // todo: to worker
     setTimeout(() => {
@@ -80,13 +85,23 @@ export const postV1InternalsPushAction: APIRoute<
       })();
     }, 1000);
   } else if (body.action === 'stop') {
-    await lives.stopStream(live);
+    newLive = await lives.stopStream(live);
   } else {
     ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
     };
     return;
+  }
+
+  if (newLive) {
+    void pubsub.publish(
+      getLiveUpdateKey(newLive.id),
+      JSON.stringify({
+        type: 'live:update',
+        data: lives.getPublic(newLive)
+      } as LiveUpdateUpdate)
+    );
   }
 
   ctx.status = 200;

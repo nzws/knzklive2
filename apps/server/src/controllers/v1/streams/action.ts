@@ -7,6 +7,9 @@ import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 import { pushApi } from '../../../services/push-api';
 import { basePushStream, serverToken } from '../../../utils/constants';
+import { getLiveUpdateKey } from '../../../redis/pubsub/keys';
+import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
+import { Live } from '@prisma/client';
 
 type Request = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
@@ -41,6 +44,7 @@ export const postV1StreamsAction: APIRoute<
   }
   const body = ctx.request.body;
 
+  let newLive: Live | undefined;
   if (body.command === 'publish') {
     if (ctx.state.live.startedAt) {
       ctx.status = 400;
@@ -51,7 +55,7 @@ export const postV1StreamsAction: APIRoute<
       return;
     }
 
-    await lives.startLive(ctx.state.live);
+    newLive = await lives.startLive(ctx.state.live);
   } else if (body.command === 'end') {
     if (ctx.state.live.endedAt) {
       ctx.status = 400;
@@ -63,7 +67,7 @@ export const postV1StreamsAction: APIRoute<
     }
 
     const { sum } = await liveWatching.get(ctx.state.live.id);
-    await lives.endLive(ctx.state.live, sum);
+    newLive = await lives.endLive(ctx.state.live, sum);
 
     await pubsub.publish(
       'update:hashtag',
@@ -86,6 +90,16 @@ export const postV1StreamsAction: APIRoute<
     } catch (e) {
       console.error(e);
     }
+  }
+
+  if (newLive) {
+    await pubsub.publish(
+      getLiveUpdateKey(newLive.id),
+      JSON.stringify({
+        type: 'live:update',
+        data: lives.getPublic(newLive)
+      } as LiveUpdateUpdate)
+    );
   }
 
   ctx.body = {

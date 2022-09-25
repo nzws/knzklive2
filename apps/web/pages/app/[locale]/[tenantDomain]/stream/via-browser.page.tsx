@@ -36,6 +36,7 @@ import { CommentPost } from '~/organisms/live/left/comment-post';
 import { WakeLock } from '~/organisms/stream/via-browser/wake-lock';
 import { OLEDScreen } from '~/organisms/stream/via-browser/oled-screen';
 import { useFullScreen } from '~/utils/hooks/use-full-screen';
+import { useLiveRealtime } from '~/utils/hooks/api/use-live-realtime';
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback },
@@ -58,6 +59,12 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
   const [count] = useLiveRealtimeCount(!live?.endedAt ? live?.id : undefined);
   const { isEnabledFullScreen, handleEnterFullScreen, handleExitFullScreen } =
     useFullScreen();
+  const {
+    comments,
+    live: realtimeLive,
+    isConnecting: isConnectingStreaming,
+    reconnect: reconnectStreaming
+  } = useLiveRealtime(live?.id);
 
   const toggleMuted = useCallback(
     () => setIsVoiceMuted(prev => !prev),
@@ -88,6 +95,10 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
       }
     }
   }, [live, handleExitFullScreen]);
+
+  useEffect(() => {
+    void mutate();
+  }, [realtimeLive, mutate]);
 
   return (
     <Container py={4}>
@@ -203,7 +214,12 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 
             <CommentPost liveId={live.id} hashtag={live.hashtag} />
 
-            <Comments live={live} isStreamer />
+            <Comments
+              comments={comments}
+              isConnectingStreaming={isConnectingStreaming}
+              reconnectStreaming={reconnectStreaming}
+              isStreamer
+            />
           </Fragment>
         )}
       </Stack>

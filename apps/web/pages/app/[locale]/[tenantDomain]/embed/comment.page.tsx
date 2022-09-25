@@ -6,13 +6,13 @@ import { useEffect, useState } from 'react';
 import { Comment } from '~/organisms/embed/comment/comment';
 import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
 import { defaultStaticProps } from '~/utils/data-fetching/default-static-props';
-import { useComments } from '~/utils/hooks/api/use-comments';
+import { useLiveRealtime } from '~/utils/hooks/api/use-live-realtime';
 
 const Page: NextPage = () => {
   const { query } = useRouter();
-  const [viewerToken, serViewerToken] = useState<string>();
+  const [viewerToken, setViewerToken] = useState<string>();
   const [liveId, setLiveId] = useState<number>();
-  const { comments } = useComments(true, liveId, viewerToken);
+  const { comments } = useLiveRealtime(liveId, viewerToken);
 
   useEffect(() => {
     if (!query) {
@@ -24,7 +24,7 @@ const Page: NextPage = () => {
       return;
     }
 
-    serViewerToken(viewerToken as string);
+    setViewerToken(viewerToken as string);
     setLiveId(Number(liveId));
   }, [query]);
 

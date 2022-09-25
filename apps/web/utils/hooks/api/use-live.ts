@@ -12,8 +12,7 @@ export const useLive = (liveId?: number, fallbackData?: LivePublic) => {
     {
       fallbackData,
       key: liveId ? undefined : null,
-      refreshInterval: 5000,
-      refreshWhenHidden: true,
+      refreshInterval: 10000,
       headers
     }
   );

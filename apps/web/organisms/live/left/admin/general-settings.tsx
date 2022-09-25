@@ -17,14 +17,9 @@ import { useAPIError } from '~/utils/hooks/api/use-api-error';
 type Props = {
   live: LivePrivate;
   notPushing: boolean;
-  onStartPublish?: () => void;
 };
 
-export const GeneralSettings: FC<Props> = ({
-  live,
-  notPushing,
-  onStartPublish
-}) => {
+export const GeneralSettings: FC<Props> = ({ live, notPushing }) => {
   const { token } = useAuth();
   const {
     isOpen: isOpenStart,
@@ -60,7 +55,6 @@ export const GeneralSettings: FC<Props> = ({
               Authorization: `Bearer ${token}`
             }
           });
-          onStartPublish?.();
           onCloseStop();
           onCloseStart();
         } catch (e) {
@@ -69,7 +63,7 @@ export const GeneralSettings: FC<Props> = ({
         }
       })();
     },
-    [live.id, token, onStartPublish, onCloseStart, onCloseStop]
+    [live.id, token, onCloseStart, onCloseStop]
   );
 
   return (

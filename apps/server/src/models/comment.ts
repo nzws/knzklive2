@@ -1,8 +1,12 @@
 import type { Comment, PrismaClient } from '@prisma/client';
 import { CommentPublic } from 'api-types/common/types';
+import {
+  LiveUpdateCommentCreated,
+  LiveUpdateCommentDeleted
+} from 'api-types/streaming/live-update';
 import { comments } from '.';
 import { pubsub } from '../redis/pubsub/client';
-import { getCommentKey } from '../redis/pubsub/keys';
+import { getLiveUpdateKey } from '../redis/pubsub/keys';
 
 export const Comments = (client: PrismaClient['comment']) =>
   Object.assign(client, {
@@ -31,7 +35,13 @@ export const Comments = (client: PrismaClient['comment']) =>
       });
 
       const result = comments.getPublic(data);
-      await pubsub.publish(getCommentKey(liveId), JSON.stringify(result));
+      await pubsub.publish(
+        getLiveUpdateKey(liveId),
+        JSON.stringify({
+          type: 'comment:created',
+          data: result
+        } as LiveUpdateCommentCreated)
+      );
 
       return result;
     },
@@ -56,7 +66,13 @@ export const Comments = (client: PrismaClient['comment']) =>
         }
       });
       const result = comments.getPublic(data);
-      await pubsub.publish(getCommentKey(liveId), JSON.stringify(result));
+      await pubsub.publish(
+        getLiveUpdateKey(liveId),
+        JSON.stringify({
+          type: 'comment:created',
+          data: result
+        } as LiveUpdateCommentCreated)
+      );
 
       return result;
     },
@@ -71,11 +87,13 @@ export const Comments = (client: PrismaClient['comment']) =>
       });
 
       await pubsub.publish(
-        getCommentKey(updated.liveId),
+        getLiveUpdateKey(updated.liveId),
         JSON.stringify({
-          id: updated.id,
-          isDeleted: true
-        })
+          type: 'comment:deleted',
+          data: {
+            id: updated.id
+          }
+        } as LiveUpdateCommentDeleted)
       );
     },
     markAsDeleteBySourceId: async (sourceId: string) => {

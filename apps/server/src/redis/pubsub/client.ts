@@ -12,7 +12,6 @@ type Callback = (message: string) => void;
 type Cb = {
   callback: Callback;
   event?: string;
-  firehoseEvent?: string;
 };
 
 class PubSub {
@@ -22,10 +21,7 @@ class PubSub {
   constructor() {
     subClient.on('message', (channelName: string, message) => {
       this.callbacks.forEach(cb => {
-        if (
-          (cb.event && cb.event === channelName) ||
-          (cb.firehoseEvent && channelName.startsWith(cb.firehoseEvent))
-        ) {
+        if (cb.event && cb.event === channelName) {
           cb.callback(message as string);
         }
       });

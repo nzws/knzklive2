@@ -14,24 +14,28 @@ import {
   Center,
   Spinner
 } from '@chakra-ui/react';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useLive } from '~/utils/hooks/api/use-live';
 import { useStream } from '~/utils/hooks/api/use-stream';
 import { PushKey } from './push-key';
 import { CommentViewer } from './comment-viewer';
 import { GeneralSettings } from './general-settings';
 import Link from 'next/link';
+import { LivePublic } from '~/../../packages/api-types/common/types';
 
 type Props = {
   liveId: number;
+  liveFallback?: LivePublic;
 };
 
-export const Admin: FC<Props> = ({ liveId }) => {
-  const [stream] = useStream(liveId);
-  const [, mutate] = useLive(liveId);
+export const Admin: FC<Props> = ({ liveId, liveFallback }) => {
+  const [stream, mutate] = useStream(liveId);
 
   const live = stream?.live;
+
+  useEffect(() => {
+    void mutate();
+  }, [liveFallback, mutate]);
 
   if (!live) {
     return (
@@ -72,7 +76,6 @@ export const Admin: FC<Props> = ({ liveId }) => {
               <GeneralSettings
                 live={live}
                 notPushing={!stream?.live?.isPushing}
-                onStartPublish={() => void mutate()}
               />
             </TabPanel>
             <TabPanel>

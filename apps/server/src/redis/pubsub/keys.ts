@@ -1,1 +1,1 @@
-export const getCommentKey = (id: number) => `comment:${id}`;
+export const getLiveUpdateKey = (id: number) => `live:${id}`;

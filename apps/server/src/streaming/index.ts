@@ -3,13 +3,14 @@ import WebSocket from 'ws';
 import { pathToRegexp } from 'path-to-regexp';
 import { lives } from '../models';
 import { pubsub } from '../redis/pubsub/client';
-import { getCommentKey } from '../redis/pubsub/keys';
+import { getLiveUpdateKey } from '../redis/pubsub/keys';
 import { UserToken } from '../redis/user-token';
 import { jwtCommentViewer } from '../services/jwt';
+import { streamingUrl } from 'api-types/streaming/live-update';
 
 const userToken = new UserToken();
 
-const commentsRegexp = pathToRegexp('/websocket/v1/stream/:liveId');
+const liveUpdateRegexp = pathToRegexp(streamingUrl(':liveId'));
 
 export class Streaming {
   constructor(server: Server) {
@@ -18,12 +19,10 @@ export class Streaming {
     });
 
     ws.on('connection', (socket, req) => {
-      const ip = req.socket.remoteAddress;
-
       try {
         console.log('websocket connected', req.url);
         if (req.url) {
-          void this.handleConnection(socket, req.url, ip);
+          void this.handleConnection(socket, req.url);
         }
       } catch (e) {
         console.warn(e);
@@ -32,25 +31,21 @@ export class Streaming {
     });
   }
 
-  private handleConnection(socket: WebSocket, Url: string, ip?: string) {
+  private handleConnection(socket: WebSocket, Url: string) {
     const url = new URL(Url, process.env.SERVER_ENDPOINT);
     const token = url.searchParams.get('token') || undefined;
-    if (!ip) {
-      return this.closeConnection(socket, 'invalid_ip');
-    }
 
-    const comments = commentsRegexp.exec(url.pathname);
-    if (comments) {
-      const liveId = Number(comments[1]);
-      return this.handleV1Comments(socket, ip, liveId, token);
+    const live = liveUpdateRegexp.exec(url.pathname);
+    if (live) {
+      const liveId = Number(live[1]);
+      return this.handleV1LiveUpdate(socket, liveId, token);
     }
 
     return this.closeConnection(socket, 'invalid_path');
   }
 
-  private async handleV1Comments(
+  private async handleV1LiveUpdate(
     socket: WebSocket,
-    ip: string,
     liveId: number,
     token?: string
   ) {
@@ -73,15 +68,12 @@ export class Streaming {
       if (!lives.isAccessibleInformationByUser(live, userId)) {
         return this.closeConnection(socket, 'forbidden_live');
       }
-      if (live.endedAt) {
-        return this.closeConnection(socket, 'ended_live');
-      }
     }
 
     console.log('websocket connected', liveId);
 
     const handle = {
-      event: getCommentKey(liveId),
+      event: getLiveUpdateKey(liveId),
       callback: (message: string) => {
         socket.send(message);
       }

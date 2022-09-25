@@ -1,6 +1,9 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams/_liveId@number';
+import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
 import { images, lives } from '../../../models';
+import { pubsub } from '../../../redis/pubsub/client';
+import { getLiveUpdateKey } from '../../../redis/pubsub/keys';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
@@ -79,7 +82,7 @@ export const patchV1Streams: APIRoute<
     }
   }
 
-  await lives.update({
+  const newLive = await lives.update({
     where: {
       id: ctx.state.live.id
     },
@@ -92,6 +95,14 @@ export const patchV1Streams: APIRoute<
       thumbnailId: body.customThumbnailId
     }
   });
+
+  await pubsub.publish(
+    getLiveUpdateKey(newLive.id),
+    JSON.stringify({
+      type: 'live:update',
+      data: lives.getPublic(newLive)
+    } as LiveUpdateUpdate)
+  );
 
   ctx.body = {
     success: true

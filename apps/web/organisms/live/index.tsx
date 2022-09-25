@@ -24,6 +24,8 @@ import { PublicStats } from './left/public-stats';
 import { Streamer } from './left/streamer';
 import { Video } from './left/video';
 import { NotPushed } from './left/video/not-pushed';
+import { useLiveRealtime } from '~/utils/hooks/api/use-live-realtime';
+import { useLive } from '~/utils/hooks/api/use-live';
 
 type Props = {
   live: LivePublic;
@@ -46,6 +48,13 @@ export const Live: FC<Props> = ({ live, streamer }) => {
     !live.endedAt && live.isPushing ? live.id : undefined
   );
   const [count] = useLiveRealtimeCount(!live.endedAt ? live.id : undefined);
+  const [, mutate] = useLive(live.id);
+  const {
+    comments,
+    live: realtimeLive,
+    isConnecting: isConnectingStreaming,
+    reconnect: reconnectStreaming
+  } = useLiveRealtime(live.id);
 
   // todo: 仮
   const streamerUrl = useMemo(() => {
@@ -75,10 +84,18 @@ export const Live: FC<Props> = ({ live, streamer }) => {
     onOpen();
     const timeout = setTimeout(() => {
       onClose();
-    }, 1.5 * 1000);
+    }, 2 * 1000);
 
     return () => clearInterval(timeout);
   }, [isDesktop, isManuallyTapped, onOpen, onClose]);
+
+  useEffect(() => {
+    if (!realtimeLive) {
+      return;
+    }
+
+    void mutate(realtimeLive, { revalidate: false });
+  }, [realtimeLive, mutate]);
 
   return (
     <Container
@@ -144,7 +161,13 @@ export const Live: FC<Props> = ({ live, streamer }) => {
         <Spacer />
 
         <Box width={{ lg: '400px' }}>
-          <Comments live={live} isStreamer={isStreamer} />
+          <Comments
+            hashtag={live.hashtag}
+            comments={comments}
+            isConnectingStreaming={isConnectingStreaming}
+            reconnectStreaming={reconnectStreaming}
+            isStreamer={isStreamer}
+          />
         </Box>
       </Flex>
 
