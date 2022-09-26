@@ -1,6 +1,13 @@
 import { AspectRatio, Button, Image, Stack } from '@chakra-ui/react';
 import styled from '@emotion/styled';
-import { ChangeEvent, FC, useCallback, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  FC,
+  Fragment,
+  useCallback,
+  useRef,
+  useState
+} from 'react';
 import { ImagePublic } from '~/../../packages/api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
@@ -74,40 +81,43 @@ export const UploadThumbnail: FC<Props> = ({
   );
 
   return (
-    <Stack spacing={4}>
-      {!hideButton && (
-        <Button
-          variant="outline"
-          width="100%"
-          onClick={handleOpenFile}
-          isLoading={isLoading}
-        >
-          新しくアップロード
-        </Button>
-      )}
-
+    <Fragment>
       <input
         type="file"
         hidden
         ref={fileInputRef}
         onChange={e => void handleFileChange(e)}
+        style={{ display: 'none' }}
       />
 
-      <VideoContainer
-        ratio={16 / 9}
-        onClick={isLoading ? undefined : handleOpenFile}
-      >
-        {thumbnailUrl && (
-          <Image
-            src={thumbnailUrl}
-            style={{
-              objectFit: 'contain'
-            }}
-            alt="image"
-          />
+      <Stack spacing={4}>
+        {!hideButton && (
+          <Button
+            variant="outline"
+            width="100%"
+            onClick={handleOpenFile}
+            isLoading={isLoading}
+          >
+            新しくアップロード
+          </Button>
         )}
-      </VideoContainer>
-    </Stack>
+
+        <VideoContainer
+          ratio={16 / 9}
+          onClick={isLoading ? undefined : handleOpenFile}
+        >
+          {thumbnailUrl && (
+            <Image
+              src={thumbnailUrl}
+              style={{
+                objectFit: 'contain'
+              }}
+              alt="image"
+            />
+          )}
+        </VideoContainer>
+      </Stack>
+    </Fragment>
   );
 };
 
