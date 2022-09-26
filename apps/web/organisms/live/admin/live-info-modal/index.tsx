@@ -334,7 +334,7 @@ export const LiveInfoModal: FC<Props> = ({
         </ModalBody>
 
         <ModalFooter>
-          <Stack spacing={4} width="100%">
+          <Stack spacing={2} width="100%">
             {isCreate && (
               <Text>
                 <FormattedMessage

@@ -56,6 +56,7 @@ import { FormattedMessage } from 'react-intl';
 import { Comment } from '~/organisms/live/comment/comment';
 import { useRouter } from 'next/router';
 import { useWakeLock } from '~/utils/hooks/use-wake-lock';
+import { TimeCounter } from '~/atoms/time-counter';
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback },
@@ -298,8 +299,15 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 
               <Spacer />
 
-              <Button variant="outline" onClick={onOpen}>
-                <FiMoreHorizontal />
+              <Button
+                variant="outline"
+                onClick={onOpen}
+                rightIcon={<FiMoreHorizontal />}
+              >
+                <TimeCounter
+                  dateFrom={live?.startedAt}
+                  dateTo={live?.endedAt}
+                />
               </Button>
             </Flex>
           </Stack>
