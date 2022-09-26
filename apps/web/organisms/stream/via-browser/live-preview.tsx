@@ -1,40 +1,34 @@
-import { Button, Stack, useDisclosure } from '@chakra-ui/react';
+import { AspectRatio, Image } from '@chakra-ui/react';
 import { FC, Fragment } from 'react';
-import { LivePublic } from 'api-types/common/types';
-import { Video } from '~/organisms/live/left/video';
-import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
 import { NotPushed } from '~/organisms/live/left/video/not-pushed';
+import styled from '@emotion/styled';
 
 type Props = {
-  live: LivePublic;
+  thumbnailUrl?: string;
+  isPushing?: boolean;
 };
 
-export const LivePreview: FC<Props> = ({ live }) => {
-  const { isOpen, onToggle } = useDisclosure();
-  const [url, updateUrl] = useStreamUrl(
-    !live.endedAt && live.isPushing ? live.id : undefined
-  );
+export const LivePreview: FC<Props> = ({ thumbnailUrl, isPushing }) => (
+  <Fragment>
+    {isPushing ? (
+      <VideoContainer ratio={16 / 9}>
+        <Image
+          src={thumbnailUrl}
+          style={{
+            objectFit: 'contain'
+          }}
+          alt="image"
+        />
+      </VideoContainer>
+    ) : (
+      <NotPushed thumbnailUrl={thumbnailUrl} />
+    )}
+  </Fragment>
+);
 
-  return (
-    <Stack spacing={4}>
-      <Button onClick={onToggle} variant="outline" size="sm" width="100%">
-        {isOpen ? '閉じる' : '配信画面を確認する'}
-      </Button>
-
-      {isOpen && (
-        <Fragment>
-          {live.isPushing ? (
-            <Video
-              url={url}
-              updateUrl={updateUrl}
-              thumbnailUrl={live.thumbnail?.publicUrl}
-              isStreamer
-            />
-          ) : (
-            <NotPushed thumbnailUrl={live.thumbnail?.publicUrl} />
-          )}
-        </Fragment>
-      )}
-    </Stack>
-  );
-};
+const VideoContainer = styled(AspectRatio)`
+  background-color: #000;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+`;

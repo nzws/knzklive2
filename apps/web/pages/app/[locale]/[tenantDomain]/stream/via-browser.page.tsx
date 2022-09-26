@@ -13,9 +13,14 @@ import { StartedNote } from '~/organisms/stream/via-browser/started-note';
 import { useStreamStatus } from '~/utils/hooks/api/use-stream-status';
 import { StreamNotFound } from '~/organisms/stream/via-browser/stream-not-found';
 import {
+  AspectRatio,
+  Box,
   Button,
   Container,
   Divider,
+  Flex,
+  Grid,
+  GridItem,
   Heading,
   Icon,
   Stack,
@@ -23,7 +28,7 @@ import {
   Tooltip
 } from '@chakra-ui/react';
 import { LivePreview } from '~/organisms/stream/via-browser/live-preview';
-import { FiMic, FiMicOff, FiRefreshCw } from 'react-icons/fi';
+import { FiMic, FiMicOff, FiPlayCircle, FiRefreshCw } from 'react-icons/fi';
 import { NotStarted } from '~/organisms/stream/via-browser/not-started';
 import { NotPushing } from '~/organisms/stream/via-browser/not-pushing';
 import { useStream } from '~/utils/hooks/api/use-stream';
@@ -110,47 +115,74 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
         </title>
       </Head>
 
-      {isEnabledFullScreen && <OLEDScreen onClick={handleExitFullScreen} />}
+      <Grid gridTemplateRows="auto 1fr 48px">
+        <GridItem>
+          <LivePreview
+            isPushing={live?.isPushing}
+            thumbnailUrl={live?.thumbnail?.publicUrl}
+          />
+        </GridItem>
 
-      <StartedNote />
+        <GridItem>
+          <Box>「ブラウザから配信」では、コメントは下から上に流れます。</Box>
+        </GridItem>
+
+        <GridItem>
+          <Flex>
+            {live?.startedAt ? (
+              live.isPushing ? (
+                isVoiceMuted ? (
+                  <Button
+                    flexShrink={0}
+                    variant="outline"
+                    colorScheme="red"
+                    leftIcon={<FiMicOff />}
+                  >
+                    ミュート解除
+                  </Button>
+                ) : (
+                  <Button
+                    flexShrink={0}
+                    variant="outline"
+                    colorScheme="blue"
+                    leftIcon={<FiMic />}
+                  >
+                    ミュート
+                  </Button>
+                )
+              ) : (
+                <Button
+                  flexShrink={0}
+                  colorScheme="yellow"
+                  leftIcon={<FiRefreshCw />}
+                >
+                  サーバーに再接続
+                </Button>
+              )
+            ) : (
+              <Button
+                flexShrink={0}
+                colorScheme="green"
+                leftIcon={<FiPlayCircle />}
+              >
+                配信を始める
+              </Button>
+            )}
+
+            <Button>設定</Button>
+          </Flex>
+        </GridItem>
+      </Grid>
 
       <Stack spacing={6}>
         {status && !liveId && <StreamNotFound />}
 
         {live && (
           <Fragment>
-            {!live.isPushing && <NotPushing />}
-            {!live.startedAt && <NotStarted />}
-
-            <LivePreview live={live} />
-
             <Stack spacing={4}>
               <Heading size="sm">画面制御</Heading>
 
               <WakeLock />
-
-              <Button onClick={handleEnterFullScreen} width="100%">
-                有機EL向け: 画面を黒くする (タップして解除)
-              </Button>
-            </Stack>
-
-            <Stack spacing={4}>
-              <Heading size="sm">映像</Heading>
-
-              <Text>そのうち作成（現在は無映像）</Text>
-
-              <Text as="b">
-                （無映像状態に表示する画像は「配信情報を編集」→「サムネイル」からできます）
-              </Text>
-            </Stack>
-
-            <Stack spacing={4}>
-              <Heading size="sm">音声</Heading>
-
-              <Button onClick={toggleMuted} width="100%">
-                <Icon mr={1} as={isVoiceMuted ? FiMicOff : FiMic} />
-                {isVoiceMuted ? 'ミュート解除' : 'ミュート'}
-              </Button>
             </Stack>
 
             <Stack spacing={4}>
