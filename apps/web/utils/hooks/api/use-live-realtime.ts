@@ -51,6 +51,7 @@ const commentReducer = (
 
 export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
   const { token, headers } = useAuth();
+  const tokenRef = useRef(token);
   const socketRef = useRef<WebSocket>();
   const timeoutRef = useRef<NodeJS.Timeout>();
   const needConnectingRef = useRef(true);
@@ -83,7 +84,7 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
     }
 
     try {
-      const Token = viewerToken || token || '';
+      const Token = viewerToken || tokenRef.current || '';
       const url = `${wsURL}/websocket/v1/live/${liveId}?token=${Token}`;
       const ws = new WebSocket(url);
       socketRef.current = ws;
@@ -131,12 +132,16 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
       console.warn(e);
       setError(e);
     }
-  }, [liveId, viewerToken, token, disconnect]);
+  }, [liveId, viewerToken, disconnect]);
 
   const reconnect = useCallback(() => {
     needConnectingRef.current = true;
     connect();
   }, [connect]);
+
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
 
   useEffect(() => {
     needConnectingRef.current = true;
@@ -148,7 +153,7 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
       setLive(undefined);
       disconnect();
     };
-  }, [liveId, connect, disconnect]);
+  }, [liveId, connect, disconnect, viewerToken]);
 
   useEffect(() => {
     if (!liveId) {
