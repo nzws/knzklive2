@@ -66,7 +66,7 @@ export const CommentMenu: FC<Props> = ({ comment, user, isStreamer }) => {
   }, [comment, token]);
 
   return (
-    <Menu onOpen={onOpen} onClose={onClose}>
+    <Menu onOpen={onOpen} onClose={onClose} isLazy>
       <MenuButton as={Button} variant="ghost" size="sm">
         <FiMoreHorizontal />
       </MenuButton>

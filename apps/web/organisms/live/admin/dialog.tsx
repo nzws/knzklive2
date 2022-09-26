@@ -44,7 +44,14 @@ export const Dialog: FC<Props> = ({
           <Button ref={cancelRef} onClick={onClose}>
             キャンセル
           </Button>
-          <Button colorScheme="blue" ml={3} onClick={onSubmit}>
+          <Button
+            colorScheme="blue"
+            ml={3}
+            onClick={() => {
+              onSubmit();
+              onClose();
+            }}
+          >
             {submitText}
           </Button>
         </AlertDialogFooter>

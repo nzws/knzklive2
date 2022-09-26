@@ -40,6 +40,7 @@ export const useWakeLock = () => {
   useEffect(() => {
     if (!('wakeLock' in navigator)) {
       setIsWakeLockSupported(false);
+      setIsWakeLockEnabled(false);
       return;
     }
     setIsWakeLockSupported(true);

@@ -79,7 +79,7 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
 
   const connect = useCallback(() => {
     disconnect();
-    if (!liveId) {
+    if (!liveId || !needConnectingRef.current) {
       return;
     }
 
@@ -125,6 +125,9 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
         setIsConnecting(false);
 
         if (needConnectingRef.current) {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
           timeoutRef.current = setTimeout(() => connect(), 1000);
         }
       };
@@ -153,7 +156,7 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
       setLive(undefined);
       disconnect();
     };
-  }, [liveId, connect, disconnect, viewerToken]);
+  }, [liveId, viewerToken, connect, disconnect]);
 
   useEffect(() => {
     if (!liveId) {

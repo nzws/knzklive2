@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { Fragment, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
 import {
   defaultStaticProps,
@@ -11,9 +11,8 @@ import { PageProps } from '~/utils/data-fetching/get-all-static-props';
 import { useTenant } from '~/utils/hooks/api/use-tenant';
 import { StartedNote } from '~/organisms/stream/via-browser/started-note';
 import { useStreamStatus } from '~/utils/hooks/api/use-stream-status';
-import { StreamNotFound } from '~/organisms/stream/via-browser/stream-not-found';
 import {
-  AspectRatio,
+  Alert,
   Box,
   Button,
   Container,
@@ -22,31 +21,49 @@ import {
   Grid,
   GridItem,
   Heading,
-  Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Spacer,
   Stack,
-  Text,
-  Tooltip
+  useDisclosure,
+  useToast
 } from '@chakra-ui/react';
 import { LivePreview } from '~/organisms/stream/via-browser/live-preview';
-import { FiMic, FiMicOff, FiPlayCircle, FiRefreshCw } from 'react-icons/fi';
-import { NotStarted } from '~/organisms/stream/via-browser/not-started';
-import { NotPushing } from '~/organisms/stream/via-browser/not-pushing';
+import {
+  FiMic,
+  FiMicOff,
+  FiMoreHorizontal,
+  FiPlayCircle,
+  FiRefreshCw
+} from 'react-icons/fi';
 import { useStream } from '~/utils/hooks/api/use-stream';
-import { Comments } from '~/organisms/live/comment';
-import { GeneralSettings } from '~/organisms/live/left/admin/general-settings';
-import { PublicStats } from '~/organisms/live/left/public-stats';
+import { PublicStats } from '~/organisms/live/public-stats';
 import { usePushViaBrowser } from '~/utils/hooks/api/use-push-via-browser';
 import { useLiveRealtimeCount } from '~/utils/hooks/api/use-live-realtime-count';
-import { CommentPost } from '~/organisms/live/left/comment-post';
+import { CommentPost } from '~/organisms/live/comment-post';
 import { WakeLock } from '~/organisms/stream/via-browser/wake-lock';
-import { OLEDScreen } from '~/organisms/stream/via-browser/oled-screen';
-import { useFullScreen } from '~/utils/hooks/use-full-screen';
 import { useLiveRealtime } from '~/utils/hooks/api/use-live-realtime';
+import { useAPIError } from '~/utils/hooks/api/use-api-error';
+import { client } from '~/utils/api/client';
+import { useAuth } from '~/utils/hooks/use-auth';
+import { LiveInfoModal } from '~/organisms/live/admin/live-info-modal';
+import { Dialog } from '~/organisms/live/admin/dialog';
+import { FormattedMessage } from 'react-intl';
+import { Comment } from '~/organisms/live/comment/comment';
+import { useRouter } from 'next/router';
+import { useWakeLock } from '~/utils/hooks/use-wake-lock';
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
   props: { tenant: tenantFallback },
   pathProps: { tenantDomain }
 }) => {
+  const { token } = useAuth();
+  const toast = useToast();
+  const router = useRouter();
   const isInitializedRef = useRef(false);
   const [tenant] = useTenant(tenantDomain, tenantFallback);
   const [status] = useStreamStatus(tenant?.id);
@@ -58,26 +75,67 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
     isConnectedWs,
     isVoiceMuted,
     setIsVoiceMuted,
-    connect,
-    disconnect
+    connect
   } = usePushViaBrowser(live?.id);
   const [count] = useLiveRealtimeCount(!live?.endedAt ? live?.id : undefined);
-  const { isEnabledFullScreen, handleEnterFullScreen, handleExitFullScreen } =
-    useFullScreen();
   const {
     comments,
     live: realtimeLive,
     isConnecting: isConnectingStreaming,
     reconnect: reconnectStreaming
   } = useLiveRealtime(live?.id);
+  const [error, setError] = useState<unknown>();
+  useAPIError(error);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenStart,
+    onOpen: onOpenStart,
+    onClose: onCloseStart
+  } = useDisclosure();
+  const {
+    isOpen: isOpenStop,
+    onOpen: onOpenStop,
+    onClose: onCloseStop
+  } = useDisclosure();
+  const {
+    isOpen: isOpenLiveEdit,
+    onOpen: onOpenLiveEdit,
+    onClose: onCloseLiveEdit
+  } = useDisclosure();
 
-  const toggleMuted = useCallback(
-    () => setIsVoiceMuted(prev => !prev),
-    [setIsVoiceMuted]
-  );
-  const toggleConnect = useCallback(
-    () => (isConnectedWs ? disconnect() : void connect()),
-    [isConnectedWs, connect, disconnect]
+  const {
+    isWakeLockSupported,
+    isWakeLockEnabled,
+    enableWakeLock,
+    disableWakeLock
+  } = useWakeLock();
+
+  const handlePublish = useCallback(
+    (isStart: boolean) => {
+      void (async () => {
+        if (!token || !live?.id) {
+          return;
+        }
+        try {
+          await client.v1.streams._liveId(live.id).action.post({
+            body: {
+              command: isStart ? 'publish' : 'end'
+            },
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+
+          if (!isStart) {
+            void router.push('/');
+          }
+        } catch (e) {
+          console.warn(e);
+          setError(e);
+        }
+      })();
+    },
+    [live?.id, token, router]
   );
 
   useEffect(() => {
@@ -91,22 +149,34 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
     }
 
     if (!live.isPushing && !live.endedAt) {
-      handleExitFullScreen();
-
       try {
+        toast({
+          title: 'エラー',
+          description: '配信サーバーから切断されました',
+          status: 'error',
+          isClosable: true
+        });
         void navigator.vibrate(500);
       } catch (e) {
         console.error(e);
       }
     }
-  }, [live, handleExitFullScreen]);
+  }, [live, toast]);
+
+  useEffect(() => {
+    if (!isConnectedWs || live?.startedAt || !live?.isPushing) {
+      return;
+    }
+
+    handlePublish(true);
+  }, [live, isConnectedWs, handlePublish]);
 
   useEffect(() => {
     void mutate();
   }, [realtimeLive, mutate]);
 
   return (
-    <Container py={4}>
+    <Container padding={0}>
       <Head>
         <title>
           {['ブラウザから配信', tenant?.displayName || tenant?.domain].join(
@@ -115,146 +185,193 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
         </title>
       </Head>
 
-      <Grid gridTemplateRows="auto 1fr 48px">
+      <StartedNote />
+
+      <Dialog
+        isOpen={isOpenStart}
+        onClose={onCloseStart}
+        onSubmit={() => void connect()}
+        title="配信を開始しますか？マイクがオンになります。"
+        submitText="配信を開始"
+      />
+
+      <Dialog
+        isOpen={isOpenStop}
+        onClose={onCloseStop}
+        onSubmit={() => handlePublish(false)}
+        title="配信を終了しますか？"
+        submitText="配信を終了"
+      />
+
+      <Grid
+        gridTemplateRows="auto 1fr auto"
+        gridTemplateColumns="1fr"
+        height="100vh"
+      >
         <GridItem>
           <LivePreview
             isPushing={live?.isPushing}
             thumbnailUrl={live?.thumbnail?.publicUrl}
+            liveId={live?.id}
+            tenantId={tenant?.id}
           />
         </GridItem>
 
-        <GridItem>
-          <Box>「ブラウザから配信」では、コメントは下から上に流れます。</Box>
+        <GridItem
+          overflowY="auto"
+          height="100%"
+          as={Flex}
+          gap={2}
+          py={2}
+          align="stretch"
+          flexDirection="column-reverse"
+        >
+          {!isConnectingStreaming && (
+            <Box>
+              <Button
+                colorScheme="blue"
+                variant="outline"
+                width="100%"
+                onClick={reconnectStreaming}
+              >
+                <FormattedMessage id="live.comment.reconnect" />
+              </Button>
+            </Box>
+          )}
+
+          {comments.map(comment => (
+            <Comment key={comment.id} comment={comment} isStreamer />
+          ))}
+
+          <Box>
+            <Alert status="info">
+              「ブラウザから配信」では、コメントは下から上に流れます。
+            </Alert>
+          </Box>
         </GridItem>
 
         <GridItem>
-          <Flex>
-            {live?.startedAt ? (
-              live.isPushing ? (
-                isVoiceMuted ? (
-                  <Button
-                    flexShrink={0}
-                    variant="outline"
-                    colorScheme="red"
-                    leftIcon={<FiMicOff />}
-                  >
-                    ミュート解除
-                  </Button>
+          <Stack>
+            {live && <CommentPost liveId={live.id} hashtag={live.hashtag} />}
+
+            <Flex gap={4} p={2}>
+              {live?.startedAt ? (
+                live.isPushing ? (
+                  isVoiceMuted ? (
+                    <Button
+                      colorScheme="red"
+                      leftIcon={<FiMicOff />}
+                      onClick={() => setIsVoiceMuted(false)}
+                    >
+                      ミュート解除
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      colorScheme="blue"
+                      leftIcon={<FiMic />}
+                      onClick={() => setIsVoiceMuted(true)}
+                    >
+                      ミュート
+                    </Button>
+                  )
                 ) : (
                   <Button
-                    flexShrink={0}
-                    variant="outline"
-                    colorScheme="blue"
-                    leftIcon={<FiMic />}
+                    colorScheme="yellow"
+                    leftIcon={<FiRefreshCw />}
+                    onClick={() => void connect()}
+                    isLoading={isConnectingWs || isConnectedWs}
                   >
-                    ミュート
+                    サーバーに再接続
                   </Button>
                 )
               ) : (
                 <Button
-                  flexShrink={0}
-                  colorScheme="yellow"
-                  leftIcon={<FiRefreshCw />}
+                  colorScheme="green"
+                  leftIcon={<FiPlayCircle />}
+                  onClick={onOpenStart}
+                  isLoading={isConnectingWs || isConnectedWs}
                 >
-                  サーバーに再接続
+                  配信を始める
                 </Button>
-              )
-            ) : (
-              <Button
-                flexShrink={0}
-                colorScheme="green"
-                leftIcon={<FiPlayCircle />}
-              >
-                配信を始める
-              </Button>
-            )}
+              )}
 
-            <Button>設定</Button>
-          </Flex>
+              <Spacer />
+
+              <Button variant="outline" onClick={onOpen}>
+                <FiMoreHorizontal />
+              </Button>
+            </Flex>
+          </Stack>
         </GridItem>
       </Grid>
 
-      <Stack spacing={6}>
-        {status && !liveId && <StreamNotFound />}
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        size="xl"
+        scrollBehavior="inside"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>配信情報/設定</ModalHeader>
+          <ModalCloseButton />
 
-        {live && (
-          <Fragment>
-            <Stack spacing={4}>
-              <Heading size="sm">画面制御</Heading>
+          <ModalBody>
+            <Stack spacing={6}>
+              {live && (
+                <Stack spacing={4}>
+                  <Heading size="md">{live.title}</Heading>
 
-              <WakeLock />
-            </Stack>
+                  <PublicStats
+                    startedAt={live.startedAt}
+                    endedAt={live.endedAt}
+                    currentViewers={count?.current}
+                    sumViewers={count?.sum || live.watchingSumCount}
+                    privacy={live.privacy}
+                  />
+                </Stack>
+              )}
 
-            <Stack spacing={4}>
-              <Heading size="sm">
-                プッシュ状態
-                {isConnectedWs ? (
-                  <Text as="span" ml={2} color="green.500">
-                    接続中
-                  </Text>
-                ) : (
-                  <Text as="span" ml={2} color="red.500">
-                    未接続
-                  </Text>
-                )}
-              </Heading>
-
-              <Tooltip
-                label={
-                  !isConnectedWs && isVoiceMuted
-                    ? 'ミュート中は接続開始できません'
-                    : ''
-                }
-                shouldWrapChildren
-              >
-                <Button
-                  onClick={toggleConnect}
-                  width="100%"
-                  isLoading={isConnectingWs}
-                  isDisabled={!isConnectedWs && isVoiceMuted}
-                >
-                  {isConnectedWs ? 'サーバーから切断' : 'サーバーに接続'}
+              {live?.startedAt && (
+                <Button colorScheme="red" width="100%" onClick={onOpenStop}>
+                  配信を終了
                 </Button>
-              </Tooltip>
-            </Stack>
+              )}
 
-            <Divider />
+              <Divider />
 
-            <Stack spacing={4}>
-              <Button
-                onClick={() => void mutate()}
-                width="100%"
-                variant="outline"
-                size="sm"
-                leftIcon={<FiRefreshCw />}
-              >
-                最新の状態に更新
+              <Stack spacing={4}>
+                <Heading size="sm">画面制御</Heading>
+
+                <WakeLock
+                  isWakeLockSupported={isWakeLockSupported}
+                  isWakeLockEnabled={isWakeLockEnabled}
+                  enableWakeLock={enableWakeLock}
+                  disableWakeLock={disableWakeLock}
+                />
+              </Stack>
+
+              <Divider />
+
+              {live && (
+                <LiveInfoModal
+                  isOpen={isOpenLiveEdit}
+                  onClose={onCloseLiveEdit}
+                  live={live}
+                  isCreate={false}
+                  tenantId={live.tenantId}
+                />
+              )}
+
+              <Button width="100%" onClick={onOpenLiveEdit}>
+                配信情報を編集
               </Button>
-
-              <Heading size="md">{live.title}</Heading>
-
-              <PublicStats
-                startedAt={live.startedAt}
-                endedAt={live.endedAt}
-                currentViewers={count?.current}
-                sumViewers={count?.sum || live.watchingSumCount}
-                privacy={live.privacy}
-              />
-
-              <GeneralSettings live={live} notPushing={!live.isPushing} />
             </Stack>
-
-            <CommentPost liveId={live.id} hashtag={live.hashtag} />
-
-            <Comments
-              comments={comments}
-              isConnectingStreaming={isConnectingStreaming}
-              reconnectStreaming={reconnectStreaming}
-              isStreamer
-            />
-          </Fragment>
-        )}
-      </Stack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Container>
   );
 };
