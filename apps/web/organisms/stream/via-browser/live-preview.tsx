@@ -1,40 +1,87 @@
-import { Button, Stack, useDisclosure } from '@chakra-ui/react';
-import { FC, Fragment } from 'react';
-import { LivePublic } from 'api-types/common/types';
-import { Video } from '~/organisms/live/left/video';
-import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
-import { NotPushed } from '~/organisms/live/left/video/not-pushed';
+import { FC, Fragment, useCallback, useEffect, useState } from 'react';
+import { NotPushed } from '~/organisms/live/video/not-pushed';
+import { UploadThumbnail } from '~/organisms/live/admin/live-info-modal/upload-thumbnail';
+import { useAuth } from '~/utils/hooks/use-auth';
+import { useAPIError } from '~/utils/hooks/api/use-api-error';
+import { ImagePublic } from '~/../../packages/api-types/common/types';
+import { client } from '~/utils/api/client';
+import { useToast } from '@chakra-ui/react';
 
 type Props = {
-  live: LivePublic;
+  liveId?: number;
+  tenantId?: number;
+  thumbnailUrl?: string;
+  isPushing?: boolean;
 };
 
-export const LivePreview: FC<Props> = ({ live }) => {
-  const { isOpen, onToggle } = useDisclosure();
-  const [url, updateUrl] = useStreamUrl(
-    !live.endedAt && live.isPushing ? live.id : undefined
+export const LivePreview: FC<Props> = ({
+  thumbnailUrl,
+  isPushing,
+  liveId,
+  tenantId
+}) => {
+  const { token } = useAuth();
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<unknown>();
+  useAPIError(error);
+
+  const handleSubmit = useCallback(
+    (thumbnail?: ImagePublic) => {
+      if (!liveId || !token || !thumbnail) {
+        return;
+      }
+      setIsLoading(true);
+
+      void (async () => {
+        try {
+          await client.v1.streams._liveId(liveId).patch({
+            body: {
+              customThumbnailId: thumbnail.id
+            },
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+        } catch (e) {
+          console.warn(e);
+          setError(e);
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+    },
+    [token, liveId]
   );
 
-  return (
-    <Stack spacing={4}>
-      <Button onClick={onToggle} variant="outline" size="sm" width="100%">
-        {isOpen ? '閉じる' : '配信画面を確認する'}
-      </Button>
+  useEffect(() => {
+    if (!isLoading) {
+      return;
+    }
 
-      {isOpen && (
-        <Fragment>
-          {live.isPushing ? (
-            <Video
-              url={url}
-              updateUrl={updateUrl}
-              thumbnailUrl={live.thumbnail?.publicUrl}
-              isStreamer
-            />
-          ) : (
-            <NotPushed thumbnailUrl={live.thumbnail?.publicUrl} />
-          )}
-        </Fragment>
+    const uploading = toast({
+      title: `サムネイルをアップロードしています...`,
+      status: 'info'
+    });
+
+    return () => {
+      toast.close(uploading);
+    };
+  }, [isLoading, toast]);
+
+  return (
+    <Fragment>
+      {isPushing ? (
+        <UploadThumbnail
+          thumbnailUrl={thumbnailUrl}
+          onThumbnailChange={handleSubmit}
+          onUploading={setIsLoading}
+          tenantId={tenantId}
+          hideButton
+        />
+      ) : (
+        <NotPushed thumbnailUrl={thumbnailUrl} />
       )}
-    </Stack>
+    </Fragment>
   );
 };

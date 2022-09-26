@@ -8,15 +8,16 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import Link from 'next/link';
-import { FC, Fragment } from 'react';
+import { FC, Fragment, useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { TenantPublic } from 'api-types/common/types';
+import { LivePublic, TenantPublic } from 'api-types/common/types';
 import { useStreamStatus } from '~/utils/hooks/api/use-stream-status';
 import { useUsersMe } from '~/utils/hooks/api/use-users-me';
 import { useAuth } from '~/utils/hooks/use-auth';
-import { CreateLive } from './create-live';
 import { LoginModal } from './login-modal';
 import { User } from './user';
+import { LiveInfoModal } from '../live/admin/live-info-modal';
+import { useRouter } from 'next/router';
 
 type Props = {
   tenant?: TenantPublic;
@@ -24,6 +25,7 @@ type Props = {
 
 export const Navbar: FC<Props> = ({ tenant }) => {
   const { user } = useAuth();
+  const router = useRouter();
   const {
     isOpen: isOpenLogin,
     onOpen: onOpenLogin,
@@ -39,15 +41,30 @@ export const Navbar: FC<Props> = ({ tenant }) => {
     tenant?.ownerId === user?.id ? tenant?.id : undefined
   );
 
+  const handleSubmitted = useCallback(
+    (live?: LivePublic, preferMoveTo?: 'broadcast-via-browser') => {
+      if (preferMoveTo === 'broadcast-via-browser') {
+        void router.push('/stream/via-browser');
+      } else {
+        if (live) {
+          void router.push(`/watch/${live.id}`);
+        }
+      }
+    },
+    [router]
+  );
+
   return (
     <Fragment>
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
-      {tenant && status && (
-        <CreateLive
+      {tenant && (
+        <LiveInfoModal
           isOpen={isOpenCreateLive}
           onClose={onCloseCreateLive}
-          recentLive={status?.recently}
-          tenant={tenant}
+          onSubmitted={handleSubmitted}
+          live={status?.recently}
+          tenantId={tenant.id}
+          isCreate
         />
       )}
 

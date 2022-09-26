@@ -1,15 +1,19 @@
 import { Alert, Button, Stack } from '@chakra-ui/react';
 import { FC, useCallback } from 'react';
-import { useWakeLock } from '~/utils/hooks/use-wake-lock';
 
-export const WakeLock: FC = () => {
-  const {
-    isWakeLockSupported,
-    isWakeLockEnabled,
-    enableWakeLock,
-    disableWakeLock
-  } = useWakeLock();
+type Props = {
+  isWakeLockSupported: boolean;
+  isWakeLockEnabled: boolean;
+  enableWakeLock: () => Promise<void>;
+  disableWakeLock: () => Promise<void>;
+};
 
+export const WakeLock: FC<Props> = ({
+  isWakeLockEnabled,
+  isWakeLockSupported,
+  enableWakeLock,
+  disableWakeLock
+}) => {
   const toggleWakeLock = useCallback(
     () => (isWakeLockEnabled ? void disableWakeLock() : void enableWakeLock()),
     [isWakeLockEnabled, enableWakeLock, disableWakeLock]

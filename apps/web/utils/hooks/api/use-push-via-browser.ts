@@ -111,7 +111,13 @@ export const usePushViaBrowser = (liveId?: number) => {
   }, [audioStream, isVoiceMuted]);
 
   useEffect(() => {
+    if (!isConnectedWs) {
+      return;
+    }
+
+    let recorder: MediaRecorder | undefined;
     let audioStream: MediaStream;
+
     void (async () => {
       try {
         const media = await navigator.mediaDevices.getUserMedia({
@@ -124,6 +130,20 @@ export const usePushViaBrowser = (liveId?: number) => {
           audioStream.addTrack(track);
         });
         setAudioStream(audioStream);
+
+        const stream = new MediaStream();
+        audioStream.getTracks().forEach(track => {
+          stream.addTrack(track);
+        });
+
+        recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = event => {
+          if (event.data.size > 0) {
+            webSocketRef.current?.send(event.data);
+          }
+        };
+
+        recorder.start(1000 / 30);
       } catch (e) {
         console.error(e);
         setError(e);
@@ -132,46 +152,20 @@ export const usePushViaBrowser = (liveId?: number) => {
     })();
 
     return () => {
-      audioStream?.getTracks().forEach(track => track.stop());
-      setAudioStream(undefined);
-    };
-  }, []);
+      try {
+        audioStream?.getTracks().forEach(track => track.stop());
+        setAudioStream(undefined);
+      } catch (e) {
+        console.error(e);
+      }
 
-  useEffect(() => {
-    if (!isConnectedWs || !audioStream) {
-      return;
-    }
-
-    let recorder: MediaRecorder | undefined;
-
-    try {
-      const stream = new MediaStream();
-
-      audioStream.getTracks().forEach(track => {
-        stream.addTrack(track);
-      });
-
-      recorder = new MediaRecorder(stream);
-      recorder.ondataavailable = event => {
-        if (event.data.size > 0) {
-          webSocketRef.current?.send(event.data);
-        }
-      };
-
-      recorder.start(1000 / 30);
-    } catch (e) {
-      console.error(e);
-      setError(e);
-    }
-
-    return () => {
       try {
         recorder?.stop();
       } catch (e) {
         console.warn(e);
       }
     };
-  }, [audioStream, isConnectedWs]);
+  }, [isConnectedWs]);
 
   return {
     isConnectingWs,

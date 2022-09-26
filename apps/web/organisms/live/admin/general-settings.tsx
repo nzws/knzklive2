@@ -9,7 +9,7 @@ import {
 import { FC, useCallback, useState } from 'react';
 import { LivePrivate } from 'api-types/common/types';
 import { Dialog } from './dialog';
-import { EditLiveModal } from './edit-live-modal';
+import { LiveInfoModal } from './live-info-modal';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
@@ -110,10 +110,12 @@ export const GeneralSettings: FC<Props> = ({ live, notPushing }) => {
 
       <Wrap>
         <WrapItem>
-          <EditLiveModal
+          <LiveInfoModal
             isOpen={isOpenLiveEdit}
             onClose={onCloseLiveEdit}
             live={live}
+            isCreate={false}
+            tenantId={live.tenantId}
           />
 
           <Button onClick={onOpenLiveEdit}>配信情報を編集</Button>
