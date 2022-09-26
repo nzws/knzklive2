@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@aspida/fetch": "1.11.0",
-    "@aws-sdk/client-s3": "3.178.0",
-    "@aws-sdk/middleware-endpoint": "3.178.0",
-    "@aws-sdk/s3-request-presigner": "3.178.0",
+    "@aws-sdk/client-s3": "3.179.0",
+    "@aws-sdk/middleware-endpoint": "3.179.0",
+    "@aws-sdk/s3-request-presigner": "3.179.0",
     "@dotplants/cli": "0.2.3",
     "@koa/cors": "3.4.1",
     "@koa/multer": "3.0.0",
