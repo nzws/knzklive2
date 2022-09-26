@@ -19,6 +19,7 @@ export class UserToken {
       return;
     }
 
+    void redis.expire(this.getKey(token), tokenExpire);
     return parseInt(userId, 10);
   }
 
