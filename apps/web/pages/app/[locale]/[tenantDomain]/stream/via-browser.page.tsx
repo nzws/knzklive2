@@ -25,6 +25,7 @@ import {
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Spacer,
@@ -38,7 +39,8 @@ import {
   FiMicOff,
   FiMoreHorizontal,
   FiPlayCircle,
-  FiRefreshCw
+  FiRefreshCw,
+  FiShare
 } from 'react-icons/fi';
 import { useStream } from '~/utils/hooks/api/use-stream';
 import { PublicStats } from '~/organisms/live/public-stats';
@@ -138,6 +140,16 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
     },
     [live?.id, token, router]
   );
+
+  const handleShare = useCallback(() => {
+    if (!live?.idInTenant) {
+      return;
+    }
+
+    void navigator.share({
+      url: `/watch/${live?.idInTenant}`
+    });
+  }, [live?.idInTenant]);
 
   useEffect(() => {
     if (!live) {
@@ -363,6 +375,10 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 
               <Divider />
 
+              <Button width="100%" onClick={handleShare} leftIcon={<FiShare />}>
+                公開リンクを共有
+              </Button>
+
               {live && (
                 <LiveInfoModal
                   isOpen={isOpenLiveEdit}
@@ -378,6 +394,8 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
               </Button>
             </Stack>
           </ModalBody>
+
+          <ModalFooter />
         </ModalContent>
       </Modal>
     </Container>
