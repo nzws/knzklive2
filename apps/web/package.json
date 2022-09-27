@@ -10,7 +10,8 @@
     "dev": "next dev",
     "build": "next build",
     "analyze": "ANALYZE=true next build",
-    "start": "next start"
+    "start": "next start",
+    "vercel-build": "yum install libuuid-devel libmount-devel && cp /lib64/{libuuid,libmount,libblkid}.so.1 node_modules/canvas/build/Release/ && next build"
   },
   "dependencies": {
     "@aspida/fetch": "1.11.0",
