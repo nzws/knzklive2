@@ -35,7 +35,7 @@
     "api-types": "workspace:^",
     "ffmpeg-static": "5.1.0",
     "fluent-ffmpeg": "2.1.2",
-    "jose": "4.9.3",
+    "jose": "4.10.0",
     "koa": "2.13.4",
     "koa-bodyparser": "4.3.0",
     "koa-logger": "3.2.1",
