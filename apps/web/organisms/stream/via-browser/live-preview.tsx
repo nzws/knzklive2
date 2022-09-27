@@ -12,13 +12,15 @@ type Props = {
   tenantId?: number;
   thumbnailUrl?: string;
   isPushing?: boolean;
+  streamerUserId: number;
 };
 
 export const LivePreview: FC<Props> = ({
   thumbnailUrl,
   isPushing,
   liveId,
-  tenantId
+  tenantId,
+  streamerUserId
 }) => {
   const { token } = useAuth();
   const toast = useToast();
@@ -77,10 +79,14 @@ export const LivePreview: FC<Props> = ({
           onThumbnailChange={handleSubmit}
           onUploading={setIsLoading}
           tenantId={tenantId}
+          streamerIdForDefaultThumbnail={streamerUserId}
           hideButton
         />
       ) : (
-        <NotPushed thumbnailUrl={thumbnailUrl} />
+        <NotPushed
+          thumbnailUrl={thumbnailUrl}
+          streamerUserId={streamerUserId}
+        />
       )}
     </Fragment>
   );

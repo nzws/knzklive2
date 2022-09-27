@@ -19,6 +19,7 @@ type Props = {
   onUploading: (isUploading: boolean) => void;
   tenantId?: number;
   hideButton?: boolean;
+  streamerIdForDefaultThumbnail?: number;
 };
 
 export const UploadThumbnail: FC<Props> = ({
@@ -26,7 +27,8 @@ export const UploadThumbnail: FC<Props> = ({
   onThumbnailChange,
   onUploading,
   tenantId,
-  hideButton
+  hideButton,
+  streamerIdForDefaultThumbnail
 }) => {
   const { token } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -106,14 +108,21 @@ export const UploadThumbnail: FC<Props> = ({
           ratio={16 / 9}
           onClick={isLoading ? undefined : handleOpenFile}
         >
-          {thumbnailUrl && (
+          {thumbnailUrl || streamerIdForDefaultThumbnail ? (
             <Image
-              src={thumbnailUrl}
+              src={
+                thumbnailUrl ||
+                `/api/default-thumbnail.png?userId=${
+                  streamerIdForDefaultThumbnail || 0
+                }`
+              }
               style={{
                 objectFit: 'contain'
               }}
               alt="image"
             />
+          ) : (
+            <div />
           )}
         </VideoContainer>
       </Stack>

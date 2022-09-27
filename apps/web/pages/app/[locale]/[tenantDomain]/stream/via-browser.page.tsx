@@ -222,12 +222,15 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
         height="100vh"
       >
         <GridItem>
-          <LivePreview
-            isPushing={live?.isPushing}
-            thumbnailUrl={live?.thumbnail?.publicUrl}
-            liveId={live?.id}
-            tenantId={tenant?.id}
-          />
+          {live && (
+            <LivePreview
+              isPushing={live.isPushing}
+              thumbnailUrl={live.thumbnail?.publicUrl}
+              liveId={live.id}
+              tenantId={tenant?.id}
+              streamerUserId={live.userId}
+            />
+          )}
         </GridItem>
 
         <GridItem

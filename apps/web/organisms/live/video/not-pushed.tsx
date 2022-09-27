@@ -5,13 +5,16 @@ import { FormattedMessage } from 'react-intl';
 
 type Props = {
   thumbnailUrl?: string;
+  streamerUserId: number;
 };
 
-export const NotPushed: FC<Props> = ({ thumbnailUrl }) => (
+export const NotPushed: FC<Props> = ({ thumbnailUrl, streamerUserId }) => (
   <Container
     ratio={16 / 9}
     style={{
-      backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : undefined
+      backgroundImage: `url(${
+        thumbnailUrl || `/api/default-thumbnail.png?userId=${streamerUserId}`
+      })`
     }}
   >
     <Inner>

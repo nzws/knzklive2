@@ -119,9 +119,13 @@ export const Live: FC<Props> = ({ live, streamer }) => {
               thumbnailUrl={live.thumbnail?.publicUrl}
               updateUrl={updateUrl}
               onToggleContainerSize={toggleContainerSize}
+              streamerUserId={live.userId}
             />
           ) : (
-            <NotPushed thumbnailUrl={live.thumbnail?.publicUrl} />
+            <NotPushed
+              thumbnailUrl={live.thumbnail?.publicUrl}
+              streamerUserId={live.userId}
+            />
           )}
 
           <CommentPost liveId={live.id} hashtag={live.hashtag} />

@@ -14,6 +14,7 @@ type Props = {
   updateUrl: () => Promise<unknown | undefined>;
   onToggleContainerSize?: () => void;
   isStreamer?: boolean;
+  streamerUserId: number;
 };
 
 export const Video: FC<Props> = ({
@@ -21,7 +22,8 @@ export const Video: FC<Props> = ({
   url,
   updateUrl,
   onToggleContainerSize,
-  isStreamer
+  isStreamer,
+  streamerUserId
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -163,7 +165,10 @@ export const Video: FC<Props> = ({
       <VideoContainer
         ratio={16 / 9}
         style={{
-          backgroundImage: thumbnailUrl ? `url(${thumbnailUrl})` : undefined
+          backgroundImage: `url(${
+            thumbnailUrl ||
+            `/api/default-thumbnail.png?userId=${streamerUserId}`
+          })`
         }}
       >
         <video ref={videoRef} autoPlay playsInline controls={false} />
