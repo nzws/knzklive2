@@ -16,6 +16,7 @@ jobs:
       - checkout
       - node/install:
           install-yarn: true
+      - run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - run: PUPPETEER_SKIP_DOWNLOAD=1 yarn install --immutable
       - run: yarn workspace server prisma generate
       - persist_to_workspace:

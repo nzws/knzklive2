@@ -27,6 +27,7 @@ jobs:
             node_modules
           key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
+      - run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - run: yarn install --immutable
       - run: yarn workspace server prisma generate
 
@@ -54,6 +55,7 @@ jobs:
             node_modules
           key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
+      - run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - run: yarn install --immutable
       - run: yarn workspace server prisma generate
       - run: yarn lint
@@ -82,7 +84,7 @@ jobs:
             node_modules
           key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
-      - run: yarn install --immutable
+      - run: yarn workspaces focus server
       - run: yarn workspace server prisma generate
       - run: yarn workspace server test
 
@@ -110,7 +112,8 @@ jobs:
             node_modules
           key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
-      - run: yarn install --immutable
+      - run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+      - run: yarn workspaces focus web
       - run: yarn workspace server prisma generate
       - run: yarn workspace web test
 
@@ -138,5 +141,5 @@ jobs:
             node_modules
           key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
-      - run: yarn install --immutable
+      - run: yarn workspaces focus push
       - run: yarn workspace push test
