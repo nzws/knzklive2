@@ -21,7 +21,7 @@
     "@emotion/react": "11.10.4",
     "@emotion/styled": "11.10.4",
     "api-types": "*",
-    "canvas": "^2.10.1",
+    "canvas": "2.10.1",
     "framer-motion": "7.4.0",
     "hls.js": "1.2.3",
     "mpegts.js": "1.6.10",

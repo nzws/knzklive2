@@ -5261,7 +5261,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"canvas@npm:^2.10.1":
+"canvas@npm:2.10.1":
   version: 2.10.1
   resolution: "canvas@npm:2.10.1"
   dependencies:
@@ -11749,7 +11749,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.38.1
     "@typescript-eslint/parser": 5.38.1
     api-types: "*"
-    canvas: ^2.10.1
+    canvas: 2.10.1
     eslint: 8.24.0
     eslint-config-next: 12.3.1
     eslint-config-prettier: 8.5.0
