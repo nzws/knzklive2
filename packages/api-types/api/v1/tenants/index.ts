@@ -1,9 +1,16 @@
-import { AuthorizationHeader, TenantPublic } from '../../../common/types';
+import {
+  AuthorizationHeader,
+  LivePrivate,
+  TenantPublic
+} from '../../../common/types';
 
 export type Methods = {
   get: {
     reqHeaders: AuthorizationHeader;
 
-    resBody: TenantPublic[];
+    resBody: {
+      tenant: TenantPublic;
+      recentLive?: LivePrivate;
+    }[];
   };
 };

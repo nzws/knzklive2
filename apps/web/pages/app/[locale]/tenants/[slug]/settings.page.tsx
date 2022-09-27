@@ -33,12 +33,11 @@ import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { client } from '~/utils/api/client';
 import { useAuth } from '~/utils/hooks/use-auth';
 
-const Page: NextPage<PageProps<Props, PathProps>> = ({
-  props: { tenant: tenantFallback },
-  pathProps: { tenantDomain }
+const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
+  pathProps: { slug }
 }) => {
   const { token } = useAuth();
-  const [Tenant] = useTenant(tenantDomain, tenantFallback);
+  const [Tenant] = useTenant(slug);
   const [tenant] = useTenantById(Tenant?.id);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
@@ -93,14 +92,10 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 
   return (
     <Fragment>
-      <Navbar tenant={Tenant} />
+      <Navbar />
 
       <Head>
-        <title>
-          {['配信に関する設定', Tenant?.displayName || Tenant?.domain].join(
-            ' - '
-          )}
-        </title>
+        <title>{['配信に関する設定', 'KnzkLive'].join(' - ')}</title>
       </Head>
 
       <Container py={6}>
@@ -116,7 +111,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
             <Heading size="md">基本設定</Heading>
 
             <FormControl>
-              <FormLabel>テナント表示名</FormLabel>
+              <FormLabel>テナント表示名(廃止予定)</FormLabel>
 
               <Input
                 type="text"
@@ -131,7 +126,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
             </FormControl>
 
             <FormControl>
-              <FormLabel>ドメイン設定</FormLabel>
+              <FormLabel>配信者ID</FormLabel>
 
               <Alert status="info">
                 <AlertIcon />

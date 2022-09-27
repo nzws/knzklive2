@@ -1,8 +1,8 @@
 import { AuthProviderType } from '@prisma/client';
+import isValidDomain from 'is-valid-domain';
 import fetch from 'node-fetch';
 import { authProviders } from '../../models';
 import { GITHUB_URL } from '../../utils/constants';
-import { checkDomain } from '../../utils/domain';
 import { AuthProvider, ExternalUser } from './_base';
 
 type MastodonApiError = {
@@ -34,7 +34,7 @@ export class AuthMastodon extends AuthProvider {
 
   constructor(domain: string) {
     domain = domain.toLowerCase();
-    if (!checkDomain(domain)) {
+    if (!isValidDomain(domain)) {
       throw new Error('Invalid domain');
     }
 

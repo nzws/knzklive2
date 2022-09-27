@@ -30,11 +30,6 @@
 - You can broadcast with common broadcast software such as OBS.
 - You can also broadcast from the mobile device without broadcast software by using the "Broadcast via browser" feature.
 
-### Customize websites for each streamer
-
-- Each streamer is assigned a subdomain and can use the live-streaming website.
-- (WIP) Streamers can edit the theme of the website and what it displays.
-
 ## Development
 
 For create the development environment, Please see [docs/dev/create-development.md](./docs/dev/create-development.md).

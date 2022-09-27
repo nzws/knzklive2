@@ -6,24 +6,20 @@ import {
   MenuItem,
   Avatar,
   MenuDivider,
-  MenuGroup,
-  LinkOverlay,
-  LinkBox
+  MenuGroup
 } from '@chakra-ui/react';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { useUsersMe } from '~/utils/hooks/api/use-users-me';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useMyTenants } from '~/utils/hooks/api/use-my-tenant';
 import Link from 'next/link';
-import { LivePublic, TenantPublic } from 'api-types/common/types';
+import { TenantPublic, LivePrivate } from 'api-types/common/types';
 
 type Props = {
-  tenant?: TenantPublic;
-  onCreateLive: () => void;
-  recentLive?: LivePublic;
+  onCreateLive: (tenant: TenantPublic, previousLive?: LivePrivate) => void;
 };
 
-export const User: FC<Props> = ({ tenant, onCreateLive, recentLive }) => {
+export const User: FC<Props> = ({ onCreateLive }) => {
   const { signOut } = useAuth();
   const intl = useIntl();
   const [me] = useUsersMe();
@@ -58,46 +54,32 @@ export const User: FC<Props> = ({ tenant, onCreateLive, recentLive }) => {
           </MenuItem>
         </MenuGroup>
 
-        {myTenants?.map(t => (
-          <Fragment key={t.id}>
+        {myTenants?.map(({ tenant, recentLive }) => (
+          <Fragment key={tenant.id}>
             <MenuDivider />
 
-            {tenant?.domain === t.domain ? (
-              <MenuGroup
-                title={intl.formatMessage(
-                  { id: 'navbar.menu.current-tenant' },
-                  { domain: t.domain }
-                )}
-              >
-                {recentLive &&
-                recentLive.tenantId === t.id &&
-                !recentLive.endedAt ? (
-                  <Link href={`/watch/${recentLive.idInTenant}`} passHref>
-                    <MenuItem as="a">
-                      <FormattedMessage id="navbar.menu.stream-link" />
-                    </MenuItem>
-                  </Link>
-                ) : (
-                  <MenuItem onClick={onCreateLive}>
-                    <FormattedMessage id="navbar.menu.start-stream" />
-                  </MenuItem>
-                )}
-
-                <Link href="/tenant/settings" passHref>
+            <MenuGroup title={`@${tenant.slug}`}>
+              {recentLive && !recentLive.endedAt ? (
+                <Link
+                  href={`/@${tenant.slug}/${recentLive.idInTenant}`}
+                  passHref
+                >
                   <MenuItem as="a">
-                    <FormattedMessage id="navbar.menu.tenant-settings" />
+                    <FormattedMessage id="navbar.menu.stream-link" />
                   </MenuItem>
                 </Link>
-              </MenuGroup>
-            ) : (
-              <MenuGroup title={t.domain}>
-                <LinkBox as={MenuItem}>
-                  <LinkOverlay href={`https://${t.domain}`} isExternal>
-                    <FormattedMessage id="navbar.menu.change-tenant" />
-                  </LinkOverlay>
-                </LinkBox>
-              </MenuGroup>
-            )}
+              ) : (
+                <MenuItem onClick={() => onCreateLive(tenant, recentLive)}>
+                  <FormattedMessage id="navbar.menu.start-stream" />
+                </MenuItem>
+              )}
+
+              <Link href={`/@${tenant.slug}/settings`} passHref>
+                <MenuItem as="a">
+                  <FormattedMessage id="navbar.menu.tenant-settings" />
+                </MenuItem>
+              </Link>
+            </MenuGroup>
           </Fragment>
         ))}
       </MenuList>

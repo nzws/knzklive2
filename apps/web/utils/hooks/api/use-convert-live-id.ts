@@ -6,16 +6,14 @@ import { useAuth } from '../use-auth';
 import { useAPIError } from './use-api-error';
 
 export const useConvertLiveId = (
-  domain: string,
+  slug: string,
   liveIdInTenant: string,
   fallbackData?: LivePublic
 ) => {
   const { headers } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { data, error, mutate } = useAspidaSWR(
-    client.v1.lives.find
-      ._tenantDomain(domain)
-      ._idInTenant(parseInt(liveIdInTenant, 10)),
+    client.v1.lives.find._slug(slug)._idInTenant(parseInt(liveIdInTenant, 10)),
     {
       fallbackData,
       revalidateIfStale: false,

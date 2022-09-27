@@ -1,7 +1,6 @@
 import { Methods } from 'api-types/api/v1/streams/_liveId@number/comment-viewer-url';
 import { tenants } from '../../../models';
 import { jwtCommentViewer } from '../../../services/jwt';
-import { PROTOCOL } from '../../../utils/constants';
 import { APIRoute, LiveState } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];
@@ -23,10 +22,10 @@ export const getV1StreamsCommentViewerUrl: APIRoute<
     return;
   }
 
-  const tenantDomain = tenants.getPublic(tenant).domain;
   const token = await jwtCommentViewer.generateToken(live.id);
+  const host = process.env.FRONTEND_ENDPOINT || '';
 
   ctx.body = {
-    url: `${PROTOCOL}://${tenantDomain}/embed/comment?liveId=${live.id}&viewerToken=${token}`
+    url: `${host}/embed/comment?liveId=${live.id}&viewerToken=${token}`
   };
 };

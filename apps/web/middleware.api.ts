@@ -35,14 +35,6 @@ export const middleware = (req: NextRequest) => {
 
   const url = req.nextUrl.clone();
   const { pathname } = req.nextUrl;
-  const hostname = req.headers.get('host');
-
-  if (!hostname) {
-    return new Response(null, {
-      status: 400,
-      statusText: 'Bad Request'
-    });
-  }
 
   if (pathname.startsWith('/app')) {
     return new Response(null, {
@@ -56,7 +48,15 @@ export const middleware = (req: NextRequest) => {
     ? language
     : defaultLocale;
 
-  url.pathname = `/app/${validLang}/${hostname}${pathname}`;
+  if (pathname.startsWith('/@')) {
+    const [, _slug, ...rest] = pathname.split('/');
+    const slug = _slug.substring(1);
+
+    url.pathname = `/app/${validLang}/tenants/${slug}/${rest.join('/')}`;
+  } else {
+    url.pathname = `/app/${validLang}${pathname}`;
+  }
+
   const response = NextResponse.rewrite(url);
   if (paramLang && paramLang === validLang) {
     response.cookies.set(LOCALE_COOKIE, validLang, {

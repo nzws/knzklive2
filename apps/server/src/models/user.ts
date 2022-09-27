@@ -1,8 +1,8 @@
 import type { PrismaClient, User } from '@prisma/client';
 import { UserConfig, UserPrivate, UserPublic } from 'api-types/common/types';
+import isValidDomain from 'is-valid-domain';
 import { users } from '.';
 import { USERNAME_REGEX } from '../utils/constants';
-import { checkDomain } from '../utils/domain';
 
 export const Users = (prismaUser: PrismaClient['user']) =>
   Object.assign(prismaUser, {
@@ -23,7 +23,7 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       if (!USERNAME_REGEX.test(username || '')) {
         throw new Error('Invalid username');
       }
-      if (!checkDomain(domain || '')) {
+      if (!isValidDomain(domain || '')) {
         throw new Error('Invalid domain');
       }
 

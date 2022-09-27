@@ -32,14 +32,13 @@ model User {
 }
 
 model Tenant {
-  id           Int      @id @default(autoincrement())
-  slug         String   @unique @db.VarChar(50)
-  ownerId      Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  displayName  String?  @db.VarChar(200)
-  customDomain String?  @unique @db.VarChar(100)
-  config       Json
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique @db.VarChar(50)
+  ownerId     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  displayName String?  @db.VarChar(200)
+  config      Json
 
   owner User @relation(fields: [ownerId], references: [id])
 

@@ -10,7 +10,6 @@ import {
 import { PageProps } from '~/utils/data-fetching/get-all-static-props';
 import { useTenant } from '~/utils/hooks/api/use-tenant';
 import { StartedNote } from '~/organisms/stream/via-browser/started-note';
-import { useStreamStatus } from '~/utils/hooks/api/use-stream-status';
 import {
   Alert,
   Box,
@@ -59,18 +58,19 @@ import { Comment } from '~/organisms/live/comment/comment';
 import { useRouter } from 'next/router';
 import { useWakeLock } from '~/utils/hooks/use-wake-lock';
 import { TimeCounter } from '~/atoms/time-counter';
+import { useConvertLiveId } from '~/utils/hooks/api/use-convert-live-id';
 
-const Page: NextPage<PageProps<Props, PathProps>> = ({
-  props: { tenant: tenantFallback },
-  pathProps: { tenantDomain }
+type Params = { slug: string; id: string };
+
+const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
+  pathProps: { slug, id }
 }) => {
   const { token } = useAuth();
   const toast = useToast();
   const router = useRouter();
   const isInitializedRef = useRef(false);
-  const [tenant] = useTenant(tenantDomain, tenantFallback);
-  const [status] = useStreamStatus(tenant?.id);
-  const liveId = status?.recently?.endedAt ? undefined : status?.recently?.id;
+  const [tenant] = useTenant(slug);
+  const [liveId] = useConvertLiveId(slug, id);
   const [stream, mutate] = useStream(liveId);
   const live = stream?.live;
   const {
@@ -142,14 +142,14 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
   );
 
   const handleShare = useCallback(() => {
-    if (!live?.idInTenant) {
+    if (!live?.idInTenant || !tenant?.slug) {
       return;
     }
 
     void navigator.share({
-      url: `/watch/${live?.idInTenant}`
+      url: `/@${tenant.slug}/${live?.idInTenant}`
     });
-  }, [live?.idInTenant]);
+  }, [live?.idInTenant, tenant?.slug]);
 
   useEffect(() => {
     if (!live) {
@@ -191,11 +191,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
   return (
     <Container padding={0}>
       <Head>
-        <title>
-          {['ブラウザから配信', tenant?.displayName || tenant?.domain].join(
-            ' - '
-          )}
-        </title>
+        <title>{['ブラウザから配信', 'KnzkLive'].join(' - ')}</title>
       </Head>
 
       <StartedNote />

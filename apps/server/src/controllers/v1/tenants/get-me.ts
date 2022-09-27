@@ -1,5 +1,5 @@
 import { Methods } from 'api-types/api/v1/tenants';
-import { tenants } from '../../../models';
+import { lives, tenants } from '../../../models';
 import type { APIRoute, UserState } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];
@@ -18,6 +18,29 @@ export const getV1TenantsMe: APIRoute<
       }
     }
   });
+  const liveList = await lives.findMany({
+    where: {
+      tenant: {
+        id: {
+          in: tenant.map(t => t.id)
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    take: 1,
+    include: {
+      thumbnail: true
+    }
+  });
 
-  ctx.body = tenant.map(t => tenants.getPublic(t));
+  ctx.body = tenant.map(t => {
+    const live = liveList.find(l => l.tenantId === t.id);
+
+    return {
+      tenant: tenants.getPublic(t),
+      recentLive: live ? lives.getPrivate(live) : undefined
+    };
+  });
 };
