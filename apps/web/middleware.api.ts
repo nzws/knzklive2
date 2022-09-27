@@ -48,7 +48,15 @@ export const middleware = (req: NextRequest) => {
     ? language
     : defaultLocale;
 
-  url.pathname = `/app/${validLang}/${pathname}`;
+  if (pathname.startsWith('/@')) {
+    const [, _slug, ...rest] = pathname.split('/');
+    const slug = _slug.substring(1);
+
+    url.pathname = `/app/${validLang}/tenants/${slug}/${rest.join('/')}`;
+  } else {
+    url.pathname = `/app/${validLang}${pathname}`;
+  }
+
   const response = NextResponse.rewrite(url);
   if (paramLang && paramLang === validLang) {
     response.cookies.set(LOCALE_COOKIE, validLang, {

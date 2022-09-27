@@ -5,7 +5,6 @@ export type Methods = {
     reqHeaders?: AuthorizationHeader;
 
     resBody: {
-      defaultDomain: string;
       contact: string;
     };
   };

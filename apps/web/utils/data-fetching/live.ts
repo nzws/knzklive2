@@ -4,7 +4,7 @@ import { client } from '../api/client';
 
 export type PathProps = {
   id: string;
-  tenantDomain: string;
+  slug: string;
 };
 
 export type Props = {
@@ -12,11 +12,11 @@ export type Props = {
 };
 
 export const liveFetcher = async (pathProps: PathProps): Promise<Props> => {
-  const { id, tenantDomain } = pathProps;
+  const { id, slug } = pathProps;
 
   try {
     const live = await client.v1.lives.find
-      ._tenantDomain(tenantDomain)
+      ._slug(slug)
       ._idInTenant(parseInt(id, 10))
       .$get();
 

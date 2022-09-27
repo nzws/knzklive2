@@ -11,25 +11,20 @@ import {
   defaultStaticProps
 } from '~/utils/data-fetching/default-static-props';
 import { Navbar } from '~/organisms/navbar';
-import { useTenant } from '~/utils/hooks/api/use-tenant';
 import { Footer } from '~/organisms/footer';
 
-const Page: NextPage<PageProps<Props, PathProps>> = ({
-  props: { tenant: tenantFallback },
-  pathProps: { tenantDomain }
-}) => {
+const Page: NextPage<PageProps<Props, PathProps>> = () => {
   const intl = useIntl();
-  const [tenant] = useTenant(tenantDomain, tenantFallback);
 
   return (
     <Fragment>
-      <Navbar tenant={tenant} />
+      <Navbar />
 
       <Head>
         <title>
           {[
             intl.formatMessage({ id: 'page.account-settings.title' }),
-            tenant?.displayName || tenant?.domain
+            'KnzkLive'
           ].join(' - ')}
         </title>
       </Head>

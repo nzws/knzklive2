@@ -8,23 +8,16 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import Link from 'next/link';
-import { FC, Fragment, useCallback } from 'react';
+import { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { LivePublic, TenantPublic } from 'api-types/common/types';
-import { useStreamStatus } from '~/utils/hooks/api/use-stream-status';
+import { LivePrivate, LivePublic, TenantPublic } from 'api-types/common/types';
 import { useUsersMe } from '~/utils/hooks/api/use-users-me';
-import { useAuth } from '~/utils/hooks/use-auth';
 import { LoginModal } from './login-modal';
 import { User } from './user';
 import { LiveInfoModal } from '../live/admin/live-info-modal';
 import { useRouter } from 'next/router';
 
-type Props = {
-  tenant?: TenantPublic;
-};
-
-export const Navbar: FC<Props> = ({ tenant }) => {
-  const { user } = useAuth();
+export const Navbar: FC = () => {
   const router = useRouter();
   const {
     isOpen: isOpenLogin,
@@ -37,33 +30,57 @@ export const Navbar: FC<Props> = ({ tenant }) => {
     onClose: onCloseCreateLive
   } = useDisclosure();
   const [me] = useUsersMe();
-  const [status] = useStreamStatus(
-    tenant?.ownerId === user?.id ? tenant?.id : undefined
+  const [liveCreatingTenant, setLiveCreatingTenant] = useState<
+    TenantPublic | undefined
+  >();
+  const [liveCreatingPrevious, setLiveCreatingPrevious] = useState<
+    LivePrivate | undefined
+  >();
+
+  const handleOpenCreateLive = useCallback(
+    (tenant: TenantPublic, previousLive?: LivePrivate) => {
+      setLiveCreatingTenant(tenant);
+      setLiveCreatingPrevious(previousLive);
+      onOpenCreateLive();
+    },
+    [onOpenCreateLive]
   );
 
   const handleSubmitted = useCallback(
     (live?: LivePublic, preferMoveTo?: 'broadcast-via-browser') => {
+      const slug = liveCreatingTenant?.slug;
+      if (!live || !slug) {
+        return;
+      }
+
       if (preferMoveTo === 'broadcast-via-browser') {
-        void router.push('/stream/via-browser');
+        void router.push(`/@${slug}/${live.id}/broadcast-via-browser`);
       } else {
-        if (live) {
-          void router.push(`/watch/${live.id}`);
-        }
+        void router.push(`/@${slug}/${live.id}`);
       }
     },
-    [router]
+    [router, liveCreatingTenant]
   );
+
+  useEffect(() => {
+    if (isOpenCreateLive) {
+      return;
+    }
+
+    setLiveCreatingPrevious(undefined);
+    setLiveCreatingTenant(undefined);
+  }, [isOpenCreateLive]);
 
   return (
     <Fragment>
       <LoginModal isOpen={isOpenLogin} onClose={onCloseLogin} />
-      {tenant && (
+      {liveCreatingTenant && (
         <LiveInfoModal
           isOpen={isOpenCreateLive}
           onClose={onCloseCreateLive}
           onSubmitted={handleSubmitted}
-          live={status?.recently}
-          tenantId={tenant.id}
+          live={liveCreatingPrevious}
+          tenantId={liveCreatingTenant?.id}
           isCreate
         />
       )}
@@ -73,20 +90,14 @@ export const Navbar: FC<Props> = ({ tenant }) => {
           <HStack spacing="10" justify="space-between">
             <Link href="/" passHref>
               <a>
-                <Heading size="md">
-                  {tenant?.displayName || tenant?.domain}
-                </Heading>
+                <Heading size="md">KnzkLive</Heading>
               </a>
             </Link>
 
             <Flex justify="right">
               <HStack spacing="3">
                 {me ? (
-                  <User
-                    tenant={tenant}
-                    onCreateLive={onOpenCreateLive}
-                    recentLive={status?.recently}
-                  />
+                  <User onCreateLive={handleOpenCreateLive} />
                 ) : (
                   <HStack spacing="3">
                     <Button variant="ghost" onClick={onOpenLogin} size="sm">

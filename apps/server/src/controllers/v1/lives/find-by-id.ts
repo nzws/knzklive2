@@ -1,19 +1,17 @@
-import { Methods } from 'api-types/api/v1/lives/find/_tenantDomain@string/_idInTenant@number';
+import { Methods } from 'api-types/api/v1/lives/find/_slug@string/_idInTenant@number';
 import { lives, tenants } from '../../../models';
-import { getSlugOrCustomDomain } from '../../../utils/domain';
 import { APIRoute } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];
 
 export const getV1LivesFindById: APIRoute<
-  'liveIdInTenant' | 'tenantDomain',
+  'liveIdInTenant' | 'slug',
   never,
   never,
   Response
 > = async ctx => {
-  const { liveIdInTenant, tenantDomain } = ctx.params;
-  const domain = getSlugOrCustomDomain(tenantDomain);
-  const tenant = await tenants.get(undefined, domain.slug, domain.customDomain);
+  const { liveIdInTenant, slug } = ctx.params;
+  const tenant = await tenants.get(undefined, slug);
 
   if (!tenant) {
     ctx.status = 404;

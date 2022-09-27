@@ -9,16 +9,12 @@ import {
   Props as LocaleProps,
   PathProps as LocalePathProps
 } from '~/utils/data-fetching/locale';
-import {
-  Props as TenantProps,
-  PathProps as TenantPathProps
-} from '~/utils/data-fetching/tenant';
 import { defaultLocale } from '~/locales';
 import { generateTheme } from '~/styles/theme';
 
 type InitialPageProps = {
-  props?: LocaleProps & TenantProps;
-  pathProps?: LocalePathProps & TenantPathProps;
+  props?: LocaleProps;
+  pathProps?: LocalePathProps;
 };
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
@@ -31,14 +27,14 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => {
       locale={pathProps?.locale || defaultLocale}
     >
       <ChakraProvider theme={theme}>
-        <APIProvider tenant={props?.tenant}>
+        <APIProvider>
           <NextNProgress
             options={{ showSpinner: false }}
             color="#fff"
             height={3}
           />
           <Head>
-            <title>{props?.tenant?.displayName || props?.tenant?.domain}</title>
+            <title>KnzkLive</title>
           </Head>
 
           <Component {...pageProps} />

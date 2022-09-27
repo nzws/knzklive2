@@ -26,10 +26,8 @@ import { getV1LivesComment } from './controllers/v1/lives/get-comment';
 import { deleteV1LivesComment } from './controllers/v1/lives/delete-comment';
 import { getV1TenantsMe } from './controllers/v1/tenants/get-me';
 import { getV1About } from './controllers/v1/about';
-import { getV1LivesTop } from './controllers/v1/lives/get-top';
 import { getV1Lives } from './controllers/v1/lives/get';
 import { middlewareMyTenant } from './middlewares/my-tenant';
-import { getV1TenantStreamStatus } from './controllers/v1/tenants/get-stream-status';
 import { postV1InternalsPushCheckToken } from './controllers/v1/internals/push/check-token';
 import { getV1LivesCount } from './controllers/v1/lives/get-count';
 import { getV1TenantsMeOnce } from './controllers/v1/tenants/get-me-once';
@@ -62,7 +60,7 @@ export const router = (): Router => {
   route.post('/v1/auth/mastodon/refresh', v1AuthMastodonRefresh);
   route.post('/v1/auth/mastodon/revoke', v1AuthMastodonRevoke);
 
-  route.get('/v1/tenants/find/:key', getV1TenantsOnce);
+  route.get('/v1/tenants/find/:slug', getV1TenantsOnce);
   route.get('/v1/tenants', middlewareAuthorizeUser, getV1TenantsMe);
   // route.post('/v1/tenants', middlewareAuthorizeUser);
   route.patch(
@@ -79,19 +77,11 @@ export const router = (): Router => {
     middlewareMyTenant,
     getV1TenantsMeOnce
   );
-  route.get(
-    '/v1/tenants/:tenantId/stream-status',
-    middlewareAuthorizeUser,
-    middlewareTenant,
-    middlewareMyTenant,
-    getV1TenantStreamStatus
-  );
 
   route.get('/v1/users/me', middlewareAuthorizeUser, getV1UsersMe);
   route.get('/v1/users/:userId', getV1UsersOnce);
 
-  route.get('/v1/lives/find/:tenantId/top', middlewareTenant, getV1LivesTop);
-  route.get('/v1/lives/find/:tenantDomain/:liveIdInTenant', getV1LivesFindById);
+  route.get('/v1/lives/find/:slug/:liveIdInTenant', getV1LivesFindById);
   route.get('/v1/lives/explore', getV1LivesExplore);
   route.get('/v1/lives/:liveId', middlewareLive, getV1Lives);
   route.get('/v1/lives/:liveId/url', middlewareLive, getV1LivesUrl);

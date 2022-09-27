@@ -68,8 +68,6 @@ export type TenantPublic = {
   slug: string;
   ownerId: number;
   displayName?: string;
-  customDomain?: string;
-  domain: string;
 };
 
 export type UserConfig = {

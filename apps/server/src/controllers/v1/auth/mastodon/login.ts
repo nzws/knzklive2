@@ -13,14 +13,9 @@ const schema: JSONSchemaType<Params> = {
     domain: {
       type: 'string',
       minLength: 1
-    },
-    tenantId: {
-      type: 'number',
-      minLength: 1,
-      maxLength: 10
     }
   },
-  required: ['domain', 'tenantId'],
+  required: ['domain'],
   additionalProperties: false
 };
 
@@ -39,21 +34,8 @@ export const v1AuthMastodonLogin: APIRoute<
     return;
   }
 
-  const tenantId = query.tenantId;
-  if (isNaN(tenantId) || !tenantId) {
-    ctx.status = 400;
-    ctx.body = {
-      errorCode: 'invalid_request'
-    };
-    return;
-  }
-
   const provider = new AuthMastodon(query.domain);
   const url = await provider.getAuthUrl();
-
-  ctx.cookies.set('tenantId', tenantId.toString(), {
-    httpOnly: true
-  });
 
   ctx.redirect(url);
 };

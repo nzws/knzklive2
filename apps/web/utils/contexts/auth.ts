@@ -27,7 +27,7 @@ const TOKEN_LS = 'knzklive-token';
 const MASTODON_LS = 'knzklive-mastodon-token';
 export const MASTODON_DOMAIN_LS = 'knzklive-mastodon-domain';
 
-export const useAuthInProvider = (tenantId?: number): Returns => {
+export const useAuthInProvider = (): Returns => {
   const intl = useIntl();
   const toast = useToast();
   const [token, setToken, removeToken] = useLocalStorage<string | undefined>(
@@ -61,10 +61,6 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
 
   const signIn = useCallback(
     async (type: SignInType, domain?: string) => {
-      if (!tenantId) {
-        return;
-      }
-
       if (type === SignInType.Mastodon) {
         if (!domain) {
           throw new Error('domain is required');
@@ -75,7 +71,6 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
 
         const url = client.v1.auth.mastodon.login.$path({
           query: {
-            tenantId,
             domain
           }
         });
@@ -96,7 +91,7 @@ export const useAuthInProvider = (tenantId?: number): Returns => {
         throw new Error('type is invalid');
       }
     },
-    [tenantId, handleForceUpdateToken, toast, intl]
+    [handleForceUpdateToken, toast, intl]
   );
 
   const signInCallback = useCallback(

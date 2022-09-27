@@ -23,27 +23,21 @@ import {
 } from '~/utils/data-fetching/default-static-props';
 import { client } from '~/utils/api/client';
 import { Navbar } from '~/organisms/navbar';
-import { useTenant } from '~/utils/hooks/api/use-tenant';
 import { Footer } from '~/organisms/footer';
 
-const Page: NextPage<PageProps<Props, PathProps>> = ({
-  props: { tenant: tenantFallback },
-  pathProps: { tenantDomain }
-}) => {
+const Page: NextPage<PageProps<Props, PathProps>> = () => {
   const intl = useIntl();
-  const [tenant] = useTenant(tenantDomain, tenantFallback);
   const { data: about } = useAspidaSWR(client.v1.about);
 
   return (
     <Fragment>
-      <Navbar tenant={tenant} />
+      <Navbar />
 
       <Head>
         <title>
-          {[
-            intl.formatMessage({ id: 'page.about.title' }),
-            tenant?.displayName || tenant?.domain
-          ].join(' - ')}
+          {[intl.formatMessage({ id: 'page.about.title' }), 'KnzkLive'].join(
+            ' - '
+          )}
         </title>
       </Head>
 
@@ -56,19 +50,10 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
           <Text>
             <FormattedMessage id="page.about.description.1" />
             <br />
-            <FormattedMessage
-              id="page.about.description.2"
-              values={{ domain: tenant?.domain }}
-            />
+            <FormattedMessage id="page.about.description.2" />
           </Text>
 
           <UnorderedList>
-            <ListItem>
-              <FormattedMessage
-                id="page.about.default-domain"
-                values={{ domain: about?.defaultDomain }}
-              />
-            </ListItem>
             <ListItem>
               <FormattedMessage
                 id="page.about.contact"

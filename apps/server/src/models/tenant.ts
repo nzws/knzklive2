@@ -1,19 +1,13 @@
 import type { PrismaClient, Tenant, User } from '@prisma/client';
 import { TenantConfig, TenantPublic } from 'api-types/common/types';
-import { checkDomain, getTenantPrimaryDomain } from '../utils/domain';
 
 export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
   Object.assign(prismaTenant, {
-    get: async (
-      id?: number,
-      slug?: string,
-      customDomain?: string
-    ): Promise<Tenant | undefined> => {
+    get: async (id?: number, slug?: string): Promise<Tenant | undefined> => {
       const tenant = await prismaTenant.findUnique({
         where: {
           id,
-          slug,
-          customDomain
+          slug
         }
       });
 
@@ -23,9 +17,7 @@ export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
       id: tenant.id,
       slug: tenant.slug,
       ownerId: tenant.ownerId,
-      displayName: tenant.displayName || undefined,
-      customDomain: tenant.customDomain || undefined,
-      domain: getTenantPrimaryDomain(tenant)
+      displayName: tenant.displayName || undefined
     }),
     getConfig: (tenant: Tenant): Required<TenantConfig> => {
       const config = (tenant.config || {}) as TenantConfig;
@@ -49,20 +41,5 @@ export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
       });
 
       return tenant;
-    },
-    updateCustomDomain: async (
-      tenant: Tenant,
-      customDomain: string | null
-    ): Promise<Tenant> => {
-      if (customDomain && !checkDomain(customDomain)) {
-        throw new Error('Invalid domain');
-      }
-
-      const tenantUpdated = await prismaTenant.update({
-        where: { id: tenant.id },
-        data: { customDomain }
-      });
-
-      return tenantUpdated;
     }
   });

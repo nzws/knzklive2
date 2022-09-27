@@ -26,9 +26,16 @@ import { LivePublic } from '~/../../packages/api-types/common/types';
 type Props = {
   liveId: number;
   liveFallback?: LivePublic;
+  tenantSlug: string;
+  idInTenant: number;
 };
 
-export const Admin: FC<Props> = ({ liveId, liveFallback }) => {
+export const Admin: FC<Props> = ({
+  liveId,
+  liveFallback,
+  tenantSlug,
+  idInTenant
+}) => {
   const [stream, mutate] = useStream(liveId);
 
   const live = stream?.live;
@@ -101,7 +108,10 @@ export const Admin: FC<Props> = ({ liveId, liveFallback }) => {
                 <Stack spacing={4}>
                   <Heading size="sm">ブラウザから配信</Heading>
 
-                  <Link href="/stream/via-browser" passHref>
+                  <Link
+                    href={`/@${tenantSlug}/${idInTenant}/broadcast-via-browser`}
+                    passHref
+                  >
                     <Button as="a">ブラウザ配信ページへ移動</Button>
                   </Link>
                 </Stack>

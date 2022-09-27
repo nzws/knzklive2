@@ -9,11 +9,6 @@ import {
   PageProps
 } from '~/utils/data-fetching/get-all-static-props';
 import {
-  tenantFetcher,
-  Props as TenantProps,
-  PathProps as TenantPathProps
-} from '~/utils/data-fetching/tenant';
-import {
   localeFetcher,
   Props as LocaleProps,
   PathProps as LocalePathProps
@@ -24,24 +19,24 @@ import {
   PathProps as LivePathProps
 } from '~/utils/data-fetching/live';
 import { Navbar } from '~/organisms/navbar';
-import { useTenant } from '~/utils/hooks/api/use-tenant';
 import { useConvertLiveId } from '~/utils/hooks/api/use-convert-live-id';
 import { Live } from '~/organisms/live';
 import { useLive } from '~/utils/hooks/api/use-live';
 import { useUser } from '~/utils/hooks/api/use-user';
 import { SensitiveWarning } from '~/organisms/live/sensitive-warning';
+import { useTenant } from '~/utils/hooks/api/use-tenant';
 
-type Props = TenantProps & LocaleProps & LiveProps;
-type PathProps = TenantPathProps & LocalePathProps & LivePathProps;
+type Props = LocaleProps & LiveProps;
+type PathProps = { slug: string } & LocalePathProps & LivePathProps;
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
-  props: { tenant: tenantFallback, live: liveFallback },
-  pathProps: { tenantDomain, id }
+  props: { live: liveFallback },
+  pathProps: { slug, id }
 }) => {
   const intl = useIntl();
-  const [tenant] = useTenant(tenantDomain, tenantFallback);
-  const [liveId] = useConvertLiveId(tenantDomain, id, liveFallback);
+  const [liveId] = useConvertLiveId(slug, id, liveFallback);
   const [live] = useLive(liveId, liveFallback);
+  const [tenant] = useTenant(slug);
   const [streamer] = useUser(live?.userId);
   const [isSensitiveAgreed, setIsSensitiveAgreed] = useState(false);
 
@@ -49,14 +44,17 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 
   return (
     <Fragment>
-      <Navbar tenant={tenant} />
+      <Navbar />
 
       <Head>
         <title>
           {[
             live?.title || intl.formatMessage({ id: 'page.live.title' }),
-            tenant?.displayName || tenant?.domain
-          ].join(' - ')}
+            tenant?.displayName,
+            'KnzkLive'
+          ]
+            .filter(Boolean)
+            .join(' - ')}
         </title>
       </Head>
 
@@ -69,7 +67,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
       )}
 
       {live && (!live.sensitive || isSensitiveAgreed) ? (
-        <Live live={live} streamer={streamer} />
+        <Live live={live} tenant={tenant} streamer={streamer} />
       ) : (
         <Box textAlign="center" py="12">
           <Spinner size="lg" />
@@ -81,7 +79,6 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
 
 export const getStaticPaths = defaultGetStaticPaths;
 export const getStaticProps = getAllStaticProps<Props, PathProps>([
-  tenantFetcher,
   localeFetcher,
   liveFetcher
 ]);
