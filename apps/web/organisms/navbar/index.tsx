@@ -54,9 +54,9 @@ export const Navbar: FC = () => {
       }
 
       if (preferMoveTo === 'broadcast-via-browser') {
-        void router.push(`/@${slug}/${live.id}/broadcast-via-browser`);
+        void router.push(`/@${slug}/${live.idInTenant}/broadcast-via-browser`);
       } else {
-        void router.push(`/@${slug}/${live.id}`);
+        void router.push(`/@${slug}/${live.idInTenant}`);
       }
     },
     [router, liveCreatingTenant]
