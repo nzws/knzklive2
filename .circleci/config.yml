@@ -7,7 +7,7 @@ executors:
     resource_class: arm.medium
 
 orbs:
-  node: circleci/node@5.0.2
+  node: circleci/node@5.0.3
 
 jobs:
   setup:
