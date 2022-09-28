@@ -22,7 +22,7 @@ import type { Methods as Methods18 } from './v1/streams/_liveId@number/url';
 import type { Methods as Methods19 } from './v1/streams/thumbnail';
 import type { Methods as Methods20 } from './v1/tenants';
 import type { Methods as Methods21 } from './v1/tenants/_tenantId@number';
-import type { Methods as Methods22 } from './v1/tenants/find/_slug@string';
+import type { Methods as Methods22 } from './v1/tenants/find/_slugOrId';
 import type { Methods as Methods23 } from './v1/users/_userId@number';
 import type { Methods as Methods24 } from './v1/users/me';
 
@@ -735,7 +735,7 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
           };
         },
         find: {
-          _slug: (val3: string) => {
+          _slugOrId: (val3: number | string) => {
             const prefix3 = `${PATH19}/${val3}`;
 
             return {

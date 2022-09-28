@@ -60,7 +60,7 @@ export const router = (): Router => {
   route.post('/v1/auth/mastodon/refresh', v1AuthMastodonRefresh);
   route.post('/v1/auth/mastodon/revoke', v1AuthMastodonRevoke);
 
-  route.get('/v1/tenants/find/:slug', getV1TenantsOnce);
+  route.get('/v1/tenants/find/:key', getV1TenantsOnce);
   route.get('/v1/tenants', middlewareAuthorizeUser, getV1TenantsMe);
   // route.post('/v1/tenants', middlewareAuthorizeUser);
   route.patch(

@@ -74,7 +74,10 @@ export const Lives = (client: PrismaClient['live']) =>
           startedAt: {
             not: null
           },
-          tenantId: tenantId || undefined
+          tenantId: tenantId || undefined,
+          privacy: {
+            not: LivePrivacy.Private
+          }
         },
         orderBy: {
           startedAt: 'desc'

@@ -36,6 +36,8 @@
   "page.about.contact": "連絡先: {contact}",
   "page.about.license": "KnzkLive は AGPL-3.0 でライセンスされたオープンソースソフトウェアです。",
   "page.index.live-not-found": "現在、公開中の配信はありません",
+  "page.index.title.has-live": "📡 KnzkLive で只今配信中",
+  "page.index.title.no-live": "👋 KnzkLive へようこそ！",
   "page.live.title": "配信",
   "create-live.title": "配信を開始",
   "create-live.input-title": "配信タイトル",
@@ -90,5 +92,7 @@
   "live.comment.note.remote": "{relative} にリモートで投稿",
   "live.comment.delete": "コメントを削除",
   "live.comment.account-page": "アカウントページ",
-  "live.comment.reconnect": "コメントサーバーに再接続"
+  "live.comment.reconnect": "コメントサーバーに再接続",
+  "live-list.current-viewers": "{current}人視聴",
+  "live-list.current-live": "ライブ"
 }

@@ -1,18 +1,20 @@
-import { Methods } from 'api-types/api/v1/tenants/find/_slug@string';
+import { Methods } from 'api-types/api/v1/tenants/find/_slugOrId';
 import { tenants } from '../../../models';
 import type { APIRoute } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];
 
 export const getV1TenantsOnce: APIRoute<
-  'slug',
+  'key',
   never,
   never,
   Response
 > = async ctx => {
-  const { slug } = ctx.params;
+  const { key } = ctx.params;
 
-  const tenant = await tenants.get(undefined, slug);
+  const id = Number(key);
+
+  const tenant = id ? await tenants.get(id) : await tenants.get(undefined, key);
 
   if (!tenant) {
     ctx.status = 404;

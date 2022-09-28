@@ -29,15 +29,15 @@ export const Streamer: FC<Props> = ({
       <HStack spacing={4}>
         <Avatar name={displayName} src={avatarUrl} />
 
-        <VStack spacing={0} alignItems="left">
-          {displayName ? (
+        <VStack spacing={1} alignItems="left">
+          {account ? (
             <Heading size="md">
               <LinkOverlay href={url} isExternal>
-                {displayName}
+                {displayName || account.split('@')[0]}
               </LinkOverlay>
             </Heading>
           ) : (
-            <Skeleton height="28px" width="200px" />
+            <Skeleton height="26px" width="200px" />
           )}
 
           {account ? (

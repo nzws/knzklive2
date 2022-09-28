@@ -18,28 +18,28 @@ export const getV1TenantsMe: APIRoute<
       }
     }
   });
-  const liveList = await lives.findMany({
-    where: {
-      tenant: {
-        id: {
-          in: tenant.map(t => t.id)
-        }
-      }
-    },
-    orderBy: {
-      createdAt: 'desc'
-    },
-    take: 1,
-    include: {
-      thumbnail: true
-    }
-  });
 
-  ctx.body = tenant.map(t => {
-    const live = liveList.find(l => l.tenantId === t.id);
+  const liveList = await Promise.all(
+    tenant.map(tenant =>
+      lives.findFirst({
+        where: {
+          tenantId: tenant.id
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        include: {
+          thumbnail: true
+        }
+      })
+    )
+  );
+
+  ctx.body = tenant.map((tenant, index) => {
+    const live = liveList[index];
 
     return {
-      tenant: tenants.getPublic(t),
+      tenant: tenants.getPublic(tenant),
       recentLive: live ? lives.getPrivate(live) : undefined
     };
   });
