@@ -3774,10 +3774,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/next@npm:1.0.2":
-  version: 1.0.2
-  resolution: "@tsconfig/next@npm:1.0.2"
-  checksum: 56b772dccf0da2ceb9aade3c59e9c739703de43465a399febd77e6898c3f92346379b22622158be76c9c5c7a47e5c133aa068661180737f3058d944cb080a10a
+"@tsconfig/next@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@tsconfig/next@npm:1.0.3"
+  checksum: 9059bcb837508f64c3938cbc56ce895f640507574adba537466c86a179a1a7e99d071c1d03e6665db9641eba441b7f7feeeccc09a5a8cb6e46dbf85a0c03dd20
   languageName: node
   linkType: hard
 
@@ -11740,7 +11740,7 @@ __metadata:
     "@testing-library/jest-dom": 5.16.5
     "@testing-library/react": 13.4.0
     "@testing-library/user-event": 14.4.3
-    "@tsconfig/next": 1.0.2
+    "@tsconfig/next": 1.0.3
     "@types/dom-screen-wake-lock": 1.0.0
     "@types/jest": 29.0.3
     "@types/node": 18.7.18
