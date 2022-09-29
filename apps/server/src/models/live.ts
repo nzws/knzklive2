@@ -3,6 +3,7 @@ import { Image, Live, LivePrivacy, PrismaClient, Tenant } from '@prisma/client';
 import { images, lives, tenants } from '.';
 import { LiveConfig, LivePrivate, LivePublic } from 'api-types/common/types';
 import { getPublicLiveUrl } from '../utils/constants';
+import { webhookQueue } from '../services/queues/webhook';
 
 export const Lives = (client: PrismaClient['live']) =>
   Object.assign(client, {
@@ -244,6 +245,11 @@ export const Lives = (client: PrismaClient['live']) =>
           tenant: true
         }
       });
+
+      await webhookQueue
+        .createJob({ live: data, type: 'live:started' })
+        .retries(0)
+        .save();
 
       return data;
     },

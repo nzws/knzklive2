@@ -60,8 +60,8 @@ export type LivePrivate = LivePublic & {
 };
 
 export type TenantConfig = {
-  autoRedirectInTopPage?: boolean;
   exploreInOtherTenants?: boolean;
+  webhookUrl?: string;
 };
 
 export type TenantPublic = {

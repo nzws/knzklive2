@@ -7,6 +7,8 @@ import { validateWithType } from '../../../utils/validate';
 type Request = Methods['patch']['reqBody'];
 type Response = Methods['patch']['resBody'];
 
+const slugRegex = /^[a-z0-9]+$/;
+
 const reqBodySchema: JSONSchemaType<Request> = {
   type: 'object',
   properties: {
@@ -16,16 +18,23 @@ const reqBodySchema: JSONSchemaType<Request> = {
       maxLength: 100,
       nullable: true
     },
+    slug: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      nullable: true
+    },
     config: {
       type: 'object',
       properties: {
-        autoRedirectInTopPage: {
-          type: 'boolean',
-          nullable: true
-        },
         exploreInOtherTenants: {
           type: 'boolean',
           nullable: true
+        },
+        webhookUrl: {
+          type: 'string',
+          nullable: true,
+          maxLength: 200
         }
       }
     }
@@ -49,6 +58,28 @@ export const patchV1Tenants: APIRoute<
     return;
   }
   const body = ctx.request.body;
+  const newSlug = body.slug?.toLowerCase();
+
+  if (newSlug && newSlug !== ctx.state.tenant.slug) {
+    if (!slugRegex.test(newSlug)) {
+      ctx.status = 400;
+      ctx.body = {
+        errorCode: 'invalid_request',
+        message: '配信者IDには半角英数字のみ使用できます'
+      };
+      return;
+    }
+
+    const tenant = await tenants.get(undefined, body.slug);
+    if (tenant) {
+      ctx.status = 409;
+      ctx.body = {
+        errorCode: 'invalid_request',
+        message: 'この配信者IDは既に使われています'
+      };
+      return;
+    }
+  }
 
   await tenants.update({
     where: {
@@ -56,6 +87,7 @@ export const patchV1Tenants: APIRoute<
     },
     data: {
       displayName: body.displayName,
+      slug: newSlug,
       config: body.config
     }
   });

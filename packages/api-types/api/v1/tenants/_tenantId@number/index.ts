@@ -10,6 +10,7 @@ export type Methods = {
 
     reqBody: {
       displayName?: string;
+      slug?: string;
       config: TenantConfig;
     };
 

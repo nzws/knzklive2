@@ -7,6 +7,7 @@ import {
   Badge,
   Button,
   Checkbox,
+  Code,
   Container,
   Divider,
   Flex,
@@ -32,19 +33,22 @@ import { useTenantById } from '~/utils/hooks/api/use-tenant-by-id';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { client } from '~/utils/api/client';
 import { useAuth } from '~/utils/hooks/use-auth';
+import { useRouter } from 'next/router';
 
 const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
   pathProps: { slug }
 }) => {
   const { token } = useAuth();
+  const router = useRouter();
   const [Tenant] = useTenant(slug);
   const [tenant] = useTenantById(Tenant?.id);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
   const [displayName, setDisplayName] = useState<string>();
-  const [autoRedirectInTopPage, setAutoRedirectInTopPage] = useState<boolean>();
+  const [newSlug, setNewSlug] = useState<string>();
   const [exploreInOtherTenants, setExploreInOtherTenants] = useState<boolean>();
+  const [webhookUrl, setWebhookUrl] = useState<string>();
 
   const handleSubmit = useCallback(async () => {
     if (!Tenant?.id) {
@@ -57,15 +61,20 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
       await client.v1.tenants._tenantId(Tenant?.id).$patch({
         body: {
           displayName,
+          slug: newSlug,
           config: {
-            autoRedirectInTopPage,
-            exploreInOtherTenants
+            exploreInOtherTenants,
+            webhookUrl
           }
         },
         headers: {
           Authorization: `Bearer ${token || ''}`
         }
       });
+
+      if (newSlug && tenant?.tenant.slug !== newSlug) {
+        await router.push(`/@${newSlug.toLowerCase()}/settings`);
+      }
     } catch (e) {
       console.warn(e);
       setError(e);
@@ -76,8 +85,11 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
     Tenant?.id,
     token,
     displayName,
-    autoRedirectInTopPage,
-    exploreInOtherTenants
+    newSlug,
+    exploreInOtherTenants,
+    webhookUrl,
+    tenant?.tenant.slug,
+    router
   ]);
 
   useEffect(() => {
@@ -86,8 +98,9 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
     }
 
     setDisplayName(tenant.tenant.displayName || '');
-    setAutoRedirectInTopPage(tenant.config.autoRedirectInTopPage);
+    setNewSlug(tenant.tenant.slug || '');
     setExploreInOtherTenants(tenant.config.exploreInOtherTenants);
+    setWebhookUrl(tenant.config.webhookUrl || '');
   }, [tenant]);
 
   return (
@@ -111,7 +124,7 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
             <Heading size="md">基本設定</Heading>
 
             <FormControl>
-              <FormLabel>テナント表示名(廃止予定)</FormLabel>
+              <FormLabel>テナント表示名</FormLabel>
 
               <Input
                 type="text"
@@ -120,18 +133,29 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
               />
 
               <FormHelperText>
-                ウェブサイトのタイトルとしてナビゲーション、ページタイトルなどに使用されます。
-                記入されていない場合はドメイン名が使用されます。
+                現状特に使っていません。そのうち使います。
               </FormHelperText>
             </FormControl>
 
             <FormControl>
               <FormLabel>配信者ID</FormLabel>
 
-              <Alert status="info">
+              <Alert status="warning" mb={4}>
                 <AlertIcon />
-                手動対応が必要なため、詳細は管理者にお問い合わせください。
+                配信者IDを変更しても、今までの URL
+                はリダイレクトされず、他の誰かが取得できるようになります。
               </Alert>
+
+              <Input
+                type="text"
+                value={newSlug}
+                onChange={e => setNewSlug(e.target.value)}
+              />
+
+              <FormHelperText>
+                英数字が使用できます。配信画面（例: <Code>/@xxx/1</Code>
+                ）などで使用されます。
+              </FormHelperText>
             </FormControl>
           </Stack>
 
@@ -146,18 +170,31 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
             </Alert>
 
             <Checkbox
-              isChecked={autoRedirectInTopPage}
-              onChange={e => setAutoRedirectInTopPage(e.target.checked)}
-            >
-              配信中の場合、トップページから配信画面に自動でリダイレクトする
-            </Checkbox>
-
-            <Checkbox
               isChecked={exploreInOtherTenants}
               onChange={e => setExploreInOtherTenants(e.target.checked)}
             >
-              同じプラットフォームの他のページにおすすめとして表示する
+              トップページや他のページで配信を表示する
             </Checkbox>
+          </Stack>
+
+          <Divider />
+
+          <Stack spacing={4}>
+            <Heading size="md">高度な設定</Heading>
+
+            <FormControl>
+              <FormLabel>Webhook URL</FormLabel>
+
+              <Input
+                type="text"
+                value={webhookUrl}
+                onChange={e => setWebhookUrl(e.target.value)}
+              />
+
+              <FormHelperText>
+                公開配信開始時に POST リクエストを送信します。
+              </FormHelperText>
+            </FormControl>
           </Stack>
 
           <Divider />

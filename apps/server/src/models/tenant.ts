@@ -19,12 +19,12 @@ export const Tenants = (prismaTenant: PrismaClient['tenant']) =>
       ownerId: tenant.ownerId,
       displayName: tenant.displayName || undefined
     }),
-    getConfig: (tenant: Tenant): Required<TenantConfig> => {
+    getConfig: (tenant: Tenant): TenantConfig => {
       const config = (tenant.config || {}) as TenantConfig;
 
       return {
-        autoRedirectInTopPage: config.autoRedirectInTopPage ?? true,
-        exploreInOtherTenants: config.exploreInOtherTenants ?? true
+        exploreInOtherTenants: config.exploreInOtherTenants ?? true,
+        webhookUrl: config.webhookUrl || undefined
       };
     },
     createTenant: async (slug: string, owner: User): Promise<Tenant> => {
