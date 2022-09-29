@@ -12,20 +12,21 @@
     ]
   },
   "scripts": {
-    "prettier:lint": "prettier --check .",
-    "prettier:format": "prettier --write .",
+    "lint": "prettier --check .",
+    "format": "prettier --write .",
     "dev-all": "docker compose up -d db redis && yarn dev:migrate && dotenv -- yarn workspaces foreach --verbose --parallel -j unlimited --interlaced run dev",
     "dev": "docker compose up",
     "dev:migrate": "dotenv -- yarn workspace server prisma migrate dev",
     "dev:sql": "dotenv -- yarn workspace server prisma studio",
-    "lint": "yarn prettier:lint && yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run lint",
-    "format": "yarn prettier:format && yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run format",
-    "test": "yarn workspaces foreach --verbose --parallel -j unlimited --exclude knzklive2 run test"
+    "turbo:build": "turbo run build",
+    "turbo:test": "turbo run test",
+    "turbo:lint": "turbo run lint"
   },
   "devDependencies": {
     "@knzk/prettier-config": "1.0.0",
     "dotenv-cli": "6.0.0",
-    "prettier": "2.7.1"
+    "prettier": "2.7.1",
+    "turbo": "1.5.4"
   },
   "prettier": "@knzk/prettier-config"
 }

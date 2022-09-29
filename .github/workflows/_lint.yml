@@ -11,6 +11,9 @@ jobs:
         node-version: [16.x, 18.x]
 
     runs-on: ${{ matrix.os }}
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
     steps:
       - uses: actions/checkout@v3
@@ -31,7 +34,7 @@ jobs:
       - run: yarn install --immutable
       - run: yarn workspace server prisma generate
 
-  lint:
+  lint-and-test:
     needs: install
     strategy:
       matrix:
@@ -58,87 +61,5 @@ jobs:
       - run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - run: yarn install --immutable
       - run: yarn workspace server prisma generate
-      - run: yarn lint
-
-  test-server:
-    needs: install
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node-version: [16.x, 18.x]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - uses: actions/cache@v3.0.8
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
-
-      - run: yarn workspaces focus server
-      - run: yarn workspace server prisma generate
-      - run: yarn workspace server test
-
-  test-web:
-    needs: install
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node-version: [16.x, 18.x]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - uses: actions/cache@v3.0.8
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
-
-      - run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-      - run: yarn workspaces focus web
-      - run: yarn workspace web test
-
-  test-push:
-    needs: install
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node-version: [16.x, 18.x]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - uses: actions/cache@v3.0.8
-        with:
-          path: |
-            node_modules
-          key: ${{ runner.os }}-node-v${{ matrix.node-version }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
-
-      - run: yarn workspaces focus push
-      - run: yarn workspace push test
+      - run: yarn turbo:lint
+      - run: yarn turbo:test
