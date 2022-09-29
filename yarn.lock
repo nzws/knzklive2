@@ -6838,9 +6838,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:7.4.0":
-  version: 7.4.0
-  resolution: "framer-motion@npm:7.4.0"
+"framer-motion@npm:7.5.0":
+  version: 7.5.0
+  resolution: "framer-motion@npm:7.5.0"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
     "@motionone/dom": 10.13.1
@@ -6855,7 +6855,7 @@ __metadata:
   dependenciesMeta:
     "@emotion/is-prop-valid":
       optional: true
-  checksum: 96973d93f8bc3c3e9611ebda2568d0cfae2b36bf7b3c8002e55b29a2e971223b3b0ee0a1c630b8d88652317813f2222a7cba366a83500750eafdffecac364e0b
+  checksum: ce0a55d02274c2d523f78df143bacd714d8343f690b8bf8cc71433afe53e72826df94cd6af6f5e2a427ed5e35d143210ec04be01b45863522930f18321198a95
   languageName: node
   linkType: hard
 
@@ -11870,7 +11870,7 @@ __metadata:
     eslint-plugin-react: 7.31.8
     eslint-plugin-react-hooks: 4.6.0
     eslint-plugin-testing-library: 5.7.0
-    framer-motion: 7.4.0
+    framer-motion: 7.5.0
     hls.js: 1.2.3
     jest: 29.1.1
     jest-environment-jsdom: 29.1.1
