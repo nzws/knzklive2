@@ -2,8 +2,8 @@ import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams/_liveId@number';
 import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
 import { images, lives } from '../../../models';
-import { pubsub } from '../../../redis/pubsub/client';
-import { getLiveUpdateKey } from '../../../redis/pubsub/keys';
+import { pubsub } from '../../../services/redis/pubsub/client';
+import { getLiveUpdateKey } from '../../../services/redis/pubsub/keys';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 

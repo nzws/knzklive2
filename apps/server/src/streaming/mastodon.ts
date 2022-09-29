@@ -1,7 +1,7 @@
 import striptags from 'striptags';
 import { WebSocket } from 'ws';
 import { comments, lives, users } from '../models';
-import { pubsub } from '../redis/pubsub/client';
+import { pubsub } from '../services/redis/pubsub/client';
 
 const token = process.env.MASTODON_ACCESS_TOKEN || '';
 const domain = process.env.MASTODON_DOMAIN || '';

@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 import type { Methods } from 'api-types/api/v1/auth/mastodon/refresh';
 import { users } from '../../../../models';
-import { UserToken } from '../../../../redis/user-token';
+import { UserToken } from '../../../../services/redis/user-token';
 import { AuthMastodon } from '../../../../services/auth-providers/mastodon';
 import type { ExternalUser } from '../../../../services/auth-providers/_base';
 import type { APIRoute } from '../../../../utils/types';

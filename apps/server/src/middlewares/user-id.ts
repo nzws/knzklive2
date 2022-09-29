@@ -1,5 +1,5 @@
 import type { Middleware } from 'koa';
-import { UserToken } from '../redis/user-token';
+import { UserToken } from '../services/redis/user-token';
 
 const userToken = new UserToken();
 

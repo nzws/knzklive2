@@ -1,5 +1,5 @@
 import { Methods } from 'api-types/api/v1/lives/_liveId@number/count';
-import { LiveWatching } from '../../../redis/live-watching';
+import { LiveWatching } from '../../../services/redis/live-watching';
 import { getIP } from '../../../utils/ip';
 import { APIRoute, LiveState } from '../../../utils/types';
 

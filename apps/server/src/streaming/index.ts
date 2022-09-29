@@ -2,9 +2,9 @@ import { Server } from 'http';
 import WebSocket from 'ws';
 import { pathToRegexp } from 'path-to-regexp';
 import { lives } from '../models';
-import { pubsub } from '../redis/pubsub/client';
-import { getLiveUpdateKey } from '../redis/pubsub/keys';
-import { UserToken } from '../redis/user-token';
+import { pubsub } from '../services/redis/pubsub/client';
+import { getLiveUpdateKey } from '../services/redis/pubsub/keys';
+import { UserToken } from '../services/redis/user-token';
 import { jwtCommentViewer } from '../services/jwt';
 
 const userToken = new UserToken();

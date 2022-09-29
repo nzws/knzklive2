@@ -1,13 +1,13 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams/_liveId@number/action';
 import { lives } from '../../../models';
-import { LiveWatching } from '../../../redis/live-watching';
-import { pubsub } from '../../../redis/pubsub/client';
+import { LiveWatching } from '../../../services/redis/live-watching';
+import { pubsub } from '../../../services/redis/pubsub/client';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 import { pushApi } from '../../../services/push-api';
 import { basePushStream, serverToken } from '../../../utils/constants';
-import { getLiveUpdateKey } from '../../../redis/pubsub/keys';
+import { getLiveUpdateKey } from '../../../services/redis/pubsub/keys';
 import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
 import { Live } from '@prisma/client';
 

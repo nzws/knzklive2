@@ -5,7 +5,7 @@ import type { ExternalUser } from '../../../../services/auth-providers/_base';
 import type { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
 import type { Methods } from 'api-types/api/v1/auth/mastodon/token';
-import { UserToken } from '../../../../redis/user-token';
+import { UserToken } from '../../../../services/redis/user-token';
 
 type Params = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];

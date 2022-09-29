@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/auth/mastodon/revoke';
-import { UserToken } from '../../../../redis/user-token';
+import { UserToken } from '../../../../services/redis/user-token';
 import { AuthMastodon } from '../../../../services/auth-providers/mastodon';
 import type { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';

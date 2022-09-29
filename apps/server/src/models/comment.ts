@@ -5,8 +5,8 @@ import {
   LiveUpdateCommentDeleted
 } from 'api-types/streaming/live-update';
 import { comments } from '.';
-import { pubsub } from '../redis/pubsub/client';
-import { getLiveUpdateKey } from '../redis/pubsub/keys';
+import { pubsub } from '../services/redis/pubsub/client';
+import { getLiveUpdateKey } from '../services/redis/pubsub/keys';
 
 export const Comments = (client: PrismaClient['comment']) =>
   Object.assign(client, {
