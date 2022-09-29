@@ -18,7 +18,6 @@ import { useUser } from '~/utils/hooks/api/use-user';
 import { RelativeTime } from '~/atoms/relative-time';
 import { FormattedMessage } from 'react-intl';
 import Link from 'next/link';
-import { useTenant } from '~/utils/hooks/api/use-tenant';
 
 type Props = {
   live?: LivePublic;
@@ -27,7 +26,6 @@ type Props = {
 
 export const LiveItem: FC<Props> = ({ live, currentWatchingCount }) => {
   const [user] = useUser(live?.userId);
-  const [tenant] = useTenant(live?.tenantId);
 
   return (
     <LinkBox as={Stack} spacing={3}>
@@ -82,9 +80,9 @@ export const LiveItem: FC<Props> = ({ live, currentWatchingCount }) => {
           <Skeleton height="18px" width="60%" />
         )}
 
-        {live && tenant ? (
+        {live ? (
           <Heading fontSize="lg" fontWeight="bold" noOfLines={1}>
-            <Link href={`/@${tenant?.slug}/${live.idInTenant}`} passHref>
+            <Link href={`/@${live.tenant.slug}/${live.idInTenant}`} passHref>
               <LinkOverlay>{live.title}</LinkOverlay>
             </Link>
           </Heading>

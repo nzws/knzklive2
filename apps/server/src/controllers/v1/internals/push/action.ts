@@ -1,4 +1,4 @@
-import { Live } from '@prisma/client';
+import { Image, Live, Tenant } from '@prisma/client';
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/internals/push/action';
 import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
@@ -54,7 +54,10 @@ export const postV1InternalsPushAction: APIRoute<
     return;
   }
 
-  let newLive: Live;
+  let newLive: Live & {
+    thumbnail?: Image | null;
+    tenant: Tenant;
+  };
   if (body.action === 'start') {
     newLive = await lives.startStream(live);
     const date = new Date();

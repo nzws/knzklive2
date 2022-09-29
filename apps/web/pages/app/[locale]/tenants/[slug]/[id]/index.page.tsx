@@ -24,7 +24,6 @@ import { Live } from '~/organisms/live';
 import { useLive } from '~/utils/hooks/api/use-live';
 import { useUser } from '~/utils/hooks/api/use-user';
 import { SensitiveWarning } from '~/organisms/live/sensitive-warning';
-import { useTenant } from '~/utils/hooks/api/use-tenant';
 
 type Props = LocaleProps & LiveProps;
 type PathProps = { slug: string } & LocalePathProps & LivePathProps;
@@ -36,7 +35,6 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
   const intl = useIntl();
   const [liveId] = useConvertLiveId(slug, id, liveFallback);
   const [live] = useLive(liveId, liveFallback);
-  const [tenant] = useTenant(slug);
   const [streamer] = useUser(live?.userId);
   const [isSensitiveAgreed, setIsSensitiveAgreed] = useState(false);
 
@@ -50,7 +48,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
         <title>
           {[
             live?.title || intl.formatMessage({ id: 'page.live.title' }),
-            tenant?.displayName,
+            live?.tenant.displayName,
             'KnzkLive'
           ]
             .filter(Boolean)
@@ -67,7 +65,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
       )}
 
       {live && (!live.sensitive || isSensitiveAgreed) ? (
-        <Live live={live} tenant={tenant} streamer={streamer} />
+        <Live live={live} streamer={streamer} />
       ) : (
         <Box textAlign="center" py="12">
           <Spinner size="lg" />

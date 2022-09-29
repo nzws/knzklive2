@@ -115,7 +115,7 @@ export const GeneralSettings: FC<Props> = ({ live, notPushing }) => {
             onClose={onCloseLiveEdit}
             live={live}
             isCreate={false}
-            tenantId={live.tenantId}
+            tenantId={live.tenant.id}
           />
 
           <Button onClick={onOpenLiveEdit}>配信情報を編集</Button>

@@ -93,6 +93,10 @@ export const patchV1Streams: APIRoute<
       privacy: body.privacy,
       config: body.config,
       thumbnailId: body.customThumbnailId
+    },
+    include: {
+      thumbnail: true,
+      tenant: true
     }
   });
 

@@ -11,7 +11,7 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { LivePublic, TenantPublic, UserPublic } from 'api-types/common/types';
+import { LivePublic, UserPublic } from 'api-types/common/types';
 import { useLiveRealtimeCount } from '~/utils/hooks/api/use-live-realtime-count';
 import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
 import { useAuth } from '~/utils/hooks/use-auth';
@@ -29,13 +29,12 @@ import { useLive } from '~/utils/hooks/api/use-live';
 
 type Props = {
   live: LivePublic;
-  tenant?: TenantPublic;
   streamer?: UserPublic;
 };
 
 const NAVBAR_HEIGHT = 56;
 
-export const Live: FC<Props> = ({ live, tenant, streamer }) => {
+export const Live: FC<Props> = ({ live, streamer }) => {
   const { user } = useAuth();
   const isDesktop = useBreakpointValue(
     { base: false, lg: true },
@@ -156,10 +155,10 @@ export const Live: FC<Props> = ({ live, tenant, streamer }) => {
 
               <Text>{live.description}</Text>
 
-              {isStreamer && tenant && !live.endedAt && (
+              {isStreamer && !live.endedAt && (
                 <Admin
                   liveId={live.id}
-                  tenantSlug={tenant.slug}
+                  tenantSlug={live.tenant.slug}
                   idInTenant={live.idInTenant}
                 />
               )}

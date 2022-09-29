@@ -29,7 +29,8 @@ export const getV1TenantsMe: APIRoute<
           createdAt: 'desc'
         },
         include: {
-          thumbnail: true
+          thumbnail: true,
+          tenant: true
         }
       })
     )

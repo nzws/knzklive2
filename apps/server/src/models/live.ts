@@ -1,19 +1,20 @@
 import crypto from 'crypto';
-import { Image, Live, LivePrivacy, PrismaClient } from '@prisma/client';
+import { Image, Live, LivePrivacy, PrismaClient, Tenant } from '@prisma/client';
 import { images, lives, tenants } from '.';
 import { LiveConfig, LivePrivate, LivePublic } from 'api-types/common/types';
+import { getPublicLiveUrl } from '../utils/constants';
 
 export const Lives = (client: PrismaClient['live']) =>
   Object.assign(client, {
     getPublic: (
       live: Live & {
         thumbnail?: Image | null;
+        tenant: Tenant;
       }
     ): LivePublic => ({
       id: live.id,
       idInTenant: live.idInTenant,
       userId: live.userId,
-      tenantId: live.tenantId,
       startedAt: live.startedAt || undefined,
       endedAt: live.endedAt || undefined,
       title: live.title,
@@ -23,11 +24,14 @@ export const Lives = (client: PrismaClient['live']) =>
       hashtag: live.hashtag || undefined,
       watchingSumCount: live.watchingSumCount || undefined,
       isPushing: !live.pushLastEndedAt && !!live.pushLastStartedAt,
+      publicUrl: getPublicLiveUrl(live.tenant.slug, live.idInTenant),
+      tenant: tenants.getPublic(live.tenant),
       thumbnail: live.thumbnail ? images.getPublic(live.thumbnail) : undefined
     }),
     getPrivate: (
       live: Live & {
         thumbnail?: Image | null;
+        tenant: Tenant;
       }
     ): LivePrivate => ({
       ...lives.getPublic(live),
@@ -46,7 +50,8 @@ export const Lives = (client: PrismaClient['live']) =>
           id
         },
         include: {
-          thumbnail: true
+          thumbnail: true,
+          tenant: true
         }
       });
 
@@ -61,7 +66,8 @@ export const Lives = (client: PrismaClient['live']) =>
           }
         },
         include: {
-          thumbnail: true
+          thumbnail: true,
+          tenant: true
         }
       });
 
@@ -163,6 +169,10 @@ export const Lives = (client: PrismaClient['live']) =>
           watchToken,
           config,
           thumbnailId
+        },
+        include: {
+          thumbnail: true,
+          tenant: true
         }
       });
     },
@@ -170,6 +180,10 @@ export const Lives = (client: PrismaClient['live']) =>
       const lives = await client.findMany({
         where: {
           endedAt: null
+        },
+        include: {
+          thumbnail: true,
+          tenant: true
         }
       });
 
@@ -188,6 +202,10 @@ export const Lives = (client: PrismaClient['live']) =>
           pushFirstStartedAt: live.pushFirstStartedAt || new Date(),
           pushLastEndedAt: null,
           pushLastStartedAt: new Date()
+        },
+        include: {
+          thumbnail: true,
+          tenant: true
         }
       });
 
@@ -204,6 +222,10 @@ export const Lives = (client: PrismaClient['live']) =>
         },
         data: {
           pushLastEndedAt: new Date()
+        },
+        include: {
+          thumbnail: true,
+          tenant: true
         }
       });
 
@@ -216,6 +238,10 @@ export const Lives = (client: PrismaClient['live']) =>
         },
         data: {
           startedAt: new Date()
+        },
+        include: {
+          thumbnail: true,
+          tenant: true
         }
       });
 
@@ -229,6 +255,10 @@ export const Lives = (client: PrismaClient['live']) =>
         data: {
           endedAt: new Date(),
           watchingSumCount
+        },
+        include: {
+          thumbnail: true,
+          tenant: true
         }
       });
 

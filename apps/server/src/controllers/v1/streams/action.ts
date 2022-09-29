@@ -9,7 +9,7 @@ import { pushApi } from '../../../services/push-api';
 import { basePushStream, serverToken } from '../../../utils/constants';
 import { getLiveUpdateKey } from '../../../services/redis/pubsub/keys';
 import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
-import { Live } from '@prisma/client';
+import { Image, Live, Tenant } from '@prisma/client';
 
 type Request = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
@@ -44,7 +44,12 @@ export const postV1StreamsAction: APIRoute<
   }
   const body = ctx.request.body;
 
-  let newLive: Live | undefined;
+  let newLive:
+    | (Live & {
+        thumbnail?: Image | null;
+        tenant: Tenant;
+      })
+    | undefined;
   if (body.command === 'publish') {
     if (ctx.state.live.startedAt) {
       ctx.status = 400;

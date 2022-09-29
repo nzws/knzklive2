@@ -31,6 +31,7 @@ export type TenantState = {
 export type LiveState = {
   live: Live & {
     thumbnail: Image | null;
+    tenant: Tenant;
   };
 };
 

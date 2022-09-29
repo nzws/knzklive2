@@ -8,7 +8,6 @@ import {
   PathProps
 } from '~/utils/data-fetching/default-static-props';
 import { PageProps } from '~/utils/data-fetching/get-all-static-props';
-import { useTenant } from '~/utils/hooks/api/use-tenant';
 import { StartedNote } from '~/organisms/stream/via-browser/started-note';
 import {
   Alert,
@@ -69,7 +68,6 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
   const toast = useToast();
   const router = useRouter();
   const isInitializedRef = useRef(false);
-  const [tenant] = useTenant(slug);
   const [liveId] = useConvertLiveId(slug, id);
   const [stream, mutate] = useStream(liveId);
   const live = stream?.live;
@@ -142,14 +140,14 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
   );
 
   const handleShare = useCallback(() => {
-    if (!live?.idInTenant || !tenant?.slug) {
+    if (!live) {
       return;
     }
 
     void navigator.share({
-      url: `/@${tenant.slug}/${live?.idInTenant}`
+      url: live.publicUrl
     });
-  }, [live?.idInTenant, tenant?.slug]);
+  }, [live]);
 
   useEffect(() => {
     if (!live) {
@@ -223,7 +221,7 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
               isPushing={live.isPushing}
               thumbnailUrl={live.thumbnail?.publicUrl}
               liveId={live.id}
-              tenantId={tenant?.id}
+              tenantId={live.tenant.id}
               streamerUserId={live.userId}
             />
           )}
@@ -384,7 +382,7 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
                   onClose={onCloseLiveEdit}
                   live={live}
                   isCreate={false}
-                  tenantId={live.tenantId}
+                  tenantId={live.tenant.id}
                 />
               )}
 

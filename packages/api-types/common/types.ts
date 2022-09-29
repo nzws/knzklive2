@@ -41,7 +41,6 @@ export type LivePublic = {
   id: number;
   idInTenant: number;
   userId: number;
-  tenantId: number;
   startedAt?: Date;
   endedAt?: Date;
   title: string;
@@ -51,6 +50,8 @@ export type LivePublic = {
   hashtag?: string;
   watchingSumCount?: number;
   isPushing: boolean;
+  publicUrl: string;
+  tenant: TenantPublic;
   thumbnail?: ImagePublic;
 };
 
