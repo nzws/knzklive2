@@ -5095,6 +5095,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bee-queue@npm:1.4.0":
+  version: 1.4.0
+  resolution: "bee-queue@npm:1.4.0"
+  dependencies:
+    p-finally: ^1.0.0
+    promise-callbacks: ^3.8.1
+    redis: ^2.7.1
+  checksum: 13666b95eb3e9a1e25a7977c19d75c550ea6d217f7313c17832d4eb64ee7a233292cc25605af002c774ea4d6c7c53dc91120121c7c0307fe165ada822ffbda9e
+  languageName: node
+  linkType: hard
+
 "binary-extensions@npm:^2.0.0":
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
@@ -6021,6 +6032,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"double-ended-queue@npm:^2.1.0-0":
+  version: 2.1.0-0
+  resolution: "double-ended-queue@npm:2.1.0-0"
+  checksum: 3030cf9dcf6f8e7d8cb6ae5b7304890445d7c32233a614e400ba7b378086ad76f5822d0e501afd5ffe0af1de4bcb842fa23d4c79174d54f6566399435fafc271
+  languageName: node
+  linkType: hard
+
 "duplexer@npm:^0.1.2":
   version: 0.1.2
   resolution: "duplexer@npm:0.1.2"
@@ -6140,6 +6158,38 @@ __metadata:
   dependencies:
     stackframe: ^1.3.4
   checksum: 3b916d2d14c6682f287c8bfa28e14672f47eafe832701080e420e7cdbaebb2c50293868256a95706ac2330fe078cf5664713158b49bc30d7a5f2ac229ded0e18
+  languageName: node
+  linkType: hard
+
+"es-abstract@npm:^1.17.0-next.1":
+  version: 1.20.3
+  resolution: "es-abstract@npm:1.20.3"
+  dependencies:
+    call-bind: ^1.0.2
+    es-to-primitive: ^1.2.1
+    function-bind: ^1.1.1
+    function.prototype.name: ^1.1.5
+    get-intrinsic: ^1.1.3
+    get-symbol-description: ^1.0.0
+    has: ^1.0.3
+    has-property-descriptors: ^1.0.0
+    has-symbols: ^1.0.3
+    internal-slot: ^1.0.3
+    is-callable: ^1.2.6
+    is-negative-zero: ^2.0.2
+    is-regex: ^1.1.4
+    is-shared-array-buffer: ^1.0.2
+    is-string: ^1.0.7
+    is-weakref: ^1.0.2
+    object-inspect: ^1.12.2
+    object-keys: ^1.1.1
+    object.assign: ^4.1.4
+    regexp.prototype.flags: ^1.4.3
+    safe-regex-test: ^1.0.0
+    string.prototype.trimend: ^1.0.5
+    string.prototype.trimstart: ^1.0.5
+    unbox-primitive: ^1.0.2
+  checksum: 225f24966ed960868bcfa7b39b38c9f4b68d1e0351e4e052a199e3e2fd93838a28b050687a0edf1021c20173d0831d076ff33ec581de77ca8aded67e2e138a80
   languageName: node
   linkType: hard
 
@@ -6999,7 +7049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-intrinsic@npm:^1.0.2, get-intrinsic@npm:^1.1.0, get-intrinsic@npm:^1.1.1, get-intrinsic@npm:^1.1.2":
+"get-intrinsic@npm:^1.0.2, get-intrinsic@npm:^1.1.0, get-intrinsic@npm:^1.1.1, get-intrinsic@npm:^1.1.2, get-intrinsic@npm:^1.1.3":
   version: 1.1.3
   resolution: "get-intrinsic@npm:1.1.3"
   dependencies:
@@ -7588,6 +7638,13 @@ __metadata:
   version: 1.2.6
   resolution: "is-callable@npm:1.2.6"
   checksum: 7667d6a6be66df00741cfa18c657877c46a00139ea7ea7765251e9db0182745c9ee173506941a329d6914e34e59e9cc80029fb3f68bbf8c22a6c155ee6ea77b3
+  languageName: node
+  linkType: hard
+
+"is-callable@npm:^1.2.6":
+  version: 1.2.7
+  resolution: "is-callable@npm:1.2.7"
+  checksum: 61fd57d03b0d984e2ed3720fb1c7a897827ea174bd44402878e059542ea8c4aeedee0ea0985998aa5cc2736b2fa6e271c08587addb5b3959ac52cf665173d1ac
   languageName: node
   linkType: hard
 
@@ -9445,6 +9502,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"object.getownpropertydescriptors@npm:2.1.0":
+  version: 2.1.0
+  resolution: "object.getownpropertydescriptors@npm:2.1.0"
+  dependencies:
+    define-properties: ^1.1.3
+    es-abstract: ^1.17.0-next.1
+  checksum: a3763085ce840b8f8de4df1e354303d21461454b91b6f6408871cb7be31af975fce45163e4c380c0704c3cfc9e06197d80a4b4a99fa83cc111d075311ae02cc7
+  languageName: node
+  linkType: hard
+
 "object.hasown@npm:^1.1.1":
   version: 1.1.1
   resolution: "object.hasown@npm:1.1.1"
@@ -9534,6 +9601,13 @@ __metadata:
     type-check: ^0.4.0
     word-wrap: ^1.2.3
   checksum: dbc6fa065604b24ea57d734261914e697bd73b69eff7f18e967e8912aa2a40a19a9f599a507fa805be6c13c24c4eae8c71306c239d517d42d4c041c942f508a0
+  languageName: node
+  linkType: hard
+
+"p-finally@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "p-finally@npm:1.0.0"
+  checksum: 93a654c53dc805dd5b5891bab16eb0ea46db8f66c4bfd99336ae929323b1af2b70a8b0654f8f1eae924b2b73d037031366d645f1fd18b3d30cbd15950cc4b1d4
   languageName: node
   linkType: hard
 
@@ -9878,6 +9952,16 @@ __metadata:
   version: 2.0.3
   resolution: "progress@npm:2.0.3"
   checksum: f67403fe7b34912148d9252cb7481266a354bd99ce82c835f79070643bb3c6583d10dbcfda4d41e04bbc1d8437e9af0fb1e1f2135727878f5308682a579429b7
+  languageName: node
+  linkType: hard
+
+"promise-callbacks@npm:^3.8.1":
+  version: 3.8.2
+  resolution: "promise-callbacks@npm:3.8.2"
+  dependencies:
+    "@babel/runtime": ^7.9.2
+    object.getownpropertydescriptors: 2.1.0
+  checksum: aeba273e22eb812b6e42fc01cdd36437c865c0cceead44d13a7580f73c35cefaf0299c08270074c09eacd0ecf527aa57b66dd42e955946953d0b3878d43dadd6
   languageName: node
   linkType: hard
 
@@ -10283,10 +10367,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"redis-commands@npm:^1.2.0":
+  version: 1.7.0
+  resolution: "redis-commands@npm:1.7.0"
+  checksum: d1ff7fbcb5e54768c77f731f1d49679d2a62c3899522c28addb4e2e5813aea8bcac3f22519d71d330224c3f2937f935dfc3d8dc65e90db0f5fe22dc2c1515aa7
+  languageName: node
+  linkType: hard
+
 "redis-errors@npm:^1.0.0, redis-errors@npm:^1.2.0":
   version: 1.2.0
   resolution: "redis-errors@npm:1.2.0"
   checksum: f28ac2692113f6f9c222670735aa58aeae413464fd58ccf3fce3f700cae7262606300840c802c64f2b53f19f65993da24dc918afc277e9e33ac1ff09edb394f4
+  languageName: node
+  linkType: hard
+
+"redis-parser@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "redis-parser@npm:2.6.0"
+  checksum: 8d4936875e39d56a951e0bbb6653b4da1f7fdd727552c89561c3c78e7ffeb9c3e8820a78454e939b74d1ba20996d62ac179b4fc39d07340d10f8d52740399422
   languageName: node
   linkType: hard
 
@@ -10296,6 +10394,17 @@ __metadata:
   dependencies:
     redis-errors: ^1.0.0
   checksum: 89290ae530332f2ae37577647fa18208d10308a1a6ba750b9d9a093e7398f5e5253f19855b64c98757f7129cccce958e4af2573fdc33bad41405f87f1943459a
+  languageName: node
+  linkType: hard
+
+"redis@npm:^2.7.1":
+  version: 2.8.0
+  resolution: "redis@npm:2.8.0"
+  dependencies:
+    double-ended-queue: ^2.1.0-0
+    redis-commands: ^1.2.0
+    redis-parser: ^2.6.0
+  checksum: e44dc50a9a92ede2c95b3166482a4b04373853fdbb72ab138e834b868a3cd446798742fc0f85de2d5e442f9c86f58e1250637ea71af3ad5527478d05ef430079
   languageName: node
   linkType: hard
 
@@ -10509,6 +10618,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"safe-regex-test@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "safe-regex-test@npm:1.0.0"
+  dependencies:
+    call-bind: ^1.0.2
+    get-intrinsic: ^1.1.3
+    is-regex: ^1.1.4
+  checksum: bc566d8beb8b43c01b94e67de3f070fd2781685e835959bbbaaec91cc53381145ca91f69bd837ce6ec244817afa0a5e974fc4e40a2957f0aca68ac3add1ddd34
+  languageName: node
+  linkType: hard
+
 "safer-buffer@npm:>= 2.1.2 < 3, safer-buffer@npm:>= 2.1.2 < 3.0.0":
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
@@ -10600,6 +10720,7 @@ __metadata:
     "@typescript-eslint/parser": 5.38.1
     ajv: 8.11.0
     api-types: "workspace:^"
+    bee-queue: 1.4.0
     dotenv: 16.0.2
     eslint: 8.24.0
     eslint-config-prettier: 8.5.0

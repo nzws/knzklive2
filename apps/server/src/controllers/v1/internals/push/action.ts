@@ -2,14 +2,12 @@ import { Live } from '@prisma/client';
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/internals/push/action';
 import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
-import { images, lives } from '../../../../models';
+import { lives } from '../../../../models';
 import { pubsub } from '../../../../services/redis/pubsub/client';
 import { getLiveUpdateKey } from '../../../../services/redis/pubsub/keys';
-import { pushApi } from '../../../../services/push-api';
-import { thumbnailStorage } from '../../../../services/storage/thumbnail';
-import { basePushStream, serverToken } from '../../../../utils/constants';
 import { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
+import { thumbnailQueue } from '../../../../services/queues/thumbnail';
 
 type Request = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
@@ -59,31 +57,9 @@ export const postV1InternalsPushAction: APIRoute<
   let newLive: Live;
   if (body.action === 'start') {
     newLive = await lives.startStream(live);
-
-    // todo: to worker
-    setTimeout(() => {
-      void (async () => {
-        try {
-          const { key, url } =
-            await thumbnailStorage.getUploadUrlFromPushServer(
-              live.tenantId,
-              live.id
-            );
-
-          await pushApi(basePushStream).api.externals.v1.thumbnail.$post({
-            body: {
-              liveId: live.id,
-              serverToken,
-              signedUploadUrl: url
-            }
-          });
-
-          await images.createForGeneratedLiveThumbnail(live, key);
-        } catch (e) {
-          console.error(e);
-        }
-      })();
-    }, 1000);
+    const date = new Date();
+    date.setSeconds(date.getSeconds() + 3);
+    await thumbnailQueue.createJob({ live }).delayUntil(date).retries(0).save();
   } else if (body.action === 'stop') {
     newLive = await lives.stopStream(live);
   } else {
