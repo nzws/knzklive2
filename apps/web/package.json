@@ -23,7 +23,7 @@
     "api-types": "*",
     "canvas": "2.10.1",
     "framer-motion": "7.5.0",
-    "hls.js": "1.2.3",
+    "hls.js": "1.2.4",
     "mpegts.js": "1.6.10",
     "next": "12.3.1",
     "nextjs-progressbar": "0.0.14",
