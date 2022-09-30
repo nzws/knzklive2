@@ -28,7 +28,7 @@
     "@prisma/client": "4.4.0",
     "ajv": "8.11.0",
     "api-types": "workspace:^",
-    "bullmq": "2.1.2",
+    "bullmq": "2.1.3",
     "dotenv": "16.0.3",
     "ioredis": "5.2.3",
     "is-valid-domain": "0.1.6",
