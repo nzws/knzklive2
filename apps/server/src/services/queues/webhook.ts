@@ -19,7 +19,7 @@ export const webhookQueue = new BeeQueue<{
 });
 
 webhookQueue.process(async job => {
-  const { live } = job.data;
+  const { live, type } = job.data;
   console.log('webhook job', live.id);
 
   if (!live.startedAt) {
@@ -36,13 +36,27 @@ webhookQueue.process(async job => {
     return;
   }
 
-  await fetch(config.webhookUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(lives.getPublic(live))
-  });
+  const abort = new AbortController();
+
+  const timeout = setTimeout(() => {
+    abort.abort();
+  }, 5000);
+
+  try {
+    await fetch(config.webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        type,
+        live: lives.getPublic(live)
+      }),
+      signal: abort.signal
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   return true;
 });

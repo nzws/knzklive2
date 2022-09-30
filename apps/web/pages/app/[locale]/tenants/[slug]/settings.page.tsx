@@ -16,6 +16,7 @@ import {
   FormLabel,
   Heading,
   Input,
+  Link,
   Stack
 } from '@chakra-ui/react';
 import { defaultGetStaticPaths } from '~/utils/data-fetching/default-static-paths';
@@ -34,6 +35,10 @@ import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { client } from '~/utils/api/client';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { useRouter } from 'next/router';
+import { getDocsUrl } from '~/utils/constants';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
+
+const webhookDocs = getDocsUrl('help/webhook');
 
 const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
   pathProps: { slug }
@@ -192,7 +197,10 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
               />
 
               <FormHelperText>
-                公開配信開始時に POST リクエストを送信します。
+                <Link href={webhookDocs} isExternal>
+                  Webhook についての詳細
+                  <ExternalLinkIcon mx="2px" />
+                </Link>
               </FormHelperText>
             </FormControl>
           </Stack>
