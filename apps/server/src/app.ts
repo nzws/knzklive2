@@ -7,6 +7,7 @@ import { Streaming } from './streaming';
 import { middlewareCatch } from './middlewares/catch';
 import { middlewareGetUserId } from './middlewares/user-id';
 import { MastodonStreaming } from './streaming/mastodon';
+import { createBoard } from './services/queues/_board';
 
 export const app = async (): Promise<void> => {
   const app = new Koa();
@@ -16,7 +17,12 @@ export const app = async (): Promise<void> => {
   app.use(cors());
   app.use(middlewareGetUserId);
 
+  if (process.env.ENABLE_QUEUE_DASHBOARD_YOU_HAVE_TO_PROTECT_IT) {
+    app.use(createBoard('/admin/queues').registerPlugin());
+  }
+
   const route = router();
+
   app.use(route.routes()).use(route.allowedMethods());
 
   const port = parseInt(process.env.PORT || '8080', 10);

@@ -2,8 +2,14 @@ import crypto from 'crypto';
 import { Image, Live, LivePrivacy, PrismaClient, Tenant } from '@prisma/client';
 import { images, lives, tenants } from '.';
 import { LiveConfig, LivePrivate, LivePublic } from 'api-types/common/types';
-import { getPublicLiveUrl } from '../utils/constants';
+import {
+  basePushStream,
+  getPublicLiveUrl,
+  serverToken
+} from '../utils/constants';
 import { webhookQueue } from '../services/queues/webhook';
+import { pushApi } from '../services/push-api';
+import { thumbnailStorage } from '../services/storage/thumbnail';
 
 export const Lives = (client: PrismaClient['live']) =>
   Object.assign(client, {
@@ -210,6 +216,30 @@ export const Lives = (client: PrismaClient['live']) =>
         }
       });
 
+      const { key, url } = await thumbnailStorage.getUploadUrlFromPushServer(
+        live.tenantId,
+        live.id
+      );
+
+      await webhookQueue.add(
+        'system:push:thumbnail',
+        {
+          url: pushApi(basePushStream).api.externals.v1.thumbnail.$path(),
+          postBody: {
+            liveId: live.id,
+            serverToken,
+            signedUploadUrl: url
+          },
+          data: {
+            storageKey: key
+          },
+          timeout: 1000 * 60
+        },
+        {
+          delay: 3000
+        }
+      );
+
       return data;
     },
     stopStream: async (live: Live) => {
@@ -246,10 +276,16 @@ export const Lives = (client: PrismaClient['live']) =>
         }
       });
 
-      await webhookQueue
-        .createJob({ live: data, type: 'live:started' })
-        .retries(0)
-        .save();
+      const webhookUrl = tenants.getConfig(data.tenant).webhookUrl;
+      if (data.privacy === 'Public' && webhookUrl) {
+        await webhookQueue.add('user:live:started', {
+          url: webhookUrl,
+          postBody: {
+            type: 'live:started',
+            live: lives.getPublic(data)
+          }
+        });
+      }
 
       return data;
     },
@@ -266,6 +302,16 @@ export const Lives = (client: PrismaClient['live']) =>
           thumbnail: true,
           tenant: true
         }
+      });
+
+      await webhookQueue.add('system:push:action', {
+        url: pushApi(basePushStream).api.externals.v1.action.$path(),
+        postBody: {
+          liveId: live.id,
+          serverToken,
+          action: 'end'
+        },
+        timeout: 1000 * 60
       });
 
       return data;

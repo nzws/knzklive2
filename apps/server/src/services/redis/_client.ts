@@ -6,3 +6,8 @@ export const family = process.env.REDIS_USE_IPV6 ? 6 : 4;
 export const redis = new Redis(redisUrl, {
   family
 });
+
+export const queueRedis = new Redis(redisUrl, {
+  family,
+  maxRetriesPerRequest: null
+});

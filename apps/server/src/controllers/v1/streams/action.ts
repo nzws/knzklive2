@@ -83,18 +83,6 @@ export const postV1StreamsAction: APIRoute<
     );
 
     await liveWatching.stopLive(ctx.state.live.id);
-
-    try {
-      await pushApi(basePushStream).api.externals.v1.action.$post({
-        body: {
-          liveId: ctx.state.live.id,
-          action: 'end',
-          serverToken
-        }
-      });
-    } catch (e) {
-      console.error(e);
-    }
   }
 
   if (newLive) {

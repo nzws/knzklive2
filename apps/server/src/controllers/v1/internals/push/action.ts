@@ -7,7 +7,6 @@ import { pubsub } from '../../../../services/redis/pubsub/client';
 import { getLiveUpdateKey } from '../../../../services/redis/pubsub/keys';
 import { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
-import { thumbnailQueue } from '../../../../services/queues/thumbnail';
 
 type Request = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
@@ -60,9 +59,6 @@ export const postV1InternalsPushAction: APIRoute<
   };
   if (body.action === 'start') {
     newLive = await lives.startStream(live);
-    const date = new Date();
-    date.setSeconds(date.getSeconds() + 3);
-    await thumbnailQueue.createJob({ live }).delayUntil(date).retries(0).save();
   } else if (body.action === 'stop') {
     newLive = await lives.stopStream(live);
   } else {

@@ -1,76 +1,135 @@
-import { Image, Live, Tenant } from '@prisma/client';
-import BeeQueue from 'bee-queue';
-import { lives, tenants } from '../../models';
-import { REDIS_CONNECTION } from '../../utils/constants';
+import { LivePublic } from 'api-types/common/types';
+import { Methods as PushAction } from 'api-types/push/api/externals/v1/action';
+import { Methods as ThumbnailApi } from 'api-types/push/api/externals/v1/thumbnail';
+import { Queue, Worker } from 'bullmq';
+import { images, lives } from '../../models';
+import { queueRedis } from '../redis/_client';
 
-type WebhookType = 'live:started';
-
-export const webhookQueue = new BeeQueue<{
-  live: Live & {
-    thumbnail: Image | null;
-    tenant: Tenant;
+interface Job {
+  name: string;
+  data: {
+    url: string;
+    postBody?: Record<string, unknown>;
+    data?: unknown;
+    timeout?: number;
   };
-  type: WebhookType;
-}>('webhook', {
-  redis: REDIS_CONNECTION,
-  removeOnSuccess: true,
-  activateDelayedJobs: true,
-  removeOnFailure: true
-});
+}
 
-webhookQueue.process(async job => {
-  const { live, type } = job.data;
-  console.log('webhook job', live.id);
+interface JobUserLiveStarted extends Job {
+  name: 'user:live:started';
+  data: {
+    url: string;
+    postBody: {
+      type: 'live:started';
+      live: LivePublic;
+    };
+  };
+}
 
-  if (!live.startedAt) {
-    throw new Error('Live not started');
+interface JobSystemClearISR extends Job {
+  name: 'system:clear:isr';
+  data: {
+    url: string;
+    postBody: {
+      url: string;
+    };
+  };
+}
+
+interface JobSystemPushThumbnail extends Job {
+  name: 'system:push:thumbnail';
+  data: {
+    url: string;
+    postBody: ThumbnailApi['post']['reqBody'];
+    data: {
+      storageKey: string;
+    };
+    timeout: number;
+  };
+}
+
+interface JobSystemPushAction extends Job {
+  name: 'system:push:action';
+  data: {
+    url: string;
+    postBody: PushAction['post']['reqBody'];
+    timeout: number;
+  };
+}
+
+export type JobData =
+  | JobUserLiveStarted
+  | JobSystemClearISR
+  | JobSystemPushThumbnail
+  | JobSystemPushAction;
+
+type JobResult = {
+  success: boolean;
+  message?: string;
+};
+
+const name = 'webhook';
+
+export const webhookQueue = new Queue<
+  JobData['data'],
+  JobResult,
+  JobData['name']
+>(name, {
+  connection: queueRedis,
+  defaultJobOptions: {
+    removeOnComplete: 20,
+    removeOnFail: 20
   }
-  if (live.privacy !== 'Public') {
-    console.log('Live is not public');
-    return;
+});
+
+const doPostAction = async <U extends JobData>(
+  name: U['name'],
+  item: U['data']
+) => {
+  if (name === 'system:generate:thumbnail') {
+    const { postBody, data } = item as JobSystemGenerateThumbnail['data'];
+    const live = await lives.get(postBody.liveId);
+    if (!live) {
+      throw new Error('Live not found');
+    }
+    await images.createForGeneratedLiveThumbnail(live, data.storageKey);
   }
+};
 
-  const config = live.tenant && tenants.getConfig(live.tenant);
-  if (!config?.webhookUrl) {
-    console.log('webhook job', live.id, 'no webhook url');
-    return;
-  }
+export const webhookWorker = new Worker<
+  JobData['data'],
+  JobResult,
+  JobData['name']
+>(
+  name,
+  async job => {
+    const { url, postBody, timeout } = job.data as Job['data'];
 
-  const abort = new AbortController();
+    const abort = new AbortController();
 
-  const timeout = setTimeout(() => {
-    abort.abort();
-  }, 5000);
+    const cleanup = setTimeout(() => {
+      abort.abort();
+    }, timeout || 5000);
 
-  try {
-    await fetch(config.webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        type,
-        live: lives.getPublic(live)
-      }),
-      signal: abort.signal
-    });
-  } finally {
-    clearTimeout(timeout);
-  }
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: postBody ? JSON.stringify(postBody) : undefined,
+        signal: abort.signal
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+    } finally {
+      clearTimeout(cleanup);
+    }
 
-  return true;
-});
+    await doPostAction(job.name, job.data);
 
-webhookQueue.on('job succeeded', (jobId, result) => {
-  console.log(`Job ${jobId} succeeded with result`, result);
-});
-
-webhookQueue.on('job retrying', (jobId, err) => {
-  console.log(
-    `Job ${jobId} failed with error ${err.message} but is being retried!`
-  );
-});
-
-webhookQueue.on('job failed', (jobId, err) => {
-  console.log(`Job ${jobId} failed with error ${err.message}`);
-});
+    return { success: true };
+  },
+  { connection: queueRedis }
+);
