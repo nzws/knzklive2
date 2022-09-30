@@ -5,8 +5,6 @@ import { LiveWatching } from '../../../services/redis/live-watching';
 import { pubsub } from '../../../services/redis/pubsub/client';
 import { APIRoute, LiveState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
-import { pushApi } from '../../../services/push-api';
-import { basePushStream, serverToken } from '../../../utils/constants';
 import { getLiveUpdateKey } from '../../../services/redis/pubsub/keys';
 import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
 import { Image, Live, Tenant } from '@prisma/client';

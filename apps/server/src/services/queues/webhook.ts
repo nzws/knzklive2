@@ -86,8 +86,8 @@ const doPostAction = async <U extends JobData>(
   name: U['name'],
   item: U['data']
 ) => {
-  if (name === 'system:generate:thumbnail') {
-    const { postBody, data } = item as JobSystemGenerateThumbnail['data'];
+  if (name === 'system:push:thumbnail') {
+    const { postBody, data } = item as JobSystemPushThumbnail['data'];
     const live = await lives.get(postBody.liveId);
     if (!live) {
       throw new Error('Live not found');
