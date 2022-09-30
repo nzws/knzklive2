@@ -36,6 +36,7 @@ import { middlewareAuthorizeServer } from './middlewares/server-token';
 import { postV1InternalsPushAction } from './controllers/v1/internals/push/action';
 import { getV1StreamsCommentViewerUrl } from './controllers/v1/streams/get-comment-viewer-url';
 import { postV1StreamsThumbnail } from './controllers/v1/streams/post-thumbnail';
+import { getV1InternalsWebInternalJwt } from './controllers/v1/internals/web-internal/jwt';
 
 const multer = Multer({
   limits: {
@@ -144,6 +145,7 @@ export const router = (): Router => {
   );
 
   route.get('/v1/internals/edge/jwt', getV1InternalsEdgeJwt);
+  route.get('/v1/internals/web-internal/jwt', getV1InternalsWebInternalJwt);
   route.post(
     '/v1/internals/push/check-token',
     middlewareAuthorizeServer,

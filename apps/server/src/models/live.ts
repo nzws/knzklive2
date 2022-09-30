@@ -4,12 +4,14 @@ import { images, lives, tenants } from '.';
 import { LiveConfig, LivePrivate, LivePublic } from 'api-types/common/types';
 import {
   basePushStream,
+  frontendUrl,
   getPublicLiveUrl,
   serverToken
 } from '../utils/constants';
 import { webhookQueue } from '../services/queues/webhook';
 import { pushApi } from '../services/push-api';
 import { thumbnailStorage } from '../services/storage/thumbnail';
+import { jwtWebInternalAPI } from '../services/jwt';
 
 export const Lives = (client: PrismaClient['live']) =>
   Object.assign(client, {
@@ -286,6 +288,25 @@ export const Lives = (client: PrismaClient['live']) =>
           }
         });
       }
+
+      // todo: locale バックエンドが持ってるわけではないので Next.js API 側で絞る？？(URLにしてもそう)
+      const paths = [
+        `/app/ja/tenants/${data.tenant.slug}/${data.idInTenant}`,
+        `/app/en/tenants/${data.tenant.slug}/${data.idInTenant}`
+      ];
+      const revalidateData = {
+        paths
+      };
+
+      await webhookQueue.add('system:web:revalidate', {
+        url: `${frontendUrl}/api/revalidate`,
+        postBody: {
+          data: revalidateData,
+          signature: await jwtWebInternalAPI.generateToken(
+            JSON.stringify(revalidateData)
+          )
+        }
+      });
 
       return data;
     },

@@ -57,11 +57,25 @@ interface JobSystemPushAction extends Job {
   };
 }
 
+interface JobSystemWebRevalidate extends Job {
+  name: 'system:web:revalidate';
+  data: {
+    url: string;
+    postBody: {
+      data: {
+        paths: string[];
+      };
+      signature: string;
+    };
+  };
+}
+
 export type JobData =
   | JobUserLiveStarted
   | JobSystemClearISR
   | JobSystemPushThumbnail
-  | JobSystemPushAction;
+  | JobSystemPushAction
+  | JobSystemWebRevalidate;
 
 type JobResult = {
   success: boolean;
