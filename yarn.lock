@@ -580,9 +580,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/middleware-endpoint@npm:3.179.0":
-  version: 3.179.0
-  resolution: "@aws-sdk/middleware-endpoint@npm:3.179.0"
+"@aws-sdk/middleware-endpoint@npm:3.182.0":
+  version: 3.182.0
+  resolution: "@aws-sdk/middleware-endpoint@npm:3.182.0"
   dependencies:
     "@aws-sdk/middleware-serde": 3.178.0
     "@aws-sdk/protocol-http": 3.178.0
@@ -592,7 +592,7 @@ __metadata:
     "@aws-sdk/util-config-provider": 3.170.0
     "@aws-sdk/util-middleware": 3.178.0
     tslib: ^2.3.1
-  checksum: 10ac3a826c505e148276a7a4af9c9108db40e40175ed3739ae06091f1740a168220bbba611e5985d0d98ec9cb73895d467faccec00810d9e241e6a6a828aaaa7
+  checksum: c30a8bff02ef96860cebbf46afae6e3b2262f0662837b4f0418e1abb273f820b62e941d47d4259502fe96ef407a2afa61f645e7e6ef5da5ae98f78e1189822cb
   languageName: node
   linkType: hard
 
@@ -824,11 +824,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:3.181.0":
-  version: 3.181.0
-  resolution: "@aws-sdk/s3-request-presigner@npm:3.181.0"
+"@aws-sdk/s3-request-presigner@npm:3.182.0":
+  version: 3.182.0
+  resolution: "@aws-sdk/s3-request-presigner@npm:3.182.0"
   dependencies:
-    "@aws-sdk/middleware-endpoint": 3.179.0
+    "@aws-sdk/middleware-endpoint": 3.182.0
     "@aws-sdk/middleware-sdk-s3": 3.178.0
     "@aws-sdk/protocol-http": 3.178.0
     "@aws-sdk/signature-v4-multi-region": 3.180.0
@@ -837,7 +837,7 @@ __metadata:
     "@aws-sdk/util-create-request": 3.180.0
     "@aws-sdk/util-format-url": 3.178.0
     tslib: ^2.3.1
-  checksum: 8d8202ba7ca3045f3d354b37d9c3755717026645ae338abc1f264f399cf7092dfaa9df5a98a1ee051351adc9d5e304f7558bea7333f86c469645157c5e753465
+  checksum: 1a400f4db89f848b0a581712f384db7b8696b56539a0cc263328dd91d49991778e975d7983967974c5f111968e3dff90a5e1073c234076ed7fa1662a19c309a1
   languageName: node
   linkType: hard
 
@@ -11082,8 +11082,8 @@ __metadata:
   dependencies:
     "@aspida/fetch": 1.11.0
     "@aws-sdk/client-s3": 3.181.0
-    "@aws-sdk/middleware-endpoint": 3.179.0
-    "@aws-sdk/s3-request-presigner": 3.181.0
+    "@aws-sdk/middleware-endpoint": 3.182.0
+    "@aws-sdk/s3-request-presigner": 3.182.0
     "@bull-board/api": 4.3.1
     "@bull-board/koa": 4.3.1
     "@dotplants/cli": 0.2.3
