@@ -1,6 +1,6 @@
 import { CommentPublic, LivePublic } from 'api-types/common/types';
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import { client, wsURL } from '~/utils/api/client';
+import { wsURL } from '~/utils/api/client';
 import { useAuth } from '../use-auth';
 import { useAPIError } from './use-api-error';
 import {
@@ -23,18 +23,18 @@ const commentReducer = (
     return [];
   }
 
-  let comment: CommentPublic;
+  let data: CommentPublic[] = [];
   if ('type' in action) {
     if (action.type === 'comment:deleted') {
       return state.filter(comment => comment.id !== action.data.id);
     }
 
-    comment = action.data;
+    data = state.concat(action.data);
   } else {
-    comment = action;
+    data = state.concat(action);
   }
 
-  const data = state.concat(comment).sort((a, b) => b.id - a.id);
+  data.sort((a, b) => b.id - a.id);
   data.splice(100);
 
   const result = [];
@@ -50,10 +50,11 @@ const commentReducer = (
 };
 
 export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
-  const { token, headers } = useAuth();
+  const { token } = useAuth();
   const tokenRef = useRef(token);
   const socketRef = useRef<WebSocket>();
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const lastCommentIdRef = useRef<number>(0);
   const needConnectingRef = useRef(true);
   const [isConnecting, setIsConnecting] = useState(false);
   const [comments, setComment] = useReducer(commentReducer, []);
@@ -85,7 +86,7 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
 
     try {
       const Token = viewerToken || tokenRef.current || '';
-      const url = `${wsURL}/websocket/v1/live/${liveId}?token=${Token}`;
+      const url = `${wsURL}/websocket/v1/live/${liveId}?token=${Token}&commentAfter=${lastCommentIdRef.current}`;
       const ws = new WebSocket(url);
       socketRef.current = ws;
       setIsConnecting(true);
@@ -152,6 +153,7 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
 
     return () => {
       needConnectingRef.current = false;
+      lastCommentIdRef.current = 0;
       setComment(undefined);
       setLive(undefined);
       disconnect();
@@ -159,36 +161,10 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
   }, [liveId, viewerToken, connect, disconnect]);
 
   useEffect(() => {
-    if (!liveId) {
-      return;
+    if (comments.length > 0) {
+      lastCommentIdRef.current = comments[0].id;
     }
-
-    void (async () => {
-      try {
-        if (viewerToken) {
-          const { body } = await client.v1.lives._liveId(liveId).comments.get({
-            query: {
-              viewerToken
-            }
-          });
-
-          body.forEach(comment => {
-            setComment(comment);
-          });
-        } else {
-          const { body } = await client.v1.lives._liveId(liveId).comments.get({
-            headers
-          });
-
-          body.forEach(comment => {
-            setComment(comment);
-          });
-        }
-      } catch (e) {
-        console.warn(e);
-      }
-    })();
-  }, [viewerToken, liveId, headers]);
+  }, [comments]);
 
   return { comments, live, isConnecting, reconnect } as const;
 };

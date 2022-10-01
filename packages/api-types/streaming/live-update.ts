@@ -7,7 +7,7 @@ export interface LiveUpdateMessageBase {
 
 export interface LiveUpdateCommentCreated extends LiveUpdateMessageBase {
   type: 'comment:created';
-  data: CommentPublic;
+  data: CommentPublic[];
 }
 
 export interface LiveUpdateCommentDeleted extends LiveUpdateMessageBase {

@@ -25,6 +25,22 @@ export const Comments = (client: PrismaClient['comment']) =>
         isDeleted: comment.isDeleted
       };
     },
+    getComments: async (liveId: number, lastCommentId = 0) => {
+      const comments = await client.findMany({
+        where: {
+          liveId,
+          id: {
+            gt: lastCommentId
+          }
+        },
+        orderBy: {
+          id: 'desc'
+        },
+        take: 100
+      });
+
+      return comments;
+    },
     createViaLocal: async (userId: number, liveId: number, content: string) => {
       const data = await client.create({
         data: {
@@ -39,7 +55,7 @@ export const Comments = (client: PrismaClient['comment']) =>
         getLiveUpdateKey(liveId),
         JSON.stringify({
           type: 'comment:created',
-          data: result
+          data: [result]
         } as LiveUpdateCommentCreated)
       );
 
@@ -70,7 +86,7 @@ export const Comments = (client: PrismaClient['comment']) =>
         getLiveUpdateKey(liveId),
         JSON.stringify({
           type: 'comment:created',
-          data: result
+          data: [result]
         } as LiveUpdateCommentCreated)
       );
 

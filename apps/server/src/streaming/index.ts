@@ -1,11 +1,12 @@
 import { Server } from 'http';
 import WebSocket from 'ws';
 import { pathToRegexp } from 'path-to-regexp';
-import { lives } from '../models';
+import { comments, lives } from '../models';
 import { pubsub } from '../services/redis/pubsub/client';
 import { getLiveUpdateKey } from '../services/redis/pubsub/keys';
 import { UserToken } from '../services/redis/user-token';
 import { jwtCommentViewer } from '../services/jwt';
+import { LiveUpdateCommentCreated } from 'api-types/streaming/live-update';
 
 const userToken = new UserToken();
 
@@ -32,12 +33,11 @@ export class Streaming {
 
   private handleConnection(socket: WebSocket, Url: string) {
     const url = new URL(Url, process.env.SERVER_ENDPOINT);
-    const token = url.searchParams.get('token') || undefined;
 
     const live = liveUpdateRegexp.exec(url.pathname);
     if (live) {
       const liveId = Number(live[1]);
-      return this.handleV1LiveUpdate(socket, liveId, token);
+      return this.handleV1LiveUpdate(socket, liveId, url.searchParams);
     }
 
     return this.closeConnection(socket, 'invalid_path');
@@ -46,8 +46,10 @@ export class Streaming {
   private async handleV1LiveUpdate(
     socket: WebSocket,
     liveId: number,
-    token?: string
+    params: URLSearchParams
   ) {
+    const token = params.get('token');
+    const commentAfter = Number(params.get('commentAfter') || 0);
     const verifyAsStreamer =
       token && (await jwtCommentViewer.verifyToken(token, liveId));
     console.log(token, verifyAsStreamer);
@@ -70,6 +72,14 @@ export class Streaming {
     }
 
     console.log('websocket connected', liveId);
+
+    const recentComments = await comments.getComments(liveId, commentAfter);
+    socket.send(
+      JSON.stringify({
+        type: 'comment:created',
+        data: recentComments.map(comments.getPublic)
+      } as LiveUpdateCommentCreated)
+    );
 
     const handle = {
       event: getLiveUpdateKey(liveId),

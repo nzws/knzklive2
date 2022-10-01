@@ -68,6 +68,7 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
   const toast = useToast();
   const router = useRouter();
   const isInitializedRef = useRef(false);
+  const commentsRef = useRef<HTMLDivElement>(null);
   const [liveId] = useConvertLiveId(slug, id);
   const [stream, mutate] = useStream(liveId);
   const live = stream?.live;
@@ -186,6 +187,16 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
     void mutate();
   }, [realtimeLive, mutate]);
 
+  useEffect(() => {
+    if (!commentsRef.current) {
+      return;
+    }
+
+    if (commentsRef.current.scrollTop > -300) {
+      commentsRef.current.scrollTop = commentsRef.current.scrollHeight;
+    }
+  }, [comments]);
+
   return (
     <Container padding={0}>
       <Head>
@@ -235,6 +246,7 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
           py={2}
           align="stretch"
           flexDirection="column-reverse"
+          ref={commentsRef}
         >
           {!isConnectingStreaming && (
             <Box>
