@@ -129,7 +129,7 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
             <Heading size="md">基本設定</Heading>
 
             <FormControl>
-              <FormLabel>テナント表示名</FormLabel>
+              <FormLabel>チャンネル表示名</FormLabel>
 
               <Input
                 type="text"
@@ -138,16 +138,16 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
               />
 
               <FormHelperText>
-                現状特に使っていません。そのうち使います。
+                配信一覧やチャンネルページに表示されます。
               </FormHelperText>
             </FormControl>
 
             <FormControl>
-              <FormLabel>配信者ID</FormLabel>
+              <FormLabel>チャンネルID</FormLabel>
 
               <Alert status="warning" mb={4}>
                 <AlertIcon />
-                配信者IDを変更しても、今までの URL
+                チャンネルIDを変更しても、今までの URL
                 はリダイレクトされず、他の誰かが取得できるようになります。
               </Alert>
 
@@ -168,11 +168,6 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
 
           <Stack spacing={4}>
             <Heading size="md">可視性、見つけやすさの設定</Heading>
-
-            <Alert status="info">
-              <AlertIcon />
-              公開範囲で「ログインが必要」を設定した配信は、下記の全てが無効になります。
-            </Alert>
 
             <Checkbox
               isChecked={exploreInOtherTenants}

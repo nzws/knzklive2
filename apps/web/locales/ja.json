@@ -1,6 +1,8 @@
 {
   "common.coming-soon": "近日中(~数年)に実装予定",
   "common.relative-time.a-few-seconds-ago": "数秒前",
+  "common.prev-page": "前のページ",
+  "common.next-page": "次のページ",
   "navbar.login": "ログイン",
   "navbar.logout": "ログアウト",
   "auth.toast.login": "ログインしました",
@@ -93,6 +95,6 @@
   "live.comment.delete": "コメントを削除",
   "live.comment.account-page": "アカウントページ",
   "live.comment.reconnect": "コメントサーバーに再接続",
-  "live-list.current-viewers": "{current}人視聴",
+  "live-list.viewers": "{count}人視聴",
   "live-list.current-live": "ライブ"
 }

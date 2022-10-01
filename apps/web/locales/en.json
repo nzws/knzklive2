@@ -1,6 +1,8 @@
 {
   "common.coming-soon": "Coming Soon",
   "common.relative-time.a-few-seconds-ago": "A few seconds ago",
+  "common.prev-page": "Previous Page",
+  "common.next-page": "Next Page",
   "navbar.login": "Login",
   "navbar.logout": "Logout",
   "auth.toast.login": "Successfully logged in",
@@ -93,6 +95,6 @@
   "live.comment.delete": "Delete comment",
   "live.comment.account-page": "Go to the account page",
   "live.comment.reconnect": "Reconnect to comment server",
-  "live-list.current-viewers": "{current} viewers",
+  "live-list.viewers": "{count} viewers",
   "live-list.current-live": "LIVE"
 }

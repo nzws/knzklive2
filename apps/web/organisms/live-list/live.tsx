@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { LivePublic } from 'api-types/common/types';
 import {
   AspectRatio,
@@ -7,6 +7,7 @@ import {
   Box,
   Flex,
   Heading,
+  Icon,
   LinkBox,
   LinkOverlay,
   Skeleton,
@@ -18,6 +19,7 @@ import { useUser } from '~/utils/hooks/api/use-user';
 import { RelativeTime } from '~/atoms/relative-time';
 import { FormattedMessage } from 'react-intl';
 import Link from 'next/link';
+import { FiLock } from 'react-icons/fi';
 
 type Props = {
   live?: LivePublic;
@@ -69,11 +71,19 @@ export const LiveItem: FC<Props> = ({ live, currentWatchingCount }) => {
           <Text color="gray.500" fontSize="sm">
             <RelativeTime date={live.startedAt} />
             {' · '}
-            {currentWatchingCount !== undefined && (
-              <FormattedMessage
-                id="live-list.current-viewers"
-                values={{ current: currentWatchingCount }}
-              />
+            <FormattedMessage
+              id="live-list.viewers"
+              values={{
+                count: currentWatchingCount || live.watchingSumCount || 0
+              }}
+            />
+
+            {live.privacy === 'Private' && (
+              <Fragment>
+                {' · '}
+
+                <Icon as={FiLock} mt={1} />
+              </Fragment>
             )}
           </Text>
         ) : (
