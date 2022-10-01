@@ -13,7 +13,7 @@ export const getV1LivesExplore: APIRoute<
   never,
   Response
 > = async ctx => {
-  const currentLives = await lives.getPublicAndAlive();
+  const currentLives = await lives.getPublicAndAlive(50);
 
   const counts = await Promise.all(
     currentLives.map(live => liveWatching.get(live.id))

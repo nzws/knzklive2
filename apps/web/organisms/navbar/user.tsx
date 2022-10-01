@@ -74,9 +74,17 @@ export const User: FC<Props> = ({ onCreateLive }) => {
                 </MenuItem>
               )}
 
+              {/*
+              <Link href={`/@${tenant.slug}/history`} passHref>
+                <MenuItem as="a">
+                  <FormattedMessage id="navbar.menu.channel-history" />
+                </MenuItem>
+              </Link>
+              */}
+
               <Link href={`/@${tenant.slug}/settings`} passHref>
                 <MenuItem as="a">
-                  <FormattedMessage id="navbar.menu.tenant-settings" />
+                  <FormattedMessage id="navbar.menu.channel-settings" />
                 </MenuItem>
               </Link>
             </MenuGroup>

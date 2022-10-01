@@ -37,6 +37,7 @@ import { postV1InternalsPushAction } from './controllers/v1/internals/push/actio
 import { getV1StreamsCommentViewerUrl } from './controllers/v1/streams/get-comment-viewer-url';
 import { postV1StreamsThumbnail } from './controllers/v1/streams/post-thumbnail';
 import { getV1InternalsWebInternalJwt } from './controllers/v1/internals/web-internal/jwt';
+import { getV1TenantsLives } from './controllers/v1/tenants/get-lives';
 
 const multer = Multer({
   limits: {
@@ -62,6 +63,7 @@ export const router = (): Router => {
   route.post('/v1/auth/mastodon/revoke', v1AuthMastodonRevoke);
 
   route.get('/v1/tenants/find/:key', getV1TenantsOnce);
+  route.get('/v1/tenants/find/:key/lives', getV1TenantsLives);
   route.get('/v1/tenants', middlewareAuthorizeUser, getV1TenantsMe);
   // route.post('/v1/tenants', middlewareAuthorizeUser);
   route.patch(

@@ -1,6 +1,8 @@
 {
   "common.coming-soon": "近日中(~数年)に実装予定",
   "common.relative-time.a-few-seconds-ago": "数秒前",
+  "common.prev-page": "前のページ",
+  "common.next-page": "次のページ",
   "navbar.login": "ログイン",
   "navbar.logout": "ログアウト",
   "auth.toast.login": "ログインしました",
@@ -25,11 +27,13 @@
   "navbar.login.modal.help": "Mastodon アカウントから取得する情報について",
   "navbar.login.modal.continue": "新しいウインドウでログインを続行してください...",
   "navbar.menu.hello": "👋 {displayName} 👋",
-  "navbar.menu.account-settings": "アカウント設定",
+  "navbar.menu.account-settings": "個人アカウント設定",
   "navbar.menu.start-stream": "配信を開始",
   "navbar.menu.stream-link": "ライブ中の配信に移動",
-  "navbar.menu.tenant-settings": "配信設定",
-  "footer.donate": "支援",
+  "navbar.menu.channel-history": "配信履歴",
+  "navbar.menu.channel-settings": "チャンネル設定",
+  "footer.donate": "プロジェクトを支援",
+  "footer.release-note": "更新履歴",
   "page.about.title": "このウェブサイトについて",
   "page.about.description.1": "このウェブサイトはライブ配信ソフトウェア「KnzkLive」のプラットフォーム機能を使用してホストされています。",
   "page.about.description.2": "このウェブサイトをホストしているサーバーの情報を以下に記載します。",
@@ -93,6 +97,6 @@
   "live.comment.delete": "コメントを削除",
   "live.comment.account-page": "アカウントページ",
   "live.comment.reconnect": "コメントサーバーに再接続",
-  "live-list.current-viewers": "{current}人視聴",
+  "live-list.viewers": "{count}人視聴",
   "live-list.current-live": "ライブ"
 }

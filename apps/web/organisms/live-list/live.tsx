@@ -1,46 +1,43 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { LivePublic } from 'api-types/common/types';
 import {
   AspectRatio,
-  Avatar,
   Badge,
   Box,
-  Flex,
   Heading,
+  Icon,
   LinkBox,
   LinkOverlay,
   Skeleton,
   Stack,
-  Text
+  Flex
 } from '@chakra-ui/react';
 import styled from '@emotion/styled';
-import { useUser } from '~/utils/hooks/api/use-user';
 import { RelativeTime } from '~/atoms/relative-time';
 import { FormattedMessage } from 'react-intl';
 import Link from 'next/link';
+import { FiLock } from 'react-icons/fi';
 
 type Props = {
   live?: LivePublic;
   currentWatchingCount?: number;
 };
 
-export const LiveItem: FC<Props> = ({ live, currentWatchingCount }) => {
-  const [user] = useUser(live?.userId);
-
-  return (
-    <LinkBox as={Stack} spacing={3}>
+export const LiveItem: FC<Props> = ({ live, currentWatchingCount }) => (
+  <Stack spacing={2}>
+    <LinkBox>
       <VideoContainer
         ratio={16 / 9}
         position="relative"
         style={{
-          backgroundImage:
-            live && user
-              ? `url(${
-                  live?.thumbnail?.publicUrl ||
-                  `/api/default-thumbnail.png?userId=${user?.id}`
-                })`
-              : undefined
+          backgroundImage: live
+            ? `url(${
+                live?.thumbnail?.publicUrl ||
+                `/api/default-thumbnail.png?userId=${live.userId}`
+              })`
+            : undefined
         }}
+        mb={2}
       >
         {live ? (
           <Box>
@@ -64,47 +61,57 @@ export const LiveItem: FC<Props> = ({ live, currentWatchingCount }) => {
         )}
       </VideoContainer>
 
-      <Stack spacing={2}>
-        {live ? (
-          <Text color="gray.500" fontSize="sm">
-            <RelativeTime date={live.startedAt} />
-            {' · '}
-            {currentWatchingCount !== undefined && (
-              <FormattedMessage
-                id="live-list.current-viewers"
-                values={{ current: currentWatchingCount }}
-              />
-            )}
-          </Text>
-        ) : (
-          <Skeleton height="18px" width="60%" />
-        )}
+      {live ? (
+        <Box color="gray.500" fontSize="sm">
+          <RelativeTime date={live.startedAt} />
+          {' · '}
+          <FormattedMessage
+            id="live-list.viewers"
+            values={{
+              count: currentWatchingCount || live.watchingSumCount || 0
+            }}
+          />
 
-        {live ? (
+          {live.privacy === 'Private' && (
+            <Fragment>
+              {' · '}
+
+              <Icon as={FiLock} mt={1} />
+            </Fragment>
+          )}
+        </Box>
+      ) : (
+        <Skeleton height="18px" width="60%" />
+      )}
+
+      {live ? (
+        <Box>
           <Heading fontSize="lg" fontWeight="bold" noOfLines={1}>
             <Link href={`/@${live.tenant.slug}/${live.idInTenant}`} passHref>
               <LinkOverlay>{live.title}</LinkOverlay>
             </Link>
           </Heading>
-        ) : (
-          <Skeleton height="24px" width="90%" />
-        )}
-
-        <Flex gap={2} alignItems="center">
-          <Avatar name={user?.displayName} src={user?.avatarUrl} size="xs" />
-
-          {user?.account ? (
-            <Text fontSize="sm" noOfLines={1} color="gray.300">
-              {user?.displayName || user?.account}
-            </Text>
-          ) : (
-            <Skeleton height="23px" width="200px" ml={2} />
-          )}
-        </Flex>
-      </Stack>
+        </Box>
+      ) : (
+        <Skeleton height="24px" width="90%" />
+      )}
     </LinkBox>
-  );
-};
+
+    <Flex>
+      {live ? (
+        <LinkBox>
+          <Link href={`/@${live.tenant.slug}`} passHref>
+            <LinkOverlay fontSize="sm" noOfLines={1} color="gray.300">
+              {live?.tenant.displayName || live?.tenant.slug}
+            </LinkOverlay>
+          </Link>
+        </LinkBox>
+      ) : (
+        <Skeleton height="23px" width="200px" ml={2} />
+      )}
+    </Flex>
+  </Stack>
+);
 
 const VideoContainer = styled(AspectRatio)`
   background-color: #000;

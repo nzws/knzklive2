@@ -82,14 +82,13 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return live || undefined;
     },
-    getPublicAndAlive: async (tenantId?: number) => {
+    getPublicAndAlive: async (take = 10, page = 1) => {
       const lives = await client.findMany({
         where: {
           endedAt: null,
           startedAt: {
             not: null
           },
-          tenantId: tenantId || undefined,
           privacy: {
             not: LivePrivacy.Private
           }
@@ -101,14 +100,39 @@ export const Lives = (client: PrismaClient['live']) =>
           tenant: true,
           thumbnail: true
         },
-        take: 10
+        take,
+        skip: (page - 1) * take
       });
 
       return lives.filter(
         live => tenants.getConfig(live.tenant).exploreInOtherTenants
       );
     },
+    getList: async (tenantId: number, take = 10, page = 1) => {
+      const lives = await client.findMany({
+        where: {
+          startedAt: {
+            not: null
+          },
+          tenantId: tenantId
+        },
+        orderBy: {
+          startedAt: 'desc'
+        },
+        include: {
+          thumbnail: true
+        },
+        take,
+        skip: (page - 1) * take
+      });
+
+      return lives;
+    },
     isAccessibleInformationByUser: (live: Live, userId?: number) => {
+      if (live.isDeleted) {
+        return false;
+      }
+
       // live owner
       if (live.userId === userId) {
         return true;

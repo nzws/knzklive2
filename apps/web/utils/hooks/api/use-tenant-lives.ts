@@ -1,21 +1,21 @@
 import useAspidaSWR from '@aspida/swr';
-import { TenantPublic } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAPIError } from './use-api-error';
 
-export const useTenant = (
-  slug?: string | number,
-  fallbackData?: TenantPublic
-) => {
+export const useTenantLives = (slug?: string, page = 1) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { data, error } = useAspidaSWR(
-    client.v1.tenants.find._slugOrId(slug || ''),
+    client.v1.tenants.find._slugOrId(slug || '').lives,
     {
-      fallbackData,
+      query: {
+        page
+      },
       key: slug ? undefined : null
     }
   );
   useAPIError(error);
 
-  return [data];
+  const isLoading = data === undefined && error === undefined;
+
+  return [data, isLoading] as const;
 };

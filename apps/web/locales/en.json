@@ -1,6 +1,8 @@
 {
   "common.coming-soon": "Coming Soon",
   "common.relative-time.a-few-seconds-ago": "A few seconds ago",
+  "common.prev-page": "Previous Page",
+  "common.next-page": "Next Page",
   "navbar.login": "Login",
   "navbar.logout": "Logout",
   "auth.toast.login": "Successfully logged in",
@@ -25,11 +27,13 @@
   "navbar.login.modal.help": "What data do we get from your Mastodon account?",
   "navbar.login.modal.continue": "Please continue to login in a new window...",
   "navbar.menu.hello": "👋 {displayName} 👋",
-  "navbar.menu.account-settings": "Account settings",
+  "navbar.menu.account-settings": "Personal Account settings",
   "navbar.menu.start-stream": "Start a stream",
   "navbar.menu.stream-link": "Go to the current stream",
-  "navbar.menu.tenant-settings": "Stream settings",
-  "footer.donate": "Donate",
+  "navbar.menu.channel-history": "Live history",
+  "navbar.menu.channel-settings": "Channel settings",
+  "footer.donate": "Support us",
+  "footer.release-note": "Release note (Japanese)",
   "page.about.title": "About this website",
   "page.about.description.1": "This website is hosted by the platform feature from the live-streaming software, KnzkLive.",
   "page.about.description.2": "Information about the server hosting this website is listed below.",
@@ -93,6 +97,6 @@
   "live.comment.delete": "Delete comment",
   "live.comment.account-page": "Go to the account page",
   "live.comment.reconnect": "Reconnect to comment server",
-  "live-list.current-viewers": "{current} viewers",
+  "live-list.viewers": "{count} viewers",
   "live-list.current-live": "LIVE"
 }
