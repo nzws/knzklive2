@@ -15,7 +15,7 @@ import {
 import Link from 'next/link';
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { FiGlobe } from 'react-icons/fi';
+import { FiGithub, FiGlobe } from 'react-icons/fi';
 import { localeNames, SupportedLocale, supportedLocales } from '~/locales';
 import { useRouter } from 'next/router';
 
@@ -30,9 +30,9 @@ export const Footer: FC = () => {
 
         <Stack as={Stack} direction={{ base: 'column', lg: 'row' }} spacing={6}>
           <Box color="gray.400">
-            Powered by{' '}
             <ChakraLink href="https://github.com/nzws/knzklive2" isExternal>
-              KnzkLive
+              <Icon as={FiGithub} mr={2} />
+              nzws/knzklive2
             </ChakraLink>
           </Box>
 
@@ -42,6 +42,15 @@ export const Footer: FC = () => {
                 <FormattedMessage id="page.about.title" />
               </ChakraLink>
             </Link>
+          </Box>
+
+          <Box color="gray.400">
+            <ChakraLink
+              href="https://github.com/nzws/knzklive2/releases"
+              isExternal
+            >
+              <FormattedMessage id="footer.release-note" />
+            </ChakraLink>
           </Box>
 
           <Box color="gray.400">

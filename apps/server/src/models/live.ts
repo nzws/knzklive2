@@ -129,6 +129,10 @@ export const Lives = (client: PrismaClient['live']) =>
       return lives;
     },
     isAccessibleInformationByUser: (live: Live, userId?: number) => {
+      if (live.isDeleted) {
+        return false;
+      }
+
       // live owner
       if (live.userId === userId) {
         return true;
