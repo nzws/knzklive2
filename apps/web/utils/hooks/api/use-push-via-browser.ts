@@ -121,7 +121,11 @@ export const usePushViaBrowser = (liveId?: number) => {
     void (async () => {
       try {
         const media = await navigator.mediaDevices.getUserMedia({
-          audio: true
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false
+          }
         });
 
         audioStream = new MediaStream();

@@ -58,6 +58,7 @@ import { useRouter } from 'next/router';
 import { useWakeLock } from '~/utils/hooks/use-wake-lock';
 import { TimeCounter } from '~/atoms/time-counter';
 import { useConvertLiveId } from '~/utils/hooks/api/use-convert-live-id';
+import { useBeforeUnload } from 'react-use';
 
 type Params = { slug: string; id: string };
 
@@ -68,6 +69,7 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
   const toast = useToast();
   const router = useRouter();
   const isInitializedRef = useRef(false);
+  const liveEndedRef = useRef(false);
   const commentsRef = useRef<HTMLDivElement>(null);
   const [liveId] = useConvertLiveId(slug, id);
   const [stream, mutate] = useStream(liveId);
@@ -104,6 +106,13 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
     onOpen: onOpenLiveEdit,
     onClose: onCloseLiveEdit
   } = useDisclosure();
+  useBeforeUnload(
+    useCallback(
+      () => !!(live?.isPushing && !live?.endedAt && !liveEndedRef.current),
+      [live]
+    ),
+    'ページを離れると、配信が切断されます'
+  );
 
   const {
     isWakeLockSupported,
@@ -129,6 +138,7 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
           });
 
           if (!isStart) {
+            liveEndedRef.current = true;
             void router.push('/');
           }
         } catch (e) {
