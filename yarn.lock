@@ -3438,12 +3438,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@koa/cors@npm:3.4.2":
-  version: 3.4.2
-  resolution: "@koa/cors@npm:3.4.2"
+"@koa/cors@npm:3.4.3":
+  version: 3.4.3
+  resolution: "@koa/cors@npm:3.4.3"
   dependencies:
     vary: ^1.1.2
-  checksum: 33e60724907bba1490a107a58925a7a4d9144333ad35060a059b0f22a068913c642a913bb530e2050293630193f6cc5ae3edc158d472fb71a0aa0dde4e878e2f
+  checksum: 51a5b89b4ea19078272ea2702916c90375853b6cfb9b65bf7720653e99b36950c1fd90df66a77fb17839bb130dc7c9f83ccc0bcec40f9d09769f9ed77ced5f23
   languageName: node
   linkType: hard
 
@@ -11117,7 +11117,7 @@ __metadata:
     "@bull-board/api": 4.3.2
     "@bull-board/koa": 4.3.2
     "@dotplants/cli": 0.2.3
-    "@koa/cors": 3.4.2
+    "@koa/cors": 3.4.3
     "@koa/multer": 3.0.0
     "@koa/router": 12.0.0
     "@prisma/client": 4.4.0
