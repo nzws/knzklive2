@@ -1,6 +1,5 @@
 import { AuthProviderType } from '@prisma/client';
 import isValidDomain from 'is-valid-domain';
-import fetch from 'node-fetch';
 import { authProviders } from '../../models';
 import { GITHUB_URL } from '../../utils/constants';
 import { AuthProvider, ExternalUser } from './_base';

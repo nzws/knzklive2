@@ -1,6 +1,12 @@
-import type { Middleware } from 'koa';
+import { APIRoute } from '../utils/types';
 
-export const middlewareAuthorizeServer: Middleware = async (ctx, next) => {
+export const middlewareAuthorizeServer: APIRoute<
+  never,
+  never,
+  {
+    serverToken?: string;
+  }
+> = async (ctx, next) => {
   const token = ctx.request.body?.serverToken as string;
 
   if (token !== process.env.SERVER_TOKEN) {
