@@ -77,7 +77,7 @@ export class Streaming {
     socket.send(
       JSON.stringify({
         type: 'comment:created',
-        data: recentComments.map(comments.getPublic)
+        data: recentComments.map(comments.getPublic).filter(Boolean)
       } as LiveUpdateCommentCreated)
     );
 
