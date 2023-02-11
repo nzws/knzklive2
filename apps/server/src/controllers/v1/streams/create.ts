@@ -1,6 +1,7 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams';
 import { images, lives, tenants } from '../../../models';
+import { LiveNotEndedError } from '../../../models/live';
 import { pubsub } from '../../../services/redis/pubsub/client';
 import { APIRoute, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
@@ -94,30 +95,44 @@ export const postV1Streams: APIRoute<
     }
   }
 
-  const live = await lives.createLive(
-    tenant.id,
-    ctx.state.user.id,
-    body.title,
-    body.privacy,
-    body.description,
-    body.hashtag,
-    body.config,
-    body.customThumbnailId
-  );
-  if (body.hashtag) {
-    await pubsub.publish(
-      'update:hashtag',
-      JSON.stringify({
-        hashtag: body.hashtag,
-        type: 'add',
-        liveId: live.id
-      })
+  try {
+    const live = await lives.createLive(
+      tenant.id,
+      ctx.state.user.id,
+      body.title,
+      body.privacy,
+      body.description,
+      body.hashtag,
+      body.config,
+      body.customThumbnailId
     );
+    if (body.hashtag) {
+      await pubsub.publish(
+        'update:hashtag',
+        JSON.stringify({
+          hashtag: body.hashtag,
+          type: 'add',
+          liveId: live.id
+        })
+      );
+    }
+
+    const livePublic = lives.getPublic(live);
+
+    ctx.body = {
+      live: livePublic
+    };
+  } catch (e) {
+    if (e instanceof LiveNotEndedError) {
+      ctx.status = 400;
+      ctx.body = {
+        errorCode: 'live_not_ended',
+        message:
+          '終了されていない配信がテナント内に存在します。新たに配信を作成するには、先に既存の配信を終了させてください。'
+      };
+      return;
+    }
+
+    throw e;
   }
-
-  const livePublic = lives.getPublic(live);
-
-  ctx.body = {
-    live: livePublic
-  };
 };

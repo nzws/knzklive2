@@ -190,6 +190,10 @@ export const Lives = (client: PrismaClient['live']) =>
         }
       });
 
+      if (lastLive && !lastLive.endedAt) {
+        throw new LiveNotEndedError();
+      }
+
       return await client.create({
         data: {
           idInTenant: lastLive ? lastLive.idInTenant + 1 : 1,
@@ -362,3 +366,9 @@ export const Lives = (client: PrismaClient['live']) =>
       return data;
     }
   });
+
+export class LiveNotEndedError extends Error {
+  constructor() {
+    super('Live is not ended');
+  }
+}

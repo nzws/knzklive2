@@ -14,7 +14,8 @@ const errorCodes = [
   'user_not_found',
   'invalid_authorization_type',
   'forbidden_live',
-  'live_already_ended'
+  'live_already_ended',
+  'live_not_ended'
 ] as const;
 type ErrorCode = typeof errorCodes[number];
 
