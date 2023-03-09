@@ -8,8 +8,11 @@ import { middlewareCatch } from './middlewares/catch';
 import { middlewareGetUserId } from './middlewares/user-id';
 import { MastodonStreaming } from './streaming/mastodon';
 import { createBoard } from './services/queues/_board';
+import { prisma } from './models';
 
 export const app = async (): Promise<void> => {
+  await prisma.$connect();
+
   const app = new Koa();
   app.use(middlewareCatch);
   app.use(bodyParser());
@@ -36,6 +39,7 @@ export const app = async (): Promise<void> => {
   mastodon.connect();
 
   process.on('SIGTERM', () => {
+    void prisma.$disconnect();
     server.close();
     process.exit(0);
   });
