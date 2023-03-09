@@ -1824,6 +1824,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bull-board/api@npm:4.12.2":
+  version: 4.12.2
+  resolution: "@bull-board/api@npm:4.12.2"
+  dependencies:
+    redis-info: ^3.0.8
+  checksum: 04f4c5d4641d4a8a28605443a85febfde5d0ac8966f848bfcab2a155e3ed2df9515b0e640de83f2a2563c0a372b54f381e04439dae402fe5152b50c2fa4c9e56
+  languageName: node
+  linkType: hard
+
 "@bull-board/api@npm:4.6.4":
   version: 4.6.4
   resolution: "@bull-board/api@npm:4.6.4"
@@ -1833,28 +1842,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bull-board/koa@npm:4.6.4":
-  version: 4.6.4
-  resolution: "@bull-board/koa@npm:4.6.4"
+"@bull-board/koa@npm:4.12.2":
+  version: 4.12.2
+  resolution: "@bull-board/koa@npm:4.12.2"
   dependencies:
-    "@bull-board/api": 4.6.4
-    "@bull-board/ui": 4.6.4
+    "@bull-board/api": 4.12.2
+    "@bull-board/ui": 4.12.2
     ejs: ^3.1.7
     koa: ^2.13.1
     koa-mount: ^4.0.0
     koa-router: ^10.0.0
     koa-static: ^5.0.0
     koa-views: ^7.0.1
-  checksum: ff472a394d9bcf734b4c110d188320b685761a0b23f5099239bdefd712c4877dcf7acfdeb8e3cbdd956f3d9654d9f8f7e5ebfe3db2a221bbe8403b593814d8b9
+  checksum: f15ce3bf8b2bd9a062ca29131227776ed1a0e410b61b5b3cd6c0a43cd82311f8e6133dac1b6ac4c3ee9602dab5e65a87f23fc5fb675116adcc14ed9c0c4195c4
   languageName: node
   linkType: hard
 
-"@bull-board/ui@npm:4.6.4":
-  version: 4.6.4
-  resolution: "@bull-board/ui@npm:4.6.4"
+"@bull-board/ui@npm:4.12.2":
+  version: 4.12.2
+  resolution: "@bull-board/ui@npm:4.12.2"
   dependencies:
-    "@bull-board/api": 4.6.4
-  checksum: c7f7134f9272c321426063ac33916d736a33d8331b577fb239ce1bda53f8007ae2b2df5cbc51f1ab7537874dd7b22bd1534a70e3e2bb8451c57a4314f6263df1
+    "@bull-board/api": 4.12.2
+  checksum: 7f7bbb69e29b3211eebe4dc35ee33f4ec24d72c186b28d203ec1de2ad85df012a9ee6590e9f88548209371874d0568ca778df54dca97cdb2caa9f088f47aa5f8
   languageName: node
   linkType: hard
 
@@ -11612,7 +11621,7 @@ __metadata:
     "@aws-sdk/middleware-endpoint": 3.215.0
     "@aws-sdk/s3-request-presigner": 3.218.0
     "@bull-board/api": 4.6.4
-    "@bull-board/koa": 4.6.4
+    "@bull-board/koa": 4.12.2
     "@dotplants/cli": 0.2.3
     "@koa/cors": 4.0.0
     "@koa/multer": 3.0.2
