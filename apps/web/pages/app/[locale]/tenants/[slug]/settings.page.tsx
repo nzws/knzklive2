@@ -120,6 +120,13 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
         <Stack spacing={6}>
           <Heading>配信に関する設定</Heading>
 
+          <Alert status="info">
+            <AlertIcon />
+            配信者を始めるには
+            <b>右上のメニュー→配信を始める</b>
+            をクリックしてください。
+          </Alert>
+
           <Alert status="warning">
             <AlertIcon />
             表示名やテーマ設定などはページごとに5分ほどキャッシュされるため、完全に反映されるまでページ読み込み時にちらつくなどの現象が発生する場合があります。

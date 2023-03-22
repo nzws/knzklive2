@@ -72,6 +72,12 @@ export type TenantPublic = {
   displayName?: string;
 };
 
+export type InvitePublic = {
+  inviteId: string;
+  createdBy?: number;
+  usedBy?: number;
+};
+
 export type UserConfig = {
   //
 };

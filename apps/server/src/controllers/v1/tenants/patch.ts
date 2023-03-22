@@ -1,13 +1,12 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/tenants/_tenantId@number';
 import { tenants } from '../../../models';
+import { InvalidSlugError, SlugAlreadyUsedError } from '../../../models/tenant';
 import { APIRoute, TenantState, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
 type Request = Methods['patch']['reqBody'];
 type Response = Methods['patch']['resBody'];
-
-const slugRegex = /^[a-z0-9]+$/;
 
 const reqBodySchema: JSONSchemaType<Request> = {
   type: 'object',
@@ -61,23 +60,26 @@ export const patchV1Tenants: APIRoute<
   const newSlug = body.slug?.toLowerCase();
 
   if (newSlug && newSlug !== ctx.state.tenant.slug) {
-    if (!slugRegex.test(newSlug)) {
-      ctx.status = 400;
-      ctx.body = {
-        errorCode: 'invalid_request',
-        message: '配信者IDには半角英数字のみ使用できます'
-      };
-      return;
-    }
+    try {
+      await tenants.checkIsValidSlug(newSlug);
+    } catch (e) {
+      if (e instanceof InvalidSlugError) {
+        ctx.status = 400;
+        ctx.body = {
+          errorCode: 'invalid_request',
+          message: '配信者IDには半角英数字のみ使用できます'
+        };
+        return;
+      }
 
-    const tenant = await tenants.get(undefined, body.slug);
-    if (tenant) {
-      ctx.status = 409;
-      ctx.body = {
-        errorCode: 'invalid_request',
-        message: 'この配信者IDは既に使われています'
-      };
-      return;
+      if (e instanceof SlugAlreadyUsedError) {
+        ctx.status = 400;
+        ctx.body = {
+          errorCode: 'invalid_request',
+          message: '配信者IDはすでに使われています'
+        };
+        return;
+      }
     }
   }
 

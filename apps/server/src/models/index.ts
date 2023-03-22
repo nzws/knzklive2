@@ -5,6 +5,7 @@ import { AuthProviders } from './auth-provider';
 import { Lives } from './live';
 import { Comments } from './comment';
 import { Images } from './image';
+import { Invites } from './invite';
 
 export { prisma };
 export const users = Users(prisma.user);
@@ -13,3 +14,4 @@ export const authProviders = AuthProviders(prisma.authProvider);
 export const lives = Lives(prisma.live);
 export const comments = Comments(prisma.comment);
 export const images = Images(prisma.image);
+export const invites = Invites(prisma.invite);

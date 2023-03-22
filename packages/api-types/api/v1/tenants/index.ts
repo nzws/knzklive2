@@ -13,4 +13,17 @@ export type Methods = {
       recentLive?: LivePrivate;
     }[];
   };
+
+  post: {
+    reqHeaders: AuthorizationHeader;
+
+    reqBody: {
+      inviteCode: string;
+      slug: string;
+    };
+
+    resBody: {
+      tenant: TenantPublic;
+    };
+  };
 };
