@@ -54,6 +54,7 @@ model AuthProvider {
   clientSecret String           @db.VarChar(100)
 }
 
+// Misskey はアプリの管理が不要なので、ここには登録しない
 enum AuthProviderType {
   Mastodon
 }

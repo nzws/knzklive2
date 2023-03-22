@@ -1,7 +1,7 @@
 export type Methods = {
   get: {
     query: {
-      code: string;
+      session: string;
     };
 
     resBody: undefined;

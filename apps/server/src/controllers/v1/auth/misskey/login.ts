@@ -1,23 +1,30 @@
 import type { JSONSchemaType } from 'ajv';
-import type { Methods } from 'api-types/api/v1/auth/mastodon/callback';
+import type { Methods } from 'api-types/api/v1/auth/misskey/login';
+import { AuthMisskey } from '../../../../services/auth-providers/misskey';
 import type { APIRoute } from '../../../../utils/types';
 import { validateWithType } from '../../../../utils/validate';
 
 type Params = Methods['get']['query'];
+type Response = Methods['get']['resBody'];
 
 const schema: JSONSchemaType<Params> = {
   type: 'object',
   properties: {
-    code: {
+    domain: {
       type: 'string',
       minLength: 1
     }
   },
-  required: ['code'],
+  required: ['domain'],
   additionalProperties: false
 };
 
-export const v1AuthMastodonCallback: APIRoute<never, Params> = ctx => {
+export const v1AuthMisskeyLogin: APIRoute<
+  never,
+  Params,
+  never,
+  Response
+> = async ctx => {
   const query = ctx.request.query;
   if (!validateWithType(schema, query)) {
     ctx.status = 400;
@@ -27,7 +34,8 @@ export const v1AuthMastodonCallback: APIRoute<never, Params> = ctx => {
     return;
   }
 
-  const host = process.env.FRONTEND_ENDPOINT || '';
+  const provider = new AuthMisskey(query.domain);
+  const url = await provider.getAuthUrl();
 
-  ctx.redirect(`${host}/auth/callback?code=${query.code}`);
+  ctx.redirect(url);
 };
