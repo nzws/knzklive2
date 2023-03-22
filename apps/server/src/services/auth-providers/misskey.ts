@@ -6,7 +6,7 @@ type MisskeyApiError = {
   error: unknown;
 };
 
-type MisskeyApiMiAuthSeesionCheck = {
+type MisskeyApiMiAuthSessionCheck = {
   token: string;
   user: unknown;
 };
@@ -62,7 +62,7 @@ export class AuthMisskey extends AuthProvider {
       }
     );
     const body = (await response.json()) as
-      | MisskeyApiMiAuthSeesionCheck
+      | MisskeyApiMiAuthSessionCheck
       | MisskeyApiError;
 
     if (!response.ok || !('token' in body)) {
