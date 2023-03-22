@@ -18,7 +18,7 @@
 ### Integrate with ActivityPub
 
 - Receive live streaming comments from public posts on ActivityPub. (Not an ActivityPub server, uses Mastodon API)
-- You can log in with Mastodon server. We also plan to integrate with other OAuth providers.
+- You can log in with Mastodon or Misskey server.
 
 ### Low latency, watch on any device
 

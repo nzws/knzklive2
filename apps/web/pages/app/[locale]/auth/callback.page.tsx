@@ -14,7 +14,7 @@ const Page: NextPage = () => {
   const { query } = useRouter();
 
   useEffect(() => {
-    const { code } = query;
+    const code = query.code || query.session;
     if (!code || typeof code !== 'string' || !signInCallback) {
       return;
     }

@@ -38,6 +38,11 @@ import { getV1StreamsCommentViewerUrl } from './controllers/v1/streams/get-comme
 import { postV1StreamsThumbnail } from './controllers/v1/streams/post-thumbnail';
 import { getV1InternalsWebInternalJwt } from './controllers/v1/internals/web-internal/jwt';
 import { getV1TenantsLives } from './controllers/v1/tenants/get-lives';
+import { v1AuthMisskeyLogin } from './controllers/v1/auth/misskey/login';
+import { v1AuthMisskeyCallback } from './controllers/v1/auth/misskey/callback';
+import { v1AuthMisskeyToken } from './controllers/v1/auth/misskey/token';
+import { v1AuthMisskeyRefresh } from './controllers/v1/auth/misskey/refresh';
+import { v1AuthMisskeyRevoke } from './controllers/v1/auth/misskey/revoke';
 
 const multer = Multer({
   limits: {
@@ -61,6 +66,12 @@ export const router = (): Router => {
   route.post('/v1/auth/mastodon/token', v1AuthMastodonToken);
   route.post('/v1/auth/mastodon/refresh', v1AuthMastodonRefresh);
   route.post('/v1/auth/mastodon/revoke', v1AuthMastodonRevoke);
+
+  route.get('/v1/auth/misskey/login', v1AuthMisskeyLogin);
+  route.get('/v1/auth/misskey/callback', v1AuthMisskeyCallback);
+  route.post('/v1/auth/misskey/token', v1AuthMisskeyToken);
+  route.post('/v1/auth/misskey/refresh', v1AuthMisskeyRefresh);
+  route.post('/v1/auth/misskey/revoke', v1AuthMisskeyRevoke);
 
   route.get('/v1/tenants/find/:key', getV1TenantsOnce);
   route.get('/v1/tenants/find/:key/lives', getV1TenantsLives);

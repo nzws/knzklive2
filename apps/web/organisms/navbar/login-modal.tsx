@@ -22,7 +22,11 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getDocsUrl } from '~/utils/constants';
 import { useAuth } from '~/utils/hooks/use-auth';
-import { MASTODON_DOMAIN_LS, SignInType } from '~/utils/contexts/auth';
+import {
+  MASTODON_DOMAIN_LS,
+  MISSKEY_DOMAIN_LS,
+  SignInType
+} from '~/utils/contexts/auth';
 
 type Props = {
   isOpen: boolean;
@@ -30,6 +34,16 @@ type Props = {
 };
 
 const mastodonHelpDocs = getDocsUrl('help/mastodon-account-integration');
+
+enum ServerType {
+  Mastodon = 'Mastodon',
+  Misskey = 'Misskey'
+}
+
+const placeholderDomain: Record<ServerType, string> = {
+  [ServerType.Mastodon]: 'knzk.me',
+  [ServerType.Misskey]: 'misskey.io'
+};
 
 export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
   const { signIn } = useAuth();
@@ -39,6 +53,7 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
     onOpen: onOpenSignIn,
     onClose: onCloseSignIn
   } = useDisclosure();
+  const [serverType, setServerType] = useState<ServerType>();
   const [domain, setDomain] = useState('');
   const [hasNotDomain, setHasNotDomain] = useState(false);
 
@@ -53,10 +68,14 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
       }
 
       onOpenSignIn();
-      await signIn(SignInType.Mastodon, domain);
+      if (serverType === ServerType.Mastodon) {
+        await signIn(SignInType.Mastodon, domain);
+      } else if (serverType === ServerType.Misskey) {
+        await signIn(SignInType.Misskey, domain);
+      }
       onClose();
     })();
-  }, [onOpenSignIn, onClose, signIn, domain]);
+  }, [onOpenSignIn, onClose, signIn, domain, serverType]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -65,11 +84,18 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
   }, [isOpen, onCloseSignIn]);
 
   useEffect(() => {
-    const prev = localStorage.getItem(MASTODON_DOMAIN_LS);
-    if (prev) {
-      setDomain(prev);
+    if (serverType === ServerType.Mastodon) {
+      const domain = localStorage.getItem(MASTODON_DOMAIN_LS);
+      if (domain) {
+        setDomain(domain);
+      }
+    } else if (serverType === ServerType.Misskey) {
+      const prev = localStorage.getItem(MISSKEY_DOMAIN_LS);
+      if (prev) {
+        setDomain(prev);
+      }
     }
-  }, []);
+  }, [serverType]);
 
   useEffect(() => {
     if (domain) {
@@ -86,11 +112,47 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
         </ModalHeader>
         <ModalCloseButton />
 
-        <Collapse in={!isOpeningSignIn} animateOpacity>
+        <Collapse in={!serverType} animateOpacity>
+          <ModalBody>
+            <Stack spacing={4} align="center" textAlign="center">
+              <Text>
+                <FormattedMessage id="navbar.login.modal.welcome" />
+              </Text>
+
+              <Button
+                colorScheme="blue"
+                onClick={() => setServerType(ServerType.Mastodon)}
+                width="100%"
+              >
+                Mastodon
+              </Button>
+
+              <Button
+                colorScheme="blue"
+                onClick={() => setServerType(ServerType.Misskey)}
+                width="100%"
+              >
+                Misskey
+              </Button>
+            </Stack>
+          </ModalBody>
+
+          <ModalFooter />
+        </Collapse>
+
+        <Collapse in={!!(!isOpeningSignIn && serverType)} animateOpacity>
           <ModalBody>
             <Stack spacing={4}>
               <Text>
-                <FormattedMessage id="navbar.login.modal.body" />
+                <FormattedMessage
+                  id="navbar.login.modal.body"
+                  values={{
+                    serverType: serverType,
+                    placeholderDomain: serverType
+                      ? placeholderDomain[serverType]
+                      : '?'
+                  }}
+                />
               </Text>
 
               <FormControl isInvalid={hasNotDomain}>
@@ -99,9 +161,16 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
                 </FormLabel>
 
                 <Input
-                  placeholder={intl.formatMessage({
-                    id: 'navbar.login.modal.domain.placeholder'
-                  })}
+                  placeholder={intl.formatMessage(
+                    {
+                      id: 'navbar.login.modal.domain.placeholder'
+                    },
+                    {
+                      placeholderDomain: serverType
+                        ? placeholderDomain[serverType]
+                        : '?'
+                    }
+                  )}
                   value={domain}
                   onChange={e => setDomain(e.target.value)}
                 />
@@ -109,7 +178,12 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
 
               <Link href={mastodonHelpDocs} isExternal>
                 <Text fontSize="xs">
-                  <FormattedMessage id="navbar.login.modal.help" />
+                  <FormattedMessage
+                    id="navbar.login.modal.help"
+                    values={{
+                      serverType
+                    }}
+                  />
                   <ExternalLinkIcon mx="2px" />
                 </Text>
               </Link>
@@ -123,7 +197,7 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
           </ModalFooter>
         </Collapse>
 
-        <Collapse in={isOpeningSignIn} animateOpacity>
+        <Collapse in={!!(isOpeningSignIn && serverType)} animateOpacity>
           <ModalBody>
             <Stack spacing={12} align="center" textAlign="center">
               <Text>
