@@ -108,12 +108,12 @@ export const Admin: FC<Props> = ({
                 <Stack spacing={4}>
                   <Heading size="sm">ブラウザから配信</Heading>
 
-                  <Link
+                  <Button
                     href={`/@${tenantSlug}/${idInTenant}/broadcast-via-browser`}
-                    passHref
+                    as={Link}
                   >
-                    <Button as="a">ブラウザ配信ページへ移動</Button>
-                  </Link>
+                    ブラウザ配信ページへ移動
+                  </Button>
                 </Stack>
               </Stack>
             </TabPanel>

@@ -45,7 +45,7 @@ export const middleware = (req: NextRequest) => {
   const paramLang = url.searchParams.get('lang');
   const language = paramLang || getLocale(req);
   const validLang = supportedLocales.includes(language as SupportedLocale)
-    ? language
+    ? language.toString()
     : defaultLocale;
 
   if (pathname.startsWith('/@')) {

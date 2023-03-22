@@ -157,3 +157,5 @@ dist
 
 Caddyfile
 push-web/
+
+packages/api-types/dist

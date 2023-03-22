@@ -17,7 +17,7 @@ const errorCodes = [
   'live_already_ended',
   'live_not_ended'
 ] as const;
-type ErrorCode = typeof errorCodes[number];
+type ErrorCode = (typeof errorCodes)[number];
 
 export interface APIError {
   errorCode: ErrorCode;

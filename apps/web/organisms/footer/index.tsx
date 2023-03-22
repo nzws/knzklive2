@@ -37,11 +37,9 @@ export const Footer: FC = () => {
           </Box>
 
           <Box color="gray.400">
-            <Link href="/about" passHref>
-              <ChakraLink>
-                <FormattedMessage id="page.about.title" />
-              </ChakraLink>
-            </Link>
+            <ChakraLink href="/about" as={Link}>
+              <FormattedMessage id="page.about.title" />
+            </ChakraLink>
           </Box>
 
           <Box color="gray.400">
