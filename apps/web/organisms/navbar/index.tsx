@@ -88,10 +88,8 @@ export const Navbar: FC = () => {
       <Box as="nav" bg="gray.900">
         <Container py={{ base: '3' }} maxW="container.xl">
           <HStack spacing="10" justify="space-between">
-            <Link href="/" passHref>
-              <a>
-                <Heading size="md">KnzkLive</Heading>
-              </a>
+            <Link href="/">
+              <Heading size="md">KnzkLive</Heading>
             </Link>
 
             <Flex justify="right">

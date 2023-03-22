@@ -43,11 +43,9 @@ export const User: FC<Props> = ({ onCreateLive }) => {
             { displayName }
           )}
         >
-          <Link href="/account/settings" passHref>
-            <MenuItem as="a">
-              <FormattedMessage id="navbar.menu.account-settings" />
-            </MenuItem>
-          </Link>
+          <MenuItem href="/account/settings" as={Link}>
+            <FormattedMessage id="navbar.menu.account-settings" />
+          </MenuItem>
 
           <MenuItem onClick={signOut}>
             <FormattedMessage id="navbar.logout" />
@@ -60,14 +58,12 @@ export const User: FC<Props> = ({ onCreateLive }) => {
 
             <MenuGroup title={`@${tenant.slug}`}>
               {recentLive && !recentLive.endedAt ? (
-                <Link
+                <MenuItem
                   href={`/@${tenant.slug}/${recentLive.idInTenant}`}
-                  passHref
+                  as={Link}
                 >
-                  <MenuItem as="a">
-                    <FormattedMessage id="navbar.menu.stream-link" />
-                  </MenuItem>
-                </Link>
+                  <FormattedMessage id="navbar.menu.stream-link" />
+                </MenuItem>
               ) : (
                 <MenuItem onClick={() => onCreateLive(tenant, recentLive)}>
                   <FormattedMessage id="navbar.menu.start-stream" />
@@ -82,11 +78,9 @@ export const User: FC<Props> = ({ onCreateLive }) => {
               </Link>
               */}
 
-              <Link href={`/@${tenant.slug}/settings`} passHref>
-                <MenuItem as="a">
-                  <FormattedMessage id="navbar.menu.channel-settings" />
-                </MenuItem>
-              </Link>
+              <MenuItem href={`/@${tenant.slug}/settings`} as={Link}>
+                <FormattedMessage id="navbar.menu.channel-settings" />
+              </MenuItem>
             </MenuGroup>
           </Fragment>
         ))}

@@ -87,9 +87,12 @@ export const LiveItem: FC<Props> = ({ live, currentWatchingCount }) => (
       {live ? (
         <Box>
           <Heading fontSize="lg" fontWeight="bold" noOfLines={1}>
-            <Link href={`/@${live.tenant.slug}/${live.idInTenant}`} passHref>
-              <LinkOverlay>{live.title}</LinkOverlay>
-            </Link>
+            <LinkOverlay
+              href={`/@${live.tenant.slug}/${live.idInTenant}`}
+              as={Link}
+            >
+              {live.title}
+            </LinkOverlay>
           </Heading>
         </Box>
       ) : (
@@ -100,7 +103,7 @@ export const LiveItem: FC<Props> = ({ live, currentWatchingCount }) => (
     <Flex>
       {live ? (
         <LinkBox>
-          <Link href={`/@${live.tenant.slug}`} passHref>
+          <Link href={`/@${live.tenant.slug}`} passHref legacyBehavior>
             <LinkOverlay fontSize="sm" noOfLines={1} color="gray.300">
               {live?.tenant.displayName || live?.tenant.slug}
             </LinkOverlay>
