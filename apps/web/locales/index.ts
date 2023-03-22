@@ -1,5 +1,5 @@
 export const supportedLocales = ['en', 'ja'] as const;
-export type SupportedLocale = typeof supportedLocales[number];
+export type SupportedLocale = (typeof supportedLocales)[number];
 
 export const localeNames: Record<SupportedLocale, string> = {
   en: 'English',

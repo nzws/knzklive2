@@ -16,17 +16,17 @@
   "devDependencies": {
     "@knzk/prettier-config": "1.0.0",
     "@tsconfig/node18": "1.0.1",
-    "@types/node": "18.11.10",
+    "@types/node": "18.15.5",
     "@types/node-fetch": "2.6.2",
-    "@typescript-eslint/eslint-plugin": "5.45.0",
-    "@typescript-eslint/experimental-utils": "5.45.0",
-    "@typescript-eslint/parser": "5.45.0",
+    "@typescript-eslint/eslint-plugin": "5.56.0",
+    "@typescript-eslint/experimental-utils": "5.56.0",
+    "@typescript-eslint/parser": "5.56.0",
     "aspida": "1.11.0",
-    "eslint": "8.28.0",
-    "eslint-config-prettier": "8.5.0",
+    "eslint": "8.36.0",
+    "eslint-config-prettier": "8.8.0",
     "eslint-plugin-aspida": "0.1.0",
     "npm-run-all": "4.1.5",
-    "prettier": "2.8.0",
-    "typescript": "4.9.3"
+    "prettier": "2.8.6",
+    "typescript": "4.9.5"
   }
 }
