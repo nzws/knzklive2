@@ -43,6 +43,9 @@ import { v1AuthMisskeyCallback } from './controllers/v1/auth/misskey/callback';
 import { v1AuthMisskeyToken } from './controllers/v1/auth/misskey/token';
 import { v1AuthMisskeyRefresh } from './controllers/v1/auth/misskey/refresh';
 import { v1AuthMisskeyRevoke } from './controllers/v1/auth/misskey/revoke';
+import { getV1InvitesGetList } from './controllers/v1/invites/get-list';
+import { postV1Invites } from './controllers/v1/invites/create';
+import { postV1Tenants } from './controllers/v1/tenants/create';
 
 const multer = Multer({
   limits: {
@@ -76,7 +79,7 @@ export const router = (): Router => {
   route.get('/v1/tenants/find/:key', getV1TenantsOnce);
   route.get('/v1/tenants/find/:key/lives', getV1TenantsLives);
   route.get('/v1/tenants', middlewareAuthorizeUser, getV1TenantsMe);
-  // route.post('/v1/tenants', middlewareAuthorizeUser);
+  route.post('/v1/tenants', middlewareAuthorizeUser, postV1Tenants);
   route.patch(
     '/v1/tenants/:tenantId',
     middlewareAuthorizeUser,
@@ -156,6 +159,9 @@ export const router = (): Router => {
     middlewareMyStream,
     postV1StreamsAction
   );
+
+  route.get('/v1/invites', middlewareAuthorizeUser, getV1InvitesGetList);
+  route.post('/v1/invites', middlewareAuthorizeUser, postV1Invites);
 
   route.get('/v1/internals/edge/jwt', getV1InternalsEdgeJwt);
   route.get('/v1/internals/web-internal/jwt', getV1InternalsWebInternalJwt);

@@ -26,10 +26,12 @@ model User {
   avatarUrl      String?   @db.VarChar(200)
   config         Json
 
-  tenants  Tenant[]
-  lives    Live[]
-  comments Comment[]
-  Images   Image[]
+  tenants     Tenant[]
+  lives       Live[]
+  comments    Comment[]
+  images      Image[]
+  invites     Invite[]  @relation("CreatedByUser")
+  usedInvites Invite[]  @relation("UsedByUser")
 }
 
 model Tenant {
@@ -44,7 +46,8 @@ model Tenant {
   owner User @relation(fields: [ownerId], references: [id])
 
   lives  Live[]
-  Images Image[]
+  images Image[]
+  Invite Invite[]
 }
 
 model AuthProvider {
@@ -141,4 +144,18 @@ model Comment {
 
   @@unique([liveId, sourceUrl, sourceId])
   @@index([liveId, createdAt, isDeleted])
+}
+
+model Invite {
+  inviteId    String    @id @db.VarChar(100)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdById Int?
+  usedById    Int?
+  tenantId    Int?
+  usedAt      DateTime?
+
+  createdBy User?   @relation("CreatedByUser", fields: [createdById], references: [id])
+  usedBy    User?   @relation("UsedByUser", fields: [usedById], references: [id])
+  tenant    Tenant? @relation(fields: [tenantId], references: [id])
 }

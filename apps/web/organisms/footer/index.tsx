@@ -42,7 +42,7 @@ export const Footer: FC = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FormattedMessage id="form.terms-and-privacy" />
+              <FormattedMessage id="footer.terms-and-privacy" />
             </ChakraLink>
           </Box>
 
