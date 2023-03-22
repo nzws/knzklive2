@@ -3,7 +3,7 @@ import isValidDomain from 'is-valid-domain';
 import { AuthProvider, ExternalUser } from './_base';
 
 type MisskeyApiError = {
-  error: string;
+  error: unknown;
 };
 
 type MisskeyApiMiAuthSeesionCheck = {
@@ -48,17 +48,17 @@ export class AuthMisskey extends AuthProvider {
   }
 
   async getToken(session: string): Promise<string> {
-    const response = await fetch(`https://${this.domain}/${session}/check`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      `https://${this.domain}/api/miauth/${session}/check`,
+      {
+        method: 'POST'
       }
-    });
+    );
     const body = (await response.json()) as
       | MisskeyApiMiAuthSeesionCheck
       | MisskeyApiError;
 
-    if (!response.ok || 'error' in body || !body.token) {
+    if (!response.ok || !('token' in body)) {
       console.warn(body);
       throw new Error('Failed to get token');
     }
@@ -71,9 +71,14 @@ export class AuthMisskey extends AuthProvider {
       method: 'POST',
       body: JSON.stringify({
         i: token
-      })
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
-    const body = (await response.json()) as MisskeyApiMyAccount;
+    const body = (await response.json()) as
+      | MisskeyApiMyAccount
+      | MisskeyApiError;
     if (!response.ok || 'error' in body || !body.username) {
       console.warn(body);
       throw new Error('Failed to get user');
