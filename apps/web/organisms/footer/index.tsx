@@ -37,6 +37,16 @@ export const Footer: FC = () => {
           </Box>
 
           <Box color="gray.400">
+            <ChakraLink
+              href="https://nzws.notion.site/knzk-live-cbc2512a7ced4c80b93536d5ab671d13"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FormattedMessage id="form.terms-and-privacy" />
+            </ChakraLink>
+          </Box>
+
+          <Box color="gray.400">
             <ChakraLink href="/about" as={Link}>
               <FormattedMessage id="page.about.title" />
             </ChakraLink>

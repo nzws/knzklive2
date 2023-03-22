@@ -30,7 +30,6 @@ import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
-import { getDocsUrl } from '~/utils/constants';
 import { FiArrowRight } from 'react-icons/fi';
 import { UploadThumbnail } from './upload-thumbnail';
 
@@ -46,7 +45,8 @@ type Props = {
   isCreate?: boolean;
 };
 
-const guidelineDocs = getDocsUrl('help/guideline');
+const guidelineDocs =
+  'https://nzws.notion.site/knzk-live-cbc2512a7ced4c80b93536d5ab671d13';
 
 export const LiveInfoModal: FC<Props> = ({
   isOpen,
