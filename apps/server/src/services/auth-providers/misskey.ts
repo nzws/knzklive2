@@ -20,6 +20,9 @@ type MisskeyApiMyAccount = {
 // https://misskey-hub.net/docs/api/permission.html
 const scopes = ['read:following', 'read:account', 'write:notes'];
 
+const uuidV4Regex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 // docs: https://misskey-hub.net/docs/api
 export class AuthMisskey extends AuthProvider {
   private readonly domain: string;
@@ -48,6 +51,10 @@ export class AuthMisskey extends AuthProvider {
   }
 
   async getToken(session: string): Promise<string> {
+    if (!this.checkIsValidSession(session)) {
+      throw new Error('Invalid session');
+    }
+
     const response = await fetch(
       `https://${this.domain}/api/miauth/${session}/check`,
       {
@@ -97,5 +104,9 @@ export class AuthMisskey extends AuthProvider {
 
   private createSession(): string {
     return crypto.randomUUID();
+  }
+
+  private checkIsValidSession(session: string): boolean {
+    return uuidV4Regex.test(session);
   }
 }
