@@ -12,7 +12,10 @@ import {
   Badge,
   Button,
   Center,
-  Spinner
+  Spinner,
+  Text,
+  UnorderedList,
+  ListItem
 } from '@chakra-ui/react';
 import { FC, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -98,6 +101,22 @@ export const Admin: FC<Props> = ({
                       配信中/システム準備中は表示できません
                     </Alert>
                   )}
+                </Stack>
+
+                <Stack spacing={4}>
+                  <Heading size="sm">配信ソフトウェア設定</Heading>
+
+                  <Text>
+                    現在、配信システム側でハードリミットは設定されていませんが、快適な配信をするために以下の設定を推奨します。
+                  </Text>
+
+                  <UnorderedList>
+                    <ListItem>
+                      キーフレーム間隔: <b>1s</b> (重要:
+                      間隔が大きい/オートだと視聴がカクつきます)
+                    </ListItem>
+                    <ListItem>出力解像度: 1920x1080</ListItem>
+                  </UnorderedList>
                 </Stack>
 
                 <Stack spacing={4}>
