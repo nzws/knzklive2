@@ -17,7 +17,7 @@
     "@aspida/fetch": "1.11.0",
     "@aspida/swr": "1.11.0",
     "@chakra-ui/icons": "2.0.17",
-    "@chakra-ui/react": "2.5.2",
+    "@chakra-ui/react": "2.5.3",
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",
     "api-types": "*",
