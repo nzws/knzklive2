@@ -44,7 +44,7 @@ export class AuthMisskey extends AuthProvider {
       name: 'KnzkLive2',
       icon: 'https://knzk.live/static/surprized_knzk.png',
       callback: this.redirectUrl,
-      scope: scopes.join(',')
+      permission: scopes.join(',')
     });
 
     return Promise.resolve(`https://${this.domain}/miauth/${session}?${query}`);
