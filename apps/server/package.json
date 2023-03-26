@@ -52,7 +52,7 @@
     "@types/koa__cors": "4.0.0",
     "@types/koa__multer": "2.0.4",
     "@types/koa__router": "12.0.0",
-    "@types/node": "18.15.5",
+    "@types/node": "18.15.10",
     "@types/sharp": "0.31.1",
     "@types/whatwg-fetch": "0.0.33",
     "@types/ws": "8.5.4",
