@@ -105,6 +105,8 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
                 },
                 { acct: me?.account || '', hashtag }
               )}
+              closeOnScroll
+              gutter={22}
             >
               <Switch
                 size="sm"
