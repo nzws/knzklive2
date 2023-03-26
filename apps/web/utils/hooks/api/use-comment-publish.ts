@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { MastodonStatusVisibility } from 'api-types/dist/external-mastodon/api/v1/statuses';
+import { MastodonStatusVisibility } from 'api-types/external-mastodon/api/v1/statuses';
 import { MisskeyNoteVisibility } from 'api-types/external-misskey/api/notes/create';
 import { client } from '~/utils/api/client';
 import { getMastodonClient } from '~/utils/api/external-mastodon';
