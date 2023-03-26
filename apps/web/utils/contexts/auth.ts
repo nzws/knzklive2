@@ -297,12 +297,13 @@ export const useAuthInProvider = (): Returns => {
   return {
     token,
     mastodonToken,
+    misskeyToken,
     signInCallback,
     signIn,
     refresh,
     signOut,
     user
-  };
+  } as const;
 };
 
 export const AuthContext = createContext<Partial<Returns>>({});
