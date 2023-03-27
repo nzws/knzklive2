@@ -4476,7 +4476,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/koa@npm:*, @types/koa@npm:2.13.5":
+"@types/koa@npm:*":
   version: 2.13.5
   resolution: "@types/koa@npm:2.13.5"
   dependencies:
@@ -4489,6 +4489,22 @@ __metadata:
     "@types/koa-compose": "*"
     "@types/node": "*"
   checksum: e3b634d934b79ce8f394bf4130511596081f9c073dbfb4309aa32e4c421c47049a002b65111f8d9687eabec55d5a27b1b9ae0699afa83894cb7032c3536bfa17
+  languageName: node
+  linkType: hard
+
+"@types/koa@npm:2.13.6":
+  version: 2.13.6
+  resolution: "@types/koa@npm:2.13.6"
+  dependencies:
+    "@types/accepts": "*"
+    "@types/content-disposition": "*"
+    "@types/cookies": "*"
+    "@types/http-assert": "*"
+    "@types/http-errors": "*"
+    "@types/keygrip": "*"
+    "@types/koa-compose": "*"
+    "@types/node": "*"
+  checksum: a4061c2e29cd4ccb65a704fe3ef6868eac82558856c7c00a5bcc0f9fdf18c595e0156c52508eb8ba926a9108d9cf5c9a1a1b73cccf50e29b37ea1154323d0b26
   languageName: node
   linkType: hard
 
@@ -10981,7 +10997,7 @@ __metadata:
     "@koa/router": 12.0.0
     "@tsconfig/node18": 1.0.1
     "@types/fluent-ffmpeg": 2.1.21
-    "@types/koa": 2.13.5
+    "@types/koa": 2.13.6
     "@types/koa-bodyparser": 4.3.10
     "@types/koa-logger": 3.1.2
     "@types/koa__router": 12.0.0
@@ -11651,7 +11667,7 @@ __metadata:
     "@prisma/client": 4.11.0
     "@tsconfig/node18": 1.0.1
     "@types/jest": 29.5.0
-    "@types/koa": 2.13.5
+    "@types/koa": 2.13.6
     "@types/koa-bodyparser": 4.3.10
     "@types/koa-logger": 3.1.2
     "@types/koa__cors": 4.0.0
