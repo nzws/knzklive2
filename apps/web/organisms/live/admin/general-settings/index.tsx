@@ -8,11 +8,12 @@ import {
 } from '@chakra-ui/react';
 import { FC, useCallback, useState } from 'react';
 import { LivePrivate } from 'api-types/common/types';
-import { Dialog } from './dialog';
-import { LiveInfoModal } from './live-info-modal';
+import { Dialog } from '../dialog';
+import { LiveInfoModal } from '../live-info-modal';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { client } from '~/utils/api/client';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
+import { StartModal } from '../start-modal';
 
 type Props = {
   live: LivePrivate;
@@ -40,42 +41,52 @@ export const GeneralSettings: FC<Props> = ({ live, notPushing }) => {
   useAPIError(error);
 
   const handlePublish = useCallback(
-    (isStart: boolean) => {
-      void (async () => {
-        if (!token) {
-          return;
-        }
+    async (isStart: boolean) => {
+      if (!token) {
+        return;
+      }
 
-        try {
-          await client.v1.streams._liveId(live.id).action.post({
-            body: {
-              command: isStart ? 'publish' : 'end'
-            },
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          onCloseStop();
-          onCloseStart();
-        } catch (e) {
-          console.warn(e);
-          setError(e);
-        }
-      })();
+      try {
+        await client.v1.streams._liveId(live.id).action.post({
+          body: {
+            command: isStart ? 'publish' : 'end'
+          },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      } catch (e) {
+        console.warn(e);
+        setError(e);
+
+        throw e;
+      }
     },
-    [live.id, token, onCloseStart, onCloseStop]
+    [live.id, token]
   );
+
+  const handleStart = useCallback(async () => {
+    await handlePublish(true);
+  }, [handlePublish]);
+
+  const handleEnd = useCallback(() => {
+    void (async () => {
+      await handlePublish(false);
+      onCloseStop();
+    })();
+  }, [handlePublish, onCloseStop]);
 
   return (
     <Stack spacing={6}>
       <Wrap spacing={6}>
         <WrapItem>
-          <Dialog
+          <StartModal
             isOpen={isOpenStart}
             onClose={onCloseStart}
-            onSubmit={() => handlePublish(true)}
-            title="配信を開始しますか？"
-            submitText="配信を開始"
+            onPublish={handleStart}
+            url={live.publicUrl}
+            hashtag={live.hashtag}
+            isBroadcastViaBrowser={false}
           />
 
           <Tooltip
@@ -97,7 +108,7 @@ export const GeneralSettings: FC<Props> = ({ live, notPushing }) => {
           <Dialog
             isOpen={isOpenStop}
             onClose={onCloseStop}
-            onSubmit={() => handlePublish(false)}
+            onSubmit={handleEnd}
             title="配信を終了しますか？"
             submitText="配信を終了"
           />

@@ -1,14 +1,18 @@
 import { useCallback } from 'react';
-import { MastodonStatusVisibility } from 'api-types/external-mastodon/api/v1/statuses';
-import { MisskeyNoteVisibility } from 'api-types/external-misskey/api/notes/create';
 import { client } from '~/utils/api/client';
-import { getMastodonClient } from '~/utils/api/external-mastodon';
-import { getMisskeyClient } from '~/utils/api/external-misskey';
-import { MASTODON_DOMAIN_LS, MISSKEY_DOMAIN_LS } from '~/utils/contexts/auth';
+import {
+  MASTODON_DOMAIN_LS,
+  MISSKEY_DOMAIN_LS,
+  SignInType
+} from '~/utils/contexts/auth';
 import { useAuth } from '../use-auth';
-import { HTTPError } from '@aspida/fetch';
 import { useToast } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
+import {
+  MisskeyRequestReSignError,
+  postToExternal,
+  Visibility
+} from '~/utils/api/post-to-external';
 
 export const useCommentPublish = (liveId: number, hashtag?: string) => {
   const toast = useToast();
@@ -22,64 +26,53 @@ export const useCommentPublish = (liveId: number, hashtag?: string) => {
           throw new Error('hashtag is required');
         }
 
+        const text = `${content} #${hashtag}`;
+
         if (mastodonToken) {
           const domain = localStorage.getItem(MASTODON_DOMAIN_LS);
           if (!domain) {
             throw new Error('domain is required');
           }
-          const client = getMastodonClient(domain);
 
-          await client.api.v1.statuses.post({
-            body: {
-              status: `${content} #${hashtag}`,
-              visibility: MastodonStatusVisibility.Unlisted
+          await postToExternal(
+            {
+              type: SignInType.Mastodon,
+              domain,
+              token: mastodonToken
             },
-            headers: {
-              Authorization: `Bearer ${mastodonToken}`
-            }
-          });
+            text,
+            Visibility.Home
+          );
         } else if (misskeyToken) {
           const domain = localStorage.getItem(MISSKEY_DOMAIN_LS);
           if (!domain) {
             throw new Error('domain is required');
           }
-          const client = getMisskeyClient(domain);
 
           try {
-            await client.api.notes.create.post({
-              body: {
-                text: `${content} #${hashtag}`,
-                visibility: MisskeyNoteVisibility.Home,
-                i: misskeyToken
-              }
-            });
+            await postToExternal(
+              {
+                type: SignInType.Misskey,
+                domain,
+                token: misskeyToken
+              },
+              text,
+              Visibility.Home
+            );
           } catch (e) {
-            if (e instanceof HTTPError) {
-              const body = (await e.response.json()) as {
-                error?: {
-                  message?: string;
-                  code?: string;
-                  id?: string;
-                };
-              };
-
-              if (body.error?.code === 'PERMISSION_DENIED') {
-                toast({
-                  title: intl.formatMessage({
-                    id: 'toast.api-error.title'
-                  }),
-                  description: intl.formatMessage({
-                    id: 'live.comment-post.permission-denied'
-                  }),
-                  status: 'error',
-                  duration: 10000,
-                  isClosable: true
-                });
-
-                throw new Error('');
-              }
+            if (e instanceof MisskeyRequestReSignError) {
+              toast({
+                title: intl.formatMessage({
+                  id: 'toast.api-error.title'
+                }),
+                description: intl.formatMessage({
+                  id: 'live.comment-post.permission-denied'
+                }),
+                status: 'error',
+                duration: 10000,
+                isClosable: true
+              });
             }
-            throw e;
           }
         }
       } else {
