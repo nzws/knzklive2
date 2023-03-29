@@ -38,10 +38,13 @@ export const useAPIError = (error?: unknown): [APIError | undefined] => {
     void (async () => {
       const apiError = await getAPIError(error);
       if (apiError) {
-        const message =
-          intl.formatMessage({ id: `api-error.${apiError.errorCode}` }) +
-          '\n' +
-          JSON.stringify(apiError);
+        const message = apiError.errorCode
+          ? intl.formatMessage({
+              id: `api-error.${apiError.errorCode}`
+            }) +
+            '\n' +
+            JSON.stringify(apiError)
+          : JSON.stringify(apiError);
         if (lastMessageRef.current === message) {
           return;
         }

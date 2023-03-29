@@ -4,9 +4,7 @@ import {
   Icon,
   Input,
   InputGroup,
-  InputRightElement,
-  Switch,
-  Tooltip
+  InputRightElement
 } from '@chakra-ui/react';
 import { FC, FormEvent, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -16,6 +14,7 @@ import { useAuth } from '~/utils/hooks/use-auth';
 import { useUsersMe } from '~/utils/hooks/api/use-users-me';
 import { useLocalStorage } from 'react-use';
 import { useCommentPublish } from '~/utils/hooks/api/use-comment-publish';
+import { PublicPostSwitch } from './public-post-switch';
 
 type Props = {
   liveId: number;
@@ -94,27 +93,13 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
 
         <InputRightElement width="6rem">
           <HStack gap={2}>
-            <Tooltip
-              label={intl.formatMessage(
-                {
-                  id: hashtag
-                    ? enablePublish
-                      ? 'live.comment-post.publish.enabled'
-                      : 'live.comment-post.publish.disabled'
-                    : 'live.comment-post.publish.disabled-in-live'
-                },
-                { acct: me?.account || '', hashtag }
-              )}
-              closeOnScroll
-              gutter={22}
-            >
-              <Switch
-                size="sm"
-                disabled={!isSignedIn || !hashtag}
-                isChecked={hashtag ? enablePublish ?? false : false}
-                onChange={toggleEnablePublish}
-              />
-            </Tooltip>
+            <PublicPostSwitch
+              acct={me?.account}
+              hashtag={hashtag}
+              isSignedIn={isSignedIn}
+              enablePublish={enablePublish}
+              toggleEnablePublish={toggleEnablePublish}
+            />
 
             <Button
               h="1.75rem"

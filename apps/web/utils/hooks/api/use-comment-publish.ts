@@ -6,8 +6,13 @@ import { getMastodonClient } from '~/utils/api/external-mastodon';
 import { getMisskeyClient } from '~/utils/api/external-misskey';
 import { MASTODON_DOMAIN_LS, MISSKEY_DOMAIN_LS } from '~/utils/contexts/auth';
 import { useAuth } from '../use-auth';
+import { HTTPError } from '@aspida/fetch';
+import { useToast } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 
 export const useCommentPublish = (liveId: number, hashtag?: string) => {
+  const toast = useToast();
+  const intl = useIntl();
   const { headers, mastodonToken, misskeyToken } = useAuth();
 
   const handlePublish = useCallback(
@@ -27,7 +32,7 @@ export const useCommentPublish = (liveId: number, hashtag?: string) => {
           await client.api.v1.statuses.post({
             body: {
               status: `${content} #${hashtag}`,
-              visibility: MastodonStatusVisibility.Public
+              visibility: MastodonStatusVisibility.Unlisted
             },
             headers: {
               Authorization: `Bearer ${mastodonToken}`
@@ -40,13 +45,42 @@ export const useCommentPublish = (liveId: number, hashtag?: string) => {
           }
           const client = getMisskeyClient(domain);
 
-          await client.api.notes.create.post({
-            body: {
-              text: `${content} #${hashtag}`,
-              visibility: MisskeyNoteVisibility.Public,
-              i: misskeyToken
+          try {
+            await client.api.notes.create.post({
+              body: {
+                text: `${content} #${hashtag}`,
+                visibility: MisskeyNoteVisibility.Home,
+                i: misskeyToken
+              }
+            });
+          } catch (e) {
+            if (e instanceof HTTPError) {
+              const body = (await e.response.json()) as {
+                error?: {
+                  message?: string;
+                  code?: string;
+                  id?: string;
+                };
+              };
+
+              if (body.error?.code === 'PERMISSION_DENIED') {
+                toast({
+                  title: intl.formatMessage({
+                    id: 'toast.api-error.title'
+                  }),
+                  description: intl.formatMessage({
+                    id: 'live.comment-post.permission-denied'
+                  }),
+                  status: 'error',
+                  duration: 10000,
+                  isClosable: true
+                });
+
+                throw new Error('');
+              }
             }
-          });
+            throw e;
+          }
         }
       } else {
         if (!headers) {
@@ -61,7 +95,7 @@ export const useCommentPublish = (liveId: number, hashtag?: string) => {
         });
       }
     },
-    [headers, liveId, hashtag, mastodonToken, misskeyToken]
+    [headers, liveId, hashtag, mastodonToken, misskeyToken, toast, intl]
   );
 
   return { handlePublish } as const;
