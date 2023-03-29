@@ -10,8 +10,8 @@ const getLocale = (req: NextRequest) => {
   const { headers, cookies } = req;
 
   const cookieLang = cookies.get(LOCALE_COOKIE);
-  if (cookieLang) {
-    return cookieLang;
+  if (cookieLang?.value) {
+    return cookieLang.value;
   }
 
   const acceptLanguage = headers.get('accept-language');
