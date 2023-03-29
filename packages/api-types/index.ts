@@ -1,5 +1,6 @@
 import api from './api/$api';
 import externalMastodon from './external-mastodon/$api';
+import externalMisskey from './external-misskey/$api';
 import push from './push/$api';
 
-export { api, externalMastodon, push };
+export { api, externalMastodon, externalMisskey, push };

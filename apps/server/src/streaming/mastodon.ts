@@ -26,12 +26,16 @@ export class MastodonStreaming {
 
     try {
       const ws = new WebSocket(
-        `wss://${domain}/api/v1/streaming/?access_token=${token}&stream=public`
+        `wss://${domain}/api/v1/streaming/?access_token=${token}`
       );
       this.ws = ws;
 
       ws.on('open', () => {
         console.log('mastodon streaming connected');
+
+        this.hashtags.forEach(({ hashtag }) => {
+          this.subscribeHashtag(hashtag);
+        });
       });
 
       ws.on('message', message => {
@@ -43,7 +47,7 @@ export class MastodonStreaming {
       });
 
       ws.on('close', () => {
-        console.log('websocket closed');
+        console.log('mastodon streaming closed');
 
         setTimeout(() => {
           this.connect();
@@ -60,40 +64,106 @@ export class MastodonStreaming {
 
   async prepareHashtag() {
     const live = await lives.getAliveAll();
-    this.hashtags = live
-      .filter(({ hashtag }) => hashtag)
+    const currentHashtags = live
       .map(l => ({
         hashtag: l.hashtag?.toLowerCase() || '',
         liveId: l.id
-      }));
+      }))
+      .filter(({ hashtag }) => hashtag);
+
+    currentHashtags.forEach(hashtag => {
+      this.addHashtag(hashtag.hashtag, hashtag.liveId);
+    });
 
     const handle = {
       event: 'update:hashtag',
       callback: (message: string) => {
         const data = JSON.parse(message) as {
           type: 'add' | 'remove';
-          hashtag?: string;
+          hashtag: string;
           liveId: number;
         };
 
         if (data.type === 'add') {
-          if (!data.hashtag) {
-            console.warn('hashtag is empty');
-            return;
-          }
-          this.hashtags.push({
-            hashtag: data.hashtag.toLowerCase(),
-            liveId: data.liveId
-          });
+          this.addHashtag(data.hashtag, data.liveId);
         } else {
-          this.hashtags = this.hashtags.filter(
-            hashtag => hashtag.liveId !== data.liveId
-          );
+          this.removeHashtag(data.hashtag, data.liveId);
         }
       }
     };
 
     await pubsub.on(handle);
+  }
+
+  private addHashtag(hashtag: string, liveId: number) {
+    const _hashtag = hashtag.toLowerCase();
+    const isAlreadySubscribed = this.hashtags.some(
+      hashtag => hashtag.hashtag === _hashtag
+    );
+
+    this.hashtags.push({
+      hashtag: _hashtag,
+      liveId
+    });
+
+    if (!isAlreadySubscribed) {
+      this.subscribeHashtag(_hashtag);
+    }
+  }
+
+  private removeHashtag(hashtag: string, liveId: number) {
+    const live = this.hashtags.find(hashtag => hashtag.liveId === liveId);
+
+    if (live) {
+      this.hashtags = this.hashtags.filter(
+        hashtag => hashtag.liveId !== liveId
+      );
+    }
+
+    const _hashtag = hashtag.toLowerCase();
+
+    // 複数配信から同じタグでサブスクライブされる可能性があるので、全配信から消えたハッシュタグのみサブスクライブ解除する
+    const isAlreadySubscribed = this.hashtags.some(
+      hashtag => hashtag.hashtag === _hashtag
+    );
+
+    if (!isAlreadySubscribed) {
+      this.unsubscribeHashtag(_hashtag);
+    }
+  }
+
+  private subscribeHashtag(hashtag: string) {
+    console.log(`Subscribe hashtag: ${hashtag}`);
+
+    try {
+      if (this.ws && this.ws.readyState === this.ws.OPEN) {
+        this.ws?.send(
+          JSON.stringify({
+            type: 'subscribe',
+            stream: 'hashtag',
+            tag: hashtag
+          })
+        );
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+  }
+
+  private unsubscribeHashtag(hashtag: string) {
+    console.log(`Unsubscribe hashtag: ${hashtag}`);
+
+    try {
+      this.ws?.send(
+        JSON.stringify({
+          type: 'unsubscribe',
+          stream: 'hashtag',
+          tag: hashtag
+        })
+      );
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   private async handleMessage(message: string) {

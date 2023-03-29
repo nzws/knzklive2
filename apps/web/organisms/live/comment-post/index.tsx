@@ -1,5 +1,6 @@
 import {
   Button,
+  HStack,
   Icon,
   Input,
   InputGroup,
@@ -9,8 +10,11 @@ import { FC, FormEvent, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { FiSend } from 'react-icons/fi';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
-import { client } from '~/utils/api/client';
 import { useAuth } from '~/utils/hooks/use-auth';
+import { useUsersMe } from '~/utils/hooks/api/use-users-me';
+import { useLocalStorage } from 'react-use';
+import { useCommentPublish } from '~/utils/hooks/api/use-comment-publish';
+import { PublicPostSwitch } from './public-post-switch';
 
 type Props = {
   liveId: number;
@@ -19,30 +23,37 @@ type Props = {
 
 export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
   const { token, isSignedIn } = useAuth();
+  const [me] = useUsersMe();
   const intl = useIntl();
+  const [enablePublish, setEnablePublish] = useLocalStorage<boolean>(
+    'knzklive-enable-publish',
+    false
+  );
   const [comment, setComment] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { handlePublish } = useCommentPublish(liveId, hashtag);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
+
+  const toggleEnablePublish = useCallback(() => {
+    setEnablePublish(!enablePublish);
+  }, [setEnablePublish, enablePublish]);
 
   const handleSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (!comment || !liveId || !token) {
+
+      if (!comment || !token) {
         return;
       }
       setIsLoading(true);
 
       void (async () => {
         try {
-          await client.v1.lives._liveId(liveId).comments.post({
-            body: {
-              content: comment
-            },
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
+          await handlePublish(
+            hashtag ? enablePublish ?? false : false,
+            comment
+          );
 
           setComment('');
         } catch (e) {
@@ -53,7 +64,7 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
         }
       })();
     },
-    [comment, liveId, token]
+    [comment, token, enablePublish, handlePublish, hashtag]
   );
 
   return (
@@ -80,17 +91,27 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
           maxLength={100}
         />
 
-        <InputRightElement width="3.5rem">
-          <Button
-            h="1.75rem"
-            size="sm"
-            type="submit"
-            colorScheme="blue"
-            isLoading={isLoading}
-            isDisabled={!isSignedIn}
-          >
-            <Icon as={FiSend} />
-          </Button>
+        <InputRightElement width="6rem">
+          <HStack gap={2}>
+            <PublicPostSwitch
+              acct={me?.account}
+              hashtag={hashtag}
+              isSignedIn={isSignedIn}
+              enablePublish={enablePublish}
+              toggleEnablePublish={toggleEnablePublish}
+            />
+
+            <Button
+              h="1.75rem"
+              size="sm"
+              type="submit"
+              colorScheme="blue"
+              isLoading={isLoading}
+              isDisabled={!isSignedIn}
+            >
+              <Icon as={FiSend} />
+            </Button>
+          </HStack>
         </InputRightElement>
       </InputGroup>
     </form>

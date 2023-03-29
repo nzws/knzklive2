@@ -5,6 +5,7 @@ export const useAuth = () => {
   const {
     token,
     mastodonToken,
+    misskeyToken,
     signInCallback,
     signIn,
     refresh,
@@ -30,6 +31,7 @@ export const useAuth = () => {
     isSignedIn,
     token,
     mastodonToken,
+    misskeyToken,
     signInCallback,
     signIn,
     refresh,

@@ -6,6 +6,10 @@
 - Node.js v18.x~
 - Yarn
 
+## Mastodon に対する要件
+
+- ハッシュタグタイムラインが未収載投稿を拾うように Mastodon API 側を改造する必要があります
+
 ## 起動
 
 ```bash
@@ -17,8 +21,7 @@ yarn workspace server cli generateKey >> .env
 
 # 毎回
 yarn
-yarn dev
-yarn dev:migrate
+yarn dev-all
 ```
 
 - Web: http://localhost:3000
@@ -30,4 +33,10 @@ yarn dev:migrate
 
 ```bash
 yarn workspace server cli addUser --account=nzws@don.nzws.me --create-tenant
+```
+
+## DB データ参照
+
+```bash
+yarn dev:sql
 ```

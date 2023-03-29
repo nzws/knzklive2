@@ -75,8 +75,9 @@ export const postV1StreamsAction: APIRoute<
     await pubsub.publish(
       'update:hashtag',
       JSON.stringify({
-        type: 'add',
-        liveId: ctx.state.live.id
+        type: 'remove',
+        liveId: ctx.state.live.id,
+        hashtag: ctx.state.live.hashtag
       })
     );
 
