@@ -26,7 +26,7 @@
     "@knzk/prettier-config": "1.0.0",
     "dotenv-cli": "7.1.0",
     "prettier": "2.8.7",
-    "turbo": "1.8.5"
+    "turbo": "1.8.6"
   },
   "prettier": "@knzk/prettier-config"
 }
