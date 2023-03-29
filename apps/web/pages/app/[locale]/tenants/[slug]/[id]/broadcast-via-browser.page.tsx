@@ -59,6 +59,7 @@ import { useWakeLock } from '~/utils/hooks/use-wake-lock';
 import { TimeCounter } from '~/atoms/time-counter';
 import { useConvertLiveId } from '~/utils/hooks/api/use-convert-live-id';
 import { useBeforeUnload } from 'react-use';
+import { StartModal } from '~/organisms/live/admin/start-modal';
 
 type Params = { slug: string; id: string };
 
@@ -215,13 +216,16 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
 
       <StartedNote />
 
-      <Dialog
-        isOpen={isOpenStart}
-        onClose={onCloseStart}
-        onSubmit={() => void connect()}
-        title="配信を開始しますか？マイクがオンになります。"
-        submitText="配信を開始"
-      />
+      {live && (
+        <StartModal
+          isOpen={isOpenStart}
+          onClose={onCloseStart}
+          onPublish={connect}
+          url={live.publicUrl}
+          hashtag={live.hashtag}
+          isBroadcastViaBrowser={true}
+        />
+      )}
 
       <Dialog
         isOpen={isOpenStop}
