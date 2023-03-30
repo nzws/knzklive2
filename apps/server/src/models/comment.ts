@@ -1,10 +1,12 @@
-import type { Comment, PrismaClient } from '@prisma/client';
+import type { Comment, Live, PrismaClient, User } from '@prisma/client';
 import { CommentPublic } from 'api-types/common/types';
 import {
   LiveUpdateCommentCreated,
-  LiveUpdateCommentDeleted
+  LiveUpdateCommentDeleted,
+  LiveUpdateCommentHidden
 } from 'api-types/streaming/live-update';
-import { comments } from '.';
+import { comments, lives, users } from '.';
+import { AutoModService } from '../services/automod';
 import { pubsub } from '../services/redis/pubsub/client';
 import { getLiveUpdateKey } from '../services/redis/pubsub/keys';
 
@@ -22,7 +24,8 @@ export const Comments = (client: PrismaClient['comment']) =>
         createdAt: comment.createdAt,
         content: comment.content,
         sourceUrl: comment.sourceUrl || undefined,
-        isDeleted: comment.isDeleted
+        isDeleted: comment.isDeleted,
+        isHidden: comment.isHidden
       };
     },
     getComments: async (liveId: number, lastCommentId = 0) => {
@@ -31,7 +34,9 @@ export const Comments = (client: PrismaClient['comment']) =>
           liveId,
           id: {
             gt: lastCommentId
-          }
+          },
+          isDeleted: false,
+          isHidden: false
         },
         orderBy: {
           id: 'desc'
@@ -41,18 +46,25 @@ export const Comments = (client: PrismaClient['comment']) =>
 
       return comments;
     },
-    createViaLocal: async (userId: number, liveId: number, content: string) => {
+    createViaLocal: async (user: User, live: Live, content: string) => {
+      const autoMod = new AutoModService(live.tenantId);
+
       const data = await client.create({
         data: {
-          liveId,
-          userId,
-          content
+          liveId: live.id,
+          userId: user.id,
+          content,
+          isHidden: await autoMod.shouldHidden(
+            user.account,
+            user.displayName || undefined,
+            content
+          )
         }
       });
 
       const result = comments.getPublic(data);
       await pubsub.publish(
-        getLiveUpdateKey(liveId),
+        getLiveUpdateKey(live.id),
         JSON.stringify({
           type: 'comment:created',
           data: [result]
@@ -62,7 +74,7 @@ export const Comments = (client: PrismaClient['comment']) =>
       return result;
     },
     createViaRemote: async (
-      userId: number,
+      user: User,
       liveId: number,
       content: string,
       sourceUrl: string,
@@ -72,13 +84,26 @@ export const Comments = (client: PrismaClient['comment']) =>
         content = content.slice(0, 100) + '...';
       }
 
+      const live = await lives.get(liveId);
+
+      if (!live?.tenantId) {
+        throw new Error('Live not found');
+      }
+
+      const autoMod = new AutoModService(live.tenantId);
+
       const data = await client.create({
         data: {
           liveId,
-          userId,
+          userId: user.id,
           content,
           sourceUrl,
-          sourceId
+          sourceId,
+          isHidden: await autoMod.shouldHidden(
+            user.account,
+            user.displayName || undefined,
+            content
+          )
         }
       });
       const result = comments.getPublic(data);
@@ -112,6 +137,26 @@ export const Comments = (client: PrismaClient['comment']) =>
         } as LiveUpdateCommentDeleted)
       );
     },
+    markAsHidden: async (commentId: number) => {
+      const updated = await client.update({
+        data: {
+          isHidden: true
+        },
+        where: {
+          id: commentId
+        }
+      });
+
+      await pubsub.publish(
+        getLiveUpdateKey(updated.liveId),
+        JSON.stringify({
+          type: 'comment:hidden',
+          data: {
+            id: updated.id
+          }
+        } as LiveUpdateCommentHidden)
+      );
+    },
     markAsDeleteBySourceId: async (sourceId: string) => {
       await client.updateMany({
         data: {
@@ -122,5 +167,29 @@ export const Comments = (client: PrismaClient['comment']) =>
         }
       });
       // todo: publish
+    },
+    applyAutoMod: async (tenantId: number, liveId: number) => {
+      const items = await comments.getComments(liveId);
+      const autoMod = new AutoModService(tenantId);
+
+      const accountIds = Array.from(new Set(items.map(item => item.userId)));
+      console.log(accountIds);
+      const accounts = (
+        await Promise.all(accountIds.map(id => users.get(id)))
+      ).filter(item => item !== undefined) as User[];
+
+      const autoModResults = await Promise.all(
+        items.map(item => {
+          const account = accounts.find(({ id }) => id === item.userId);
+          return autoMod.shouldHidden(
+            account?.account,
+            account?.displayName || undefined,
+            item.content
+          );
+        })
+      );
+
+      const results = items.filter((_, index) => autoModResults[index]);
+      await Promise.all(results.map(item => comments.markAsHidden(item.id)));
     }
   });

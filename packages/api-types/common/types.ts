@@ -32,6 +32,15 @@ export type CommentPublic = {
   content: string;
   sourceUrl?: string;
   isDeleted: boolean;
+  isHidden: boolean;
+};
+
+export type CommentAutoModType = 'Account' | 'Domain' | 'Text';
+
+export type CommentAutoModPrivate = {
+  id: number;
+  type: CommentAutoModType;
+  value: string;
 };
 
 export type LiveConfig = {

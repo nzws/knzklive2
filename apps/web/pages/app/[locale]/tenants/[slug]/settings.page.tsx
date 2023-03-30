@@ -122,9 +122,7 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
 
           <Alert status="info">
             <AlertIcon />
-            配信者を始めるには
-            <b>右上のメニュー→配信を始める</b>
-            をクリックしてください。
+            配信を始めるには 右上のメニュー→配信を開始 をクリックしてください。
           </Alert>
 
           <Alert status="warning">

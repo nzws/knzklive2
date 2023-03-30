@@ -9,22 +9,22 @@ import {
   Tabs,
   Alert,
   AlertIcon,
-  Badge,
   Button,
   Center,
   Spinner,
   Text,
   UnorderedList,
-  ListItem
+  ListItem,
+  Badge
 } from '@chakra-ui/react';
 import { FC, useEffect } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { useStream } from '~/utils/hooks/api/use-stream';
 import { PushKey } from './push-key';
 import { CommentViewer } from './comment-viewer';
 import { GeneralSettings } from './general-settings';
 import Link from 'next/link';
 import { LivePublic } from '~/../../packages/api-types/common/types';
+import { AutoMods } from './auto-mods';
 
 type Props = {
   liveId: number;
@@ -75,11 +75,16 @@ export const Admin: FC<Props> = ({
           )}
         </Box>
 
-        <Tabs size="md" variant="enclosed">
+        <Tabs size="md" variant="enclosed" isLazy>
           <TabList>
             <Tab>配信設定</Tab>
             <Tab>配信ソフトウェア設定</Tab>
-            <Tab>モデレーション</Tab>
+            <Tab>
+              モデレーション
+              <Badge colorScheme="teal" ml={2}>
+                NEW
+              </Badge>
+            </Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
@@ -137,12 +142,7 @@ export const Admin: FC<Props> = ({
               </Stack>
             </TabPanel>
             <TabPanel>
-              <p>
-                <Badge>
-                  <FormattedMessage id="common.coming-soon" />
-                </Badge>
-                😇
-              </p>
+              <AutoMods live={live} />
             </TabPanel>
           </TabPanels>
         </Tabs>

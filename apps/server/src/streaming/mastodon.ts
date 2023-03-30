@@ -212,7 +212,7 @@ export class MastodonStreaming {
         await Promise.all(
           liveIds.map(liveId =>
             comments.createViaRemote(
-              user.id,
+              user,
               liveId,
               content,
               payload.url,

@@ -6,6 +6,7 @@ import { useAPIError } from './use-api-error';
 import {
   LiveUpdateCommentCreated,
   LiveUpdateCommentDeleted,
+  LiveUpdateCommentHidden,
   LiveUpdateMessage
 } from 'api-types/streaming/live-update';
 
@@ -17,6 +18,7 @@ const commentReducer = (
     | CommentPublic
     | LiveUpdateCommentCreated
     | LiveUpdateCommentDeleted
+    | LiveUpdateCommentHidden
     | undefined
 ) => {
   if (!action) {
@@ -27,9 +29,20 @@ const commentReducer = (
   if ('type' in action) {
     if (action.type === 'comment:deleted') {
       return state.filter(comment => comment.id !== action.data.id);
-    }
+    } else if (action.type === 'comment:hidden') {
+      data = state.map(comment => {
+        if (comment.id === action.data.id) {
+          return {
+            ...comment,
+            isHidden: true
+          };
+        }
 
-    data = state.concat(action.data);
+        return comment;
+      });
+    } else {
+      data = state.concat(action.data);
+    }
   } else {
     data = state.concat(action);
   }
@@ -56,8 +69,8 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
   const timeoutRef = useRef<NodeJS.Timeout>();
   const lastCommentIdRef = useRef<number>(0);
   const needConnectingRef = useRef(true);
-  const [isConnecting, setIsConnecting] = useState(false);
   const [comments, setComment] = useReducer(commentReducer, []);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [live, setLive] = useState<LivePublic>();
   const [error, setError] = useState<unknown>();
   useAPIError(error);

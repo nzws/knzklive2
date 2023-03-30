@@ -275,9 +275,15 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
             </Box>
           )}
 
-          {comments.map(comment => (
-            <Comment key={comment.id} comment={comment} isStreamer />
-          ))}
+          {live &&
+            comments.map(comment => (
+              <Comment
+                key={comment.id}
+                comment={comment}
+                isStreamer
+                tenantId={live.tenant.id}
+              />
+            ))}
 
           <Box>
             <Alert status="info">

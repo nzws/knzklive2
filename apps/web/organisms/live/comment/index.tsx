@@ -1,11 +1,12 @@
 import { Box, Button, Flex, Heading, VStack } from '@chakra-ui/react';
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { CommentPublic } from 'api-types/common/types';
+import { CommentPublic, LivePublic } from 'api-types/common/types';
 import { Comment } from './comment';
 
 type Props = {
   hashtag?: string;
+  live: LivePublic;
   comments: CommentPublic[];
   isStreamer?: boolean;
   isConnectingStreaming: boolean;
@@ -14,6 +15,7 @@ type Props = {
 
 export const Comments: FC<Props> = ({
   hashtag,
+  live,
   comments,
   isConnectingStreaming,
   reconnectStreaming,
@@ -45,7 +47,12 @@ export const Comments: FC<Props> = ({
         )}
 
         {comments.map(comment => (
-          <Comment key={comment.id} comment={comment} isStreamer={isStreamer} />
+          <Comment
+            key={comment.id}
+            comment={comment}
+            isStreamer={isStreamer}
+            tenantId={live.tenant.id}
+          />
         ))}
       </VStack>
     </Box>

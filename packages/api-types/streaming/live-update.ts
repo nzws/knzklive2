@@ -17,6 +17,13 @@ export interface LiveUpdateCommentDeleted extends LiveUpdateMessageBase {
   };
 }
 
+export interface LiveUpdateCommentHidden extends LiveUpdateMessageBase {
+  type: 'comment:hidden';
+  data: {
+    id: number;
+  };
+}
+
 export interface LiveUpdateUpdate extends LiveUpdateMessageBase {
   type: 'live:update';
   data: LivePublic;
@@ -25,4 +32,5 @@ export interface LiveUpdateUpdate extends LiveUpdateMessageBase {
 export type LiveUpdateMessage =
   | LiveUpdateCommentCreated
   | LiveUpdateCommentDeleted
+  | LiveUpdateCommentHidden
   | LiveUpdateUpdate;

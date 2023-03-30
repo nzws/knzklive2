@@ -177,6 +177,7 @@ export const Live: FC<Props> = ({ live, streamer }) => {
             isConnectingStreaming={isConnectingStreaming}
             reconnectStreaming={reconnectStreaming}
             isStreamer={isStreamer}
+            live={live}
           />
         </Box>
       </Flex>

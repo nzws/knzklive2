@@ -45,9 +45,10 @@ model Tenant {
 
   owner User @relation(fields: [ownerId], references: [id])
 
-  lives  Live[]
-  images Image[]
-  Invite Invite[]
+  lives          Live[]
+  images         Image[]
+  Invite         Invite[]
+  CommentAutoMod CommentAutoMod[]
 }
 
 model AuthProvider {
@@ -138,12 +139,30 @@ model Comment {
   sourceUrl String?  @db.VarChar(200)
   sourceId  String?  @db.VarChar(100)
   isDeleted Boolean  @default(false)
+  isHidden  Boolean  @default(false)
 
   live Live @relation(fields: [liveId], references: [id])
   user User @relation(fields: [userId], references: [id])
 
   @@unique([liveId, sourceUrl, sourceId])
   @@index([liveId, createdAt, isDeleted])
+}
+
+enum CommentAutoModType {
+  Account
+  Domain
+  Text
+}
+
+model CommentAutoMod {
+  id        Int                @id @default(autoincrement())
+  tenantId  Int
+  createdAt DateTime           @default(now())
+  type      CommentAutoModType
+  value     String             @db.VarChar(200)
+  temporary Boolean            @default(false) // 配信終了時に削除
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
 }
 
 model Invite {
