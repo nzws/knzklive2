@@ -4,7 +4,8 @@ import {
   FormLabel,
   HStack,
   Input,
-  InputGroup
+  InputGroup,
+  useToast
 } from '@chakra-ui/react';
 import { FC, FocusEvent, Fragment, useCallback, useState } from 'react';
 import { client } from '~/utils/api/client';
@@ -22,6 +23,7 @@ type Rtmp = {
 
 export const PushKey: FC<Props> = ({ liveId }) => {
   const { token } = useAuth();
+  const toast = useToast();
   const [rtmp, setRtmp] = useState<Rtmp>();
   const [isShowKey, setIsShowKey] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,10 +60,19 @@ export const PushKey: FC<Props> = ({ liveId }) => {
       if (!rtmp) {
         return;
       }
-      e.target.select();
-      void navigator.clipboard.writeText(rtmp.url);
+
+      void (async () => {
+        e.target.select();
+        await navigator.clipboard.writeText(rtmp.url);
+
+        toast({
+          title: 'サーバーURL をコピーしました',
+          status: 'success',
+          isClosable: true
+        });
+      })();
     },
-    [rtmp]
+    [rtmp, toast]
   );
 
   const handleKeyFocus = useCallback(
@@ -70,10 +81,19 @@ export const PushKey: FC<Props> = ({ liveId }) => {
         return;
       }
       setIsShowKey(true);
-      e.target.select();
-      void navigator.clipboard.writeText(rtmp.streamKey);
+
+      void (async () => {
+        e.target.select();
+        await navigator.clipboard.writeText(rtmp.streamKey);
+
+        toast({
+          title: 'ストリームキー をコピーしました',
+          status: 'success',
+          isClosable: true
+        });
+      })();
     },
-    [rtmp]
+    [rtmp, toast]
   );
 
   const handleKeyBlur = useCallback(() => {

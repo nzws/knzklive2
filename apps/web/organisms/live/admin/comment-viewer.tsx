@@ -3,7 +3,8 @@ import {
   FormControl,
   FormLabel,
   Input,
-  InputGroup
+  InputGroup,
+  useToast
 } from '@chakra-ui/react';
 import { FC, FocusEvent, Fragment, useCallback, useState } from 'react';
 import { client } from '~/utils/api/client';
@@ -16,6 +17,7 @@ type Props = {
 
 export const CommentViewer: FC<Props> = ({ liveId }) => {
   const { token } = useAuth();
+  const toast = useToast();
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
@@ -51,10 +53,19 @@ export const CommentViewer: FC<Props> = ({ liveId }) => {
       if (!url) {
         return;
       }
-      e.target.select();
-      void navigator.clipboard.writeText(url);
+
+      void (async () => {
+        e.target.select();
+        await navigator.clipboard.writeText(url);
+
+        toast({
+          title: 'コメントビューワー URL をコピーしました',
+          status: 'success',
+          isClosable: true
+        });
+      })();
     },
-    [url]
+    [url, toast]
   );
 
   return (
