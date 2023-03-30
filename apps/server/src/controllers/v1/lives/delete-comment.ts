@@ -34,19 +34,22 @@ export const deleteV1LivesComment: APIRoute<
     return;
   }
 
-  if (
-    ctx.state.user.id !== ctx.state.live.userId &&
-    comment.userId !== ctx.state.user.id
-  ) {
+  const isLiveOwner = ctx.state.user.id === ctx.state.live.userId;
+  const isCommentOwner = comment.userId === ctx.state.user.id;
+  if (!isLiveOwner && !isCommentOwner) {
     ctx.status = 403;
     ctx.body = {
       errorCode: 'forbidden',
-      message: 'コメントは配信者かコメントしたユーザーのみ削除できます'
+      message: 'コメントはコメントしたユーザーのみ削除できます'
     };
     return;
   }
 
-  await comments.markAsDelete(commentId);
+  if (isCommentOwner) {
+    await comments.markAsDelete(commentId);
+  } else {
+    await comments.markAsHidden(commentId);
+  }
 
   ctx.body = { success: true };
 };

@@ -48,9 +48,9 @@ export const postV1LivesComment: APIRoute<
     return;
   }
 
-  const content = ctx.request.body.content;
+  const content = ctx.request.body.content.trim();
 
-  if (content.trim().length <= 0) {
+  if (content.length <= 0) {
     ctx.status = 400;
     ctx.body = {
       errorCode: 'invalid_request'
@@ -59,8 +59,8 @@ export const postV1LivesComment: APIRoute<
   }
 
   const result = await comments.createViaLocal(
-    ctx.state.user.id,
-    ctx.state.live.id,
+    ctx.state.user,
+    ctx.state.live,
     content
   );
 

@@ -46,6 +46,9 @@ import { v1AuthMisskeyRevoke } from './controllers/v1/auth/misskey/revoke';
 import { getV1InvitesGetList } from './controllers/v1/invites/get-list';
 import { postV1Invites } from './controllers/v1/invites/create';
 import { postV1Tenants } from './controllers/v1/tenants/create';
+import { getV1TenantsAutoMod } from './controllers/v1/tenants/get-auto-mod';
+import { postV1TenantsAutoMod } from './controllers/v1/tenants/create-auto-mod';
+import { deleteV1TenantsAutoMod } from './controllers/v1/tenants/delete-auto-mod';
 
 const multer = Multer({
   limits: {
@@ -93,6 +96,27 @@ export const router = (): Router => {
     middlewareTenant,
     middlewareMyTenant,
     getV1TenantsMeOnce
+  );
+  route.get(
+    '/v1/tenants/:tenantId/auto-mod',
+    middlewareAuthorizeUser,
+    middlewareTenant,
+    middlewareMyTenant,
+    getV1TenantsAutoMod
+  );
+  route.post(
+    '/v1/tenants/:tenantId/auto-mod',
+    middlewareAuthorizeUser,
+    middlewareTenant,
+    middlewareMyTenant,
+    postV1TenantsAutoMod
+  );
+  route.delete(
+    '/v1/tenants/:tenantId/auto-mod/:id',
+    middlewareAuthorizeUser,
+    middlewareTenant,
+    middlewareMyTenant,
+    deleteV1TenantsAutoMod
   );
 
   route.get('/v1/users/me', middlewareAuthorizeUser, getV1UsersMe);

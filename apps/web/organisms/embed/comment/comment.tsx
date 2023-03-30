@@ -11,6 +11,10 @@ type Props = {
 export const Comment: FC<Props> = ({ comment }) => {
   const [user] = useUser(comment.userId);
 
+  if (comment.isHidden) {
+    return null;
+  }
+
   return (
     <VStack spacing={2} p={2} alignItems="left" flexShrink={0} css={Container}>
       <Flex gap={2}>
