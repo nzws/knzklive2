@@ -4,6 +4,11 @@ export type ExternalUser = {
   avatarUrl?: string;
 };
 
+export interface RelationData {
+  following: boolean;
+  follower: boolean;
+}
+
 const endpoint = process.env.SERVER_ENDPOINT || '';
 
 export abstract class AuthProvider {
@@ -24,4 +29,12 @@ export abstract class AuthProvider {
   abstract getToken(code: string): Promise<string>;
 
   abstract getUser(token: string): Promise<ExternalUser>;
+
+  abstract getInternalUserIdFromAcct(
+    token: string,
+    acct: string
+  ): Promise<string>;
+
+  // targetId はサーバー内の採番された id なので、getInternalUserIdFromAcct で変換する必要がある
+  abstract getRelation(token: string, targetId: string): Promise<RelationData>;
 }

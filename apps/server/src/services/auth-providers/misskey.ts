@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import isValidDomain from 'is-valid-domain';
-import { AuthProvider, ExternalUser } from './_base';
+import { AuthProvider, ExternalUser, RelationData } from './_base';
 
 type MisskeyApiError = {
   error: unknown;
@@ -11,10 +11,18 @@ type MisskeyApiMiAuthSessionCheck = {
   user: unknown;
 };
 
-type MisskeyApiMyAccount = {
+type MisskeyApiAccount = {
+  id: string;
   username: string;
   name: string;
   avatarUrl: string;
+};
+
+// https://github.com/misskey-dev/misskey/blob/26068a3a8ffcd6cc787ff7fe15ccdd4a4bf0ae32/packages/backend/src/server/api/endpoints/users/relation.ts
+type MisskeyApiUsersRelation = {
+  id: string;
+  isFollowing: boolean;
+  isFollowed: boolean;
 };
 
 // https://misskey-hub.net/docs/api/permission.html
@@ -61,6 +69,7 @@ export class AuthMisskey extends AuthProvider {
         method: 'POST'
       }
     );
+    console.log('[AuthMisskey]', response.url, response.status);
     const body = (await response.json()) as
       | MisskeyApiMiAuthSessionCheck
       | MisskeyApiError;
@@ -83,9 +92,8 @@ export class AuthMisskey extends AuthProvider {
         'Content-Type': 'application/json'
       }
     });
-    const body = (await response.json()) as
-      | MisskeyApiMyAccount
-      | MisskeyApiError;
+    console.log('[AuthMisskey]', response.url, response.status);
+    const body = (await response.json()) as MisskeyApiAccount | MisskeyApiError;
     if (!response.ok || 'error' in body || !body.username) {
       console.warn(body);
       throw new Error('Failed to get user');
@@ -100,6 +108,62 @@ export class AuthMisskey extends AuthProvider {
 
   async revokeToken(): Promise<void> {
     // :shrug:
+  }
+
+  async getInternalUserIdFromAcct(
+    token: string,
+    acct: string
+  ): Promise<string> {
+    const [username, host] = acct.split('@');
+    if (!host || !username) {
+      throw new Error('Invalid acct');
+    }
+
+    const response = await fetch(`https://${this.domain}/api/users/show`, {
+      method: 'POST',
+      body: JSON.stringify({
+        i: token,
+        username,
+        host
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log('[AuthMisskey]', response.url, response.status);
+    const body = (await response.json()) as MisskeyApiAccount;
+    if (!response.ok || 'error' in body || !body.id) {
+      console.warn(body);
+      throw new Error('Failed to get user');
+    }
+
+    return body.id;
+  }
+
+  async getRelation(token: string, targetId: string): Promise<RelationData> {
+    const response = await fetch(`https://${this.domain}/api/users/relation`, {
+      method: 'POST',
+      body: JSON.stringify({
+        userId: targetId,
+        i: token
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log('[AuthMisskey]', response.url, response.status);
+    const body = (await response.json()) as
+      | MisskeyApiUsersRelation
+      | MisskeyApiError;
+    if (!response.ok || 'error' in body) {
+      console.warn(body);
+      throw new Error('Failed to get relation');
+    }
+
+    return {
+      following: body.isFollowing,
+      follower: body.isFollowed
+    };
   }
 
   private createSession(): string {

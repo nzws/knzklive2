@@ -3,6 +3,7 @@ import { Methods } from 'api-types/api/v1/streams';
 import { images, lives, tenants } from '../../../models';
 import { LiveNotEndedError } from '../../../models/live';
 import { pubsub } from '../../../services/redis/pubsub/client';
+import { RelationCache } from '../../../services/redis/relation-cache';
 import { APIRoute, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
 
@@ -45,6 +46,14 @@ const reqBodySchema: JSONSchemaType<Request> = {
         preferThumbnailType: {
           type: 'string',
           enum: ['generate', 'custom'],
+          nullable: true
+        },
+        isRequiredFollowing: {
+          type: 'boolean',
+          nullable: true
+        },
+        isRequiredFollower: {
+          type: 'boolean',
           nullable: true
         }
       }
@@ -116,6 +125,8 @@ export const postV1Streams: APIRoute<
         })
       );
     }
+
+    await new RelationCache(ctx.state.user.id).reset();
 
     const livePublic = lives.getPublic(live);
 

@@ -45,9 +45,12 @@ export const getV1LivesComment: APIRoute<
       return;
     }
   } else {
-    if (
-      !lives.isAccessibleInformationByUser(live, ctx.state.userId as number)
-    ) {
+    const isAccessible = await lives.isAccessibleInformationByUser(
+      live,
+      ctx.state.userId as number
+    );
+
+    if (!isAccessible) {
       ctx.status = 403;
       ctx.body = {
         errorCode: 'forbidden_live'

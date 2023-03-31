@@ -50,9 +50,13 @@ export const getV1TenantsLives: APIRoute<
 
   const take = 21;
   const list = await lives.getList(tenant.id, take, query.page ?? 1);
-  const accessibleLives = list.filter(live =>
-    lives.isAccessibleInformationByUser(live, ctx.state.userId)
+  const accessible = await Promise.all(
+    list.map(live =>
+      lives.isAccessibleInformationByUser(live, ctx.state.userId)
+    )
   );
+
+  const accessibleLives = list.filter((_, index) => accessible[index]);
 
   const currentLives = accessibleLives.filter(live => !live.endedAt);
   const realtimeCounts = await Promise.all(

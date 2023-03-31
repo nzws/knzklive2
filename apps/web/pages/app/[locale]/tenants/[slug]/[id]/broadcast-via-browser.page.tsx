@@ -379,6 +379,8 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
                     currentViewers={count?.current}
                     sumViewers={count?.sum || live.watchingSumCount}
                     privacy={live.privacy}
+                    isRequiredFollower={live.isRequiredFollower}
+                    isRequiredFollowing={live.isRequiredFollowing}
                   />
                 </Stack>
               )}

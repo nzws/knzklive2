@@ -14,8 +14,7 @@ import {
   Spinner,
   Text,
   UnorderedList,
-  ListItem,
-  Badge
+  ListItem
 } from '@chakra-ui/react';
 import { FC, useEffect } from 'react';
 import { useStream } from '~/utils/hooks/api/use-stream';
@@ -25,6 +24,7 @@ import { GeneralSettings } from './general-settings';
 import Link from 'next/link';
 import { LivePublic } from '~/../../packages/api-types/common/types';
 import { AutoMods } from './auto-mods';
+import { NewFeature } from '~/atoms/new-badge';
 
 type Props = {
   liveId: number;
@@ -81,9 +81,7 @@ export const Admin: FC<Props> = ({
             <Tab>配信ソフトウェア設定</Tab>
             <Tab>
               モデレーション
-              <Badge colorScheme="teal" ml={2}>
-                NEW
-              </Badge>
+              <NewFeature />
             </Tab>
           </TabList>
           <TabPanels>
