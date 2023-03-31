@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -17,10 +17,7 @@ import {
   RadioGroup,
   Radio,
   Checkbox,
-  Badge,
   Textarea,
-  Alert,
-  AlertIcon,
   Text,
   Link
 } from '@chakra-ui/react';
@@ -32,6 +29,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { FiArrowRight } from 'react-icons/fi';
 import { UploadThumbnail } from './upload-thumbnail';
+import { getDocsUrl } from '~/utils/constants';
+import { NewFeature } from '~/atoms/new-badge';
 
 type Props = {
   isOpen: boolean;
@@ -48,6 +47,8 @@ type Props = {
 const guidelineDocs =
   'https://nzws.notion.site/knzk-live-cbc2512a7ced4c80b93536d5ab671d13';
 
+const livePermissionDocs = getDocsUrl('help/live-privacy-setting');
+
 export const LiveInfoModal: FC<Props> = ({
   isOpen,
   onClose,
@@ -61,6 +62,12 @@ export const LiveInfoModal: FC<Props> = ({
   const [title, setTitle] = useState(live?.title);
   const [description, setDescription] = useState(live?.description || '');
   const [privacy, setPrivacy] = useState<string>(live?.privacy || 'Public');
+  const [isRequiredFollowing, setIsRequiredFollowing] = useState(
+    live?.config.isRequiredFollowing ?? false
+  );
+  const [isRequiredFollower, setIsRequiredFollower] = useState(
+    live?.config.isRequiredFollower ?? false
+  );
   const [hashTag, setHashTag] = useState(live?.hashtag || '');
   const [sensitive, setSensitive] = useState(live?.sensitive || false);
   const [isLoading, setIsLoading] = useState(false);
@@ -98,7 +105,9 @@ export const LiveInfoModal: FC<Props> = ({
               sensitive,
               tenantId,
               config: {
-                preferThumbnailType
+                preferThumbnailType,
+                isRequiredFollowing,
+                isRequiredFollower
               },
               ...(preferThumbnailType === 'custom' &&
                 !!customThumbnail?.id && {
@@ -120,7 +129,6 @@ export const LiveInfoModal: FC<Props> = ({
           await client.v1.streams._liveId(live?.id).patch({
             body: {
               title,
-              privacy: privacy as LivePrivate['privacy'],
               sensitive,
               description,
               config: {
@@ -159,7 +167,9 @@ export const LiveInfoModal: FC<Props> = ({
       description,
       customThumbnail?.id,
       preferThumbnailType,
-      hashTag
+      hashTag,
+      isRequiredFollowing,
+      isRequiredFollower
     ]
   );
 
@@ -223,73 +233,82 @@ export const LiveInfoModal: FC<Props> = ({
               />
             </FormControl>
 
-            {!isCreate && (
-              <Collapse in={privacy !== live?.privacy} animateOpacity>
-                <Alert status="warning" size="sm">
-                  <AlertIcon />
-                  現時点では公開範囲を配信中に変更しても、コメントサーバーや配信サーバーとは自動的に切断されません。
-                  <br />
-                  確実に管理するには配信ソフトウェアから切断→再接続を行うか、枠を取り直してください。
-                </Alert>
-              </Collapse>
-            )}
-
-            <FormControl isRequired>
-              <FormLabel as="legend">
-                <FormattedMessage id="create-live.privacy" />
-              </FormLabel>
-
-              <RadioGroup value={privacy} onChange={value => setPrivacy(value)}>
-                <Stack spacing={4}>
-                  <Radio value="Public">
-                    <FormattedMessage id="create-live.privacy.public" />
-                  </Radio>
-
-                  <Radio value="Private">
-                    <FormattedMessage id="create-live.privacy.private" />
-                  </Radio>
-                </Stack>
-              </RadioGroup>
-
-              <FormHelperText>
-                <FormattedMessage id="create-live.privacy.private.note" />
-              </FormHelperText>
-            </FormControl>
-
-            <Collapse in={privacy === 'Private'} animateOpacity>
-              <Badge>
-                <FormattedMessage id="common.coming-soon" />
-              </Badge>
-
-              <Stack spacing={4}>
-                <Checkbox isDisabled>
-                  <FormattedMessage id="create-live.privacy.private.require-follower" />
-                </Checkbox>
-                <Checkbox isDisabled>
-                  <FormattedMessage id="create-live.privacy.private.require-following" />
-                </Checkbox>
-              </Stack>
-            </Collapse>
-
             {isCreate && (
-              <FormControl>
-                <FormLabel>
-                  <FormattedMessage id="create-live.hashtag" />
-                </FormLabel>
+              <Fragment>
+                <FormControl isRequired>
+                  <FormLabel as="legend">
+                    <FormattedMessage id="create-live.privacy" />
+                  </FormLabel>
 
-                <Input
-                  type="text"
-                  value={hashTag}
-                  onChange={e => setHashTag(e.target.value)}
-                  placeholder={intl.formatMessage({
-                    id: 'create-live.hashtag.placeholder'
-                  })}
-                />
+                  <RadioGroup
+                    value={privacy}
+                    onChange={value => setPrivacy(value)}
+                  >
+                    <Stack spacing={4}>
+                      <Radio value="Public">
+                        <FormattedMessage id="create-live.privacy.public" />
+                      </Radio>
 
-                <FormHelperText>
-                  <FormattedMessage id="create-live.hashtag.note" />
-                </FormHelperText>
-              </FormControl>
+                      <Radio value="Private">
+                        <FormattedMessage id="create-live.privacy.private" />
+                        <NewFeature />
+                      </Radio>
+                    </Stack>
+                  </RadioGroup>
+
+                  <FormHelperText>
+                    <FormattedMessage id="create-live.privacy.private.note" />
+                  </FormHelperText>
+                </FormControl>
+
+                <Collapse in={privacy === 'Private'} animateOpacity>
+                  <Link
+                    href={livePermissionDocs}
+                    isExternal
+                    fontWeight="normal"
+                    fontSize="sm"
+                  >
+                    配信の視聴制御について <ExternalLinkIcon mx="2px" />
+                  </Link>
+
+                  <Stack spacing={4}>
+                    {/** tip: following/follower は relation API を叩く視聴者視点なので、
+                     * following=視聴者が配信者をフォロー、follower=配信者が視聴者をフォロー */}
+                    <Checkbox
+                      isChecked={isRequiredFollowing}
+                      onChange={e => setIsRequiredFollowing(e.target.checked)}
+                    >
+                      <FormattedMessage id="create-live.privacy.private.require-following" />
+                    </Checkbox>
+
+                    <Checkbox
+                      isChecked={isRequiredFollower}
+                      onChange={e => setIsRequiredFollower(e.target.checked)}
+                    >
+                      <FormattedMessage id="create-live.privacy.private.require-follower" />
+                    </Checkbox>
+                  </Stack>
+                </Collapse>
+
+                <FormControl>
+                  <FormLabel>
+                    <FormattedMessage id="create-live.hashtag" />
+                  </FormLabel>
+
+                  <Input
+                    type="text"
+                    value={hashTag}
+                    onChange={e => setHashTag(e.target.value)}
+                    placeholder={intl.formatMessage({
+                      id: 'create-live.hashtag.placeholder'
+                    })}
+                  />
+
+                  <FormHelperText>
+                    <FormattedMessage id="create-live.hashtag.note" />
+                  </FormHelperText>
+                </FormControl>
+              </Fragment>
             )}
 
             <FormControl>
@@ -318,7 +337,7 @@ export const LiveInfoModal: FC<Props> = ({
               </Checkbox>
 
               <FormHelperText>
-                デフォルトではプッシュ開始時に自動的にキャプチャされます。
+                デフォルトではプッシュ開始時、自動的にキャプチャされます。
               </FormHelperText>
             </FormControl>
 

@@ -39,17 +39,19 @@ export const getV1LivesFindById: APIRoute<
     return;
   }
 
-  const isAccessible = lives.isAccessibleInformationByUser(
+  const isAccessible = await lives.isAccessibleInformationByUser(
     live,
     ctx.state.userId
   );
-  if (!isAccessible) {
-    ctx.status = 403;
-    ctx.body = {
-      errorCode: 'forbidden_live'
-    };
-    return;
-  }
 
-  ctx.body = lives.getPublic(live);
+  const config = lives.getConfig(live);
+
+  ctx.body = {
+    id: live.id,
+    live: isAccessible ? lives.getPublic(live) : undefined,
+    isAccessible,
+    privacy: live.privacy,
+    isRequiredFollowing: config.isRequiredFollowing,
+    isRequiredFollower: config.isRequiredFollower
+  };
 };

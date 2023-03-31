@@ -22,7 +22,10 @@ export const getV1LivesUrl: APIRoute<
     return;
   }
 
-  const isAccessible = lives.isAccessibleStreamByUser(live, ctx.state.userId);
+  const isAccessible = await lives.isAccessibleStreamByUser(
+    live,
+    ctx.state.userId
+  );
   if (!isAccessible) {
     ctx.status = 403;
     ctx.body = {

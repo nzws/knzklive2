@@ -12,6 +12,7 @@ import { webhookQueue } from '../services/queues/webhook';
 import { pushApi } from '../services/push-api';
 import { thumbnailStorage } from '../services/storage/thumbnail';
 import { jwtWebInternalAPI } from '../services/jwt';
+import { RelationCache } from '../services/redis/relation-cache';
 
 export const Lives = (client: PrismaClient['live']) =>
   Object.assign(client, {
@@ -20,23 +21,31 @@ export const Lives = (client: PrismaClient['live']) =>
         thumbnail?: Image | null;
         tenant: Tenant;
       }
-    ): LivePublic => ({
-      id: live.id,
-      idInTenant: live.idInTenant,
-      userId: live.userId,
-      startedAt: live.startedAt || undefined,
-      endedAt: live.endedAt || undefined,
-      title: live.title,
-      description: live.description || undefined,
-      privacy: live.privacy,
-      sensitive: live.sensitive,
-      hashtag: live.hashtag || undefined,
-      watchingSumCount: live.watchingSumCount || undefined,
-      isPushing: !live.pushLastEndedAt && !!live.pushLastStartedAt,
-      publicUrl: getPublicLiveUrl(live.tenant.slug, live.idInTenant),
-      tenant: tenants.getPublic(live.tenant),
-      thumbnail: live.thumbnail ? images.getPublic(live.thumbnail) : undefined
-    }),
+    ): LivePublic => {
+      const config = lives.getConfig(live);
+
+      return {
+        id: live.id,
+        idInTenant: live.idInTenant,
+        userId: live.userId,
+        startedAt: live.startedAt || undefined,
+        endedAt: live.endedAt || undefined,
+        title: live.title,
+        description: live.description || undefined,
+        privacy: live.privacy,
+        sensitive: live.sensitive,
+        hashtag: live.hashtag || undefined,
+        watchingSumCount: live.watchingSumCount || undefined,
+        isPushing: !live.pushLastEndedAt && !!live.pushLastStartedAt,
+        publicUrl: getPublicLiveUrl(live.tenant.slug, live.idInTenant),
+        tenant: tenants.getPublic(live.tenant),
+        thumbnail: live.thumbnail
+          ? images.getPublic(live.thumbnail)
+          : undefined,
+        isRequiredFollowing: config.isRequiredFollowing,
+        isRequiredFollower: config.isRequiredFollower
+      };
+    },
     getPrivate: (
       live: Live & {
         thumbnail?: Image | null;
@@ -50,7 +59,9 @@ export const Lives = (client: PrismaClient['live']) =>
       const config = (live.config || {}) as LiveConfig;
 
       return {
-        preferThumbnailType: config.preferThumbnailType ?? 'generate'
+        preferThumbnailType: config.preferThumbnailType ?? 'generate',
+        isRequiredFollowing: config.isRequiredFollowing ?? false,
+        isRequiredFollower: config.isRequiredFollower ?? false
       };
     },
     get: async (id: number) => {
@@ -128,7 +139,10 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return lives;
     },
-    isAccessibleInformationByUser: (live: Live, userId?: number) => {
+    // 配信の何かしらの情報を確認可能か？
+    isAccessibleInformationByUser: async (live: Live, userId?: number) => {
+      const config = lives.getConfig(live);
+
       if (live.isDeleted) {
         return false;
       }
@@ -142,6 +156,13 @@ export const Lives = (client: PrismaClient['live']) =>
         }
       }
 
+      /*
+      todo: admin が確認できる
+      if (userId === admin) {
+        return true;
+      }
+      */
+
       // public live
       if (live.privacy === LivePrivacy.Public) {
         return true;
@@ -153,14 +174,32 @@ export const Lives = (client: PrismaClient['live']) =>
           return false;
         }
 
-        // todo: FF限定とかの機能
+        // FFによる制御
+        if (config.isRequiredFollower || config.isRequiredFollowing) {
+          const relation = await new RelationCache(live.userId).get(userId);
+          if (!relation) {
+            return false;
+          }
+
+          // 配信者は視聴者をフォローしてほしい
+          if (config.isRequiredFollower && !relation.follower) {
+            return false;
+          }
+
+          // 視聴者は配信者をフォローしてほしい
+          if (config.isRequiredFollowing && !relation.following) {
+            return false;
+          }
+        }
+
         return true;
       }
 
       return false;
     },
-    isAccessibleStreamByUser: (live: Live, userId?: number) => {
-      const isAccessibleInformation = lives.isAccessibleInformationByUser(
+    // 配信を視聴可能か？
+    isAccessibleStreamByUser: async (live: Live, userId?: number) => {
+      const isAccessibleInformation = await lives.isAccessibleInformationByUser(
         live,
         userId
       );

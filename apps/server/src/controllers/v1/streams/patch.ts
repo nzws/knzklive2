@@ -1,5 +1,6 @@
 import { JSONSchemaType } from 'ajv';
 import { Methods } from 'api-types/api/v1/streams/_liveId@number';
+import { LiveConfig } from 'api-types/common/types';
 import { LiveUpdateUpdate } from 'api-types/streaming/live-update';
 import { images, lives } from '../../../models';
 import { pubsub } from '../../../services/redis/pubsub/client';
@@ -29,17 +30,22 @@ const reqBodySchema: JSONSchemaType<Request> = {
       type: 'boolean',
       nullable: true
     },
-    privacy: {
-      type: 'string',
-      enum: ['Public', 'Private'],
-      nullable: true
-    },
     config: {
       type: 'object',
       properties: {
         preferThumbnailType: {
           type: 'string',
           enum: ['generate', 'custom'],
+          nullable: true
+        },
+        // 権限周りの途中編集は挙動として想定通りに動かせないので、
+        // 型定義的には一応入れられるがサポートしない
+        isRequiredFollowing: {
+          type: 'boolean',
+          nullable: true
+        },
+        isRequiredFollower: {
+          type: 'boolean',
           nullable: true
         }
       },
@@ -82,6 +88,8 @@ export const patchV1Streams: APIRoute<
     }
   }
 
+  const oldConfig = ctx.state.live.config as Partial<LiveConfig>;
+
   const newLive = await lives.update({
     where: {
       id: ctx.state.live.id
@@ -90,8 +98,10 @@ export const patchV1Streams: APIRoute<
       title: body.title,
       description: body.description,
       sensitive: body.sensitive,
-      privacy: body.privacy,
-      config: body.config,
+      config: {
+        ...oldConfig,
+        ...body.config
+      },
       thumbnailId: body.customThumbnailId
     },
     include: {

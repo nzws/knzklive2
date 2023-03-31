@@ -66,7 +66,11 @@ export class Streaming {
       if (!live) {
         return this.closeConnection(socket, 'live_not_found');
       }
-      if (!lives.isAccessibleInformationByUser(live, userId)) {
+      const isAccessible = await lives.isAccessibleInformationByUser(
+        live,
+        userId
+      );
+      if (!isAccessible) {
         return this.closeConnection(socket, 'forbidden_live');
       }
     }

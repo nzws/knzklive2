@@ -45,7 +45,13 @@ export type CommentAutoModPrivate = {
 
 export type LiveConfig = {
   preferThumbnailType?: 'generate' | 'custom';
+  // 視聴者が配信者をフォロー
+  isRequiredFollowing?: boolean;
+  // 配信者が視聴者をフォロー
+  isRequiredFollower?: boolean;
 };
+
+export type LivePrivacy = 'Public' | 'Private';
 
 export type LivePublic = {
   id: number;
@@ -56,13 +62,15 @@ export type LivePublic = {
   title: string;
   description?: string;
   sensitive: boolean;
-  privacy: 'Public' | 'Private';
+  privacy: LivePrivacy;
   hashtag?: string;
   watchingSumCount?: number;
   isPushing: boolean;
   publicUrl: string;
   tenant: TenantPublic;
   thumbnail?: ImagePublic;
+  isRequiredFollowing: boolean;
+  isRequiredFollower: boolean;
 };
 
 export type LivePrivate = LivePublic & {

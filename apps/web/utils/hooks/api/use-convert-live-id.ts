@@ -1,21 +1,15 @@
 import useAspidaSWR from '@aspida/swr';
 import { useEffect } from 'react';
-import { LivePublic } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import { useAuth } from '../use-auth';
 import { useAPIError } from './use-api-error';
 
-export const useConvertLiveId = (
-  slug: string,
-  liveIdInTenant: string,
-  fallbackData?: LivePublic
-) => {
+export const useConvertLiveId = (slug: string, liveIdInTenant: string) => {
   const { headers } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { data, error, mutate } = useAspidaSWR(
     client.v1.lives.find._slug(slug)._idInTenant(parseInt(liveIdInTenant, 10)),
     {
-      fallbackData,
       revalidateIfStale: false,
       revalidateOnFocus: false,
       headers

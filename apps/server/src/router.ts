@@ -49,6 +49,7 @@ import { postV1Tenants } from './controllers/v1/tenants/create';
 import { getV1TenantsAutoMod } from './controllers/v1/tenants/get-auto-mod';
 import { postV1TenantsAutoMod } from './controllers/v1/tenants/create-auto-mod';
 import { deleteV1TenantsAutoMod } from './controllers/v1/tenants/delete-auto-mod';
+import { postV1LivesCheckRelation } from './controllers/v1/lives/check-relation';
 
 const multer = Multer({
   limits: {
@@ -140,6 +141,7 @@ export const router = (): Router => {
     middlewareLive,
     deleteV1LivesComment
   );
+  route.post('/v1/lives/:liveId/check-relation', postV1LivesCheckRelation);
 
   route.post('/v1/streams', middlewareAuthorizeUser, postV1Streams);
   route.post(

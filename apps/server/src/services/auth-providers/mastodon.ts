@@ -2,7 +2,7 @@ import { AuthProviderType } from '@prisma/client';
 import isValidDomain from 'is-valid-domain';
 import { authProviders } from '../../models';
 import { GITHUB_URL } from '../../utils/constants';
-import { AuthProvider, ExternalUser } from './_base';
+import { AuthProvider, ExternalUser, RelationData } from './_base';
 
 type MastodonApiError = {
   error: string;
@@ -24,6 +24,20 @@ type MastodonApiV1AccountsVerifyCredentials = {
   display_name?: string;
   avatar?: string;
 };
+
+type MastodonApiV1Accounts = {
+  id?: string;
+  username?: string;
+  acct?: string;
+  display_name?: string;
+  avatar?: string;
+};
+
+type MastodonApiV1AccountsRelationships = {
+  id: string;
+  following: boolean;
+  followed_by: boolean;
+}[];
 
 const scopes = ['read:follows', 'read:accounts', 'write:statuses'];
 
@@ -71,6 +85,7 @@ export class AuthMastodon extends AuthProvider {
         code
       })
     });
+    console.log('[AuthMastodon]', response.url, response.status);
     const body = (await response.json()) as
       | MastodonOauthToken
       | MastodonApiError;
@@ -93,6 +108,7 @@ export class AuthMastodon extends AuthProvider {
         method: 'GET'
       }
     );
+    console.log('[AuthMastodon]', response.url, response.status);
     const body =
       (await response.json()) as MastodonApiV1AccountsVerifyCredentials;
     if (!response.ok || 'error' in body || !body.username) {
@@ -110,7 +126,7 @@ export class AuthMastodon extends AuthProvider {
   async revokeToken(token: string): Promise<void> {
     const { clientId, clientSecret } = await this._getClient(false);
 
-    await fetch(`https://${this.domain}/oauth/revoke`, {
+    const response = await fetch(`https://${this.domain}/oauth/revoke`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -121,6 +137,58 @@ export class AuthMastodon extends AuthProvider {
         token
       })
     });
+    console.log('[AuthMastodon]', response.url, response.status);
+  }
+
+  async getInternalUserIdFromAcct(
+    token: string,
+    acct: string
+  ): Promise<string> {
+    const query = this.objToQueryString({
+      acct
+    });
+
+    const response = await fetch(
+      `https://${this.domain}/api/v1/accounts/lookup?${query}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        method: 'GET'
+      }
+    );
+    console.log('[AuthMastodon]', response.url, response.status);
+    const body = (await response.json()) as MastodonApiV1Accounts;
+    if (!response.ok || 'error' in body || !body.id) {
+      console.warn(body);
+      throw new Error('Failed to get user');
+    }
+
+    return body.id;
+  }
+
+  async getRelation(token: string, targetId: string): Promise<RelationData> {
+    const response = await fetch(
+      `https://${this.domain}/api/v1/accounts/relationships?id=${targetId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        method: 'GET'
+      }
+    );
+    console.log('[AuthMastodon]', response.url, response.status);
+    const body = (await response.json()) as MastodonApiV1AccountsRelationships;
+    if (!response.ok || 'error' in body || body.length !== 1) {
+      console.warn(body);
+      throw new Error('Failed to get relation');
+    }
+    const relation = body[0];
+
+    return {
+      following: relation.following,
+      follower: relation.followed_by
+    };
   }
 
   async _getClient(
@@ -154,6 +222,7 @@ export class AuthMastodon extends AuthProvider {
         scopes: scopes.join(' ')
       })
     });
+    console.log('[AuthMastodon]', response.url, response.status);
 
     const body = (await response.json()) as
       | MastodonApiV1Apps

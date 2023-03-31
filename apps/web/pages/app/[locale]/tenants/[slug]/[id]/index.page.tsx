@@ -19,7 +19,7 @@ import {
   PathProps as LivePathProps
 } from '~/utils/data-fetching/live';
 import { Navbar } from '~/organisms/navbar';
-import { useConvertLiveId } from '~/utils/hooks/api/use-convert-live-id';
+import { useLivePermissionCheck } from '~/utils/hooks/api/use-live-permission-check';
 import { Live } from '~/organisms/live';
 import { useLive } from '~/utils/hooks/api/use-live';
 import { useUser } from '~/utils/hooks/api/use-user';
@@ -29,12 +29,11 @@ type Props = LocaleProps & LiveProps;
 type PathProps = { slug: string } & LocalePathProps & LivePathProps;
 
 const Page: NextPage<PageProps<Props, PathProps>> = ({
-  props: { live: liveFallback },
-  pathProps: { slug, id }
+  props: { live: liveFallback, id: liveId, ...permission }
 }) => {
   const intl = useIntl();
-  const [liveId] = useConvertLiveId(slug, id, liveFallback);
-  const [live] = useLive(liveId, liveFallback);
+  const allowed = useLivePermissionCheck(liveId, permission);
+  const [live] = useLive(allowed ? liveId : undefined, liveFallback);
   const [streamer] = useUser(live?.userId);
   const [isSensitiveAgreed, setIsSensitiveAgreed] = useState(false);
 

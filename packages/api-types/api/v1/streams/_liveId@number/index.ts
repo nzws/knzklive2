@@ -6,7 +6,7 @@ export type Methods = {
   patch: {
     reqHeaders: AuthorizationHeader;
 
-    reqBody: Partial<Omit<LiveSetting, 'hashtag'>>;
+    reqBody: Partial<Omit<LiveSetting, 'hashtag' | 'privacy'>>;
 
     resBody: {
       success: boolean;
