@@ -33,7 +33,7 @@
     "react-icons": "4.8.0",
     "react-intl": "6.3.2",
     "react-use": "17.4.0",
-    "swr": "2.1.1"
+    "swr": "2.1.2"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "13.2.4",
