@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@aspida/fetch": "1.11.0",
-    "@aws-sdk/client-s3": "3.303.0",
+    "@aws-sdk/client-s3": "3.304.0",
     "@aws-sdk/middleware-endpoint": "3.303.0",
-    "@aws-sdk/s3-request-presigner": "3.303.0",
+    "@aws-sdk/s3-request-presigner": "3.304.0",
     "@bull-board/api": "5.0.0",
     "@bull-board/koa": "5.0.0",
     "@dotplants/cli": "0.2.3",

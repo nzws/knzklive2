@@ -152,9 +152,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.303.0":
-  version: 3.303.0
-  resolution: "@aws-sdk/client-s3@npm:3.303.0"
+"@aws-sdk/client-s3@npm:3.304.0":
+  version: 3.304.0
+  resolution: "@aws-sdk/client-s3@npm:3.304.0"
   dependencies:
     "@aws-crypto/sha1-browser": 3.0.0
     "@aws-crypto/sha256-browser": 3.0.0
@@ -210,7 +210,7 @@ __metadata:
     "@aws-sdk/xml-builder": 3.303.0
     fast-xml-parser: 4.1.2
     tslib: ^2.5.0
-  checksum: ead03a85f18cc83cb17320232db4305875365650f631499af4e69a50f1322d5907df639c19ff71d519ab42882d8be2944433a87e7d765dbe452c8871a96881a8
+  checksum: 8dda05a26366a551131b4f3414c393a3edb6f44a14addcb2537de1ce5f87ecac3084f239965002bd9340955a84e111bef8576fa19eb25039d29fbea251731440
   languageName: node
   linkType: hard
 
@@ -842,9 +842,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:3.303.0":
-  version: 3.303.0
-  resolution: "@aws-sdk/s3-request-presigner@npm:3.303.0"
+"@aws-sdk/s3-request-presigner@npm:3.304.0":
+  version: 3.304.0
+  resolution: "@aws-sdk/s3-request-presigner@npm:3.304.0"
   dependencies:
     "@aws-sdk/middleware-endpoint": 3.303.0
     "@aws-sdk/protocol-http": 3.303.0
@@ -853,7 +853,7 @@ __metadata:
     "@aws-sdk/types": 3.303.0
     "@aws-sdk/util-format-url": 3.303.0
     tslib: ^2.5.0
-  checksum: 89dcb5ee274af0272c6c88629dd1b1545166230825592a4c849a9a4dc7e39a2137b9d91f6ad4a0c90dfc46000b02a89350d41c459f0edf139e6b7836cb18460d
+  checksum: 076858ed56ad758edc84ba584cd2e13db266e5c28aea3a799884c020b1e12ca1b975de37756298be9b0384de267885fb433f25db5d3c722346fe512dad15dae8
   languageName: node
   linkType: hard
 
@@ -11262,9 +11262,9 @@ __metadata:
   resolution: "server@workspace:apps/server"
   dependencies:
     "@aspida/fetch": 1.11.0
-    "@aws-sdk/client-s3": 3.303.0
+    "@aws-sdk/client-s3": 3.304.0
     "@aws-sdk/middleware-endpoint": 3.303.0
-    "@aws-sdk/s3-request-presigner": 3.303.0
+    "@aws-sdk/s3-request-presigner": 3.304.0
     "@bull-board/api": 5.0.0
     "@bull-board/koa": 5.0.0
     "@dotplants/cli": 0.2.3
