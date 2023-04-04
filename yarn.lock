@@ -11931,14 +11931,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swr@npm:2.1.1":
-  version: 2.1.1
-  resolution: "swr@npm:2.1.1"
+"swr@npm:2.1.2":
+  version: 2.1.2
+  resolution: "swr@npm:2.1.2"
   dependencies:
     use-sync-external-store: ^1.2.0
   peerDependencies:
     react: ^16.11.0 || ^17.0.0 || ^18.0.0
-  checksum: 77a7854f87c2a3244b4047eca5d88a0f5db6cb47f783fd13b8a38f5a611940142645c943e105fbfa64aac51e642361180366107ade0454744a80d6dedbe350db
+  checksum: 90010a1a1ba3ecd699f64ef5e3de9a40c291e220803e811c46fabb858d908fd74039f4a2c668cf8fd21dbb3f9d9b3d8300915292ed9933d0e4bdac1193ba8fb8
   languageName: node
   linkType: hard
 
@@ -12722,7 +12722,7 @@ __metadata:
     react-icons: 4.8.0
     react-intl: 6.3.2
     react-use: 17.4.0
-    swr: 2.1.1
+    swr: 2.1.2
     ts-node: 10.9.1
     typescript: 5.0.3
   languageName: unknown
