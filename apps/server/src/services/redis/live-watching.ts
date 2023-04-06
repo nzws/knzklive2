@@ -2,6 +2,7 @@ import { redis } from './_client';
 
 // 視聴者数のリアルタイムカウント
 // field: ip / value: timestamp
+// -1 は視聴終了
 
 export class LiveWatching {
   lastCleanup = this.getTimestamp();

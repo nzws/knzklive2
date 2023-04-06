@@ -47,7 +47,7 @@ export const Images = (prismaImage: PrismaClient['image']) =>
       return image;
     },
     createForCustomLiveThumbnail: async (
-      url: string,
+      url: string, // path?
       userId: number,
       tenantId: number
     ) => {

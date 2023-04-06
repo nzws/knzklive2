@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Image, Live, LivePrivacy, PrismaClient, Tenant } from '@prisma/client';
-import { images, lives, tenants } from '.';
+import { images, liveStreamProgresses, lives, tenants } from '.';
 import { LiveConfig, LivePrivate, LivePublic } from 'api-types/common/types';
 import {
   basePushStream,
@@ -36,14 +36,15 @@ export const Lives = (client: PrismaClient['live']) =>
         sensitive: live.sensitive,
         hashtag: live.hashtag || undefined,
         watchingSumCount: live.watchingSumCount || undefined,
-        isPushing: !live.pushLastEndedAt && !!live.pushLastStartedAt,
+        isPushing: live.isPushing,
         publicUrl: getPublicLiveUrl(live.tenant.slug, live.idInTenant),
         tenant: tenants.getPublic(live.tenant),
         thumbnail: live.thumbnail
           ? images.getPublic(live.thumbnail)
           : undefined,
         isRequiredFollowing: config.isRequiredFollowing,
-        isRequiredFollower: config.isRequiredFollower
+        isRequiredFollower: config.isRequiredFollower,
+        isRecording: live.isRecording
       };
     },
     getPrivate: (
@@ -53,6 +54,7 @@ export const Lives = (client: PrismaClient['live']) =>
       }
     ): LivePrivate => ({
       ...lives.getPublic(live),
+      isRecording: live.isRecording,
       config: lives.getConfig(live)
     }),
     getConfig: (live: Live): Required<LiveConfig> => {
@@ -197,7 +199,7 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return false;
     },
-    // 配信を視聴可能か？
+    // 生配信を視聴可能か？
     isAccessibleStreamByUser: async (live: Live, userId?: number) => {
       const isAccessibleInformation = await lives.isAccessibleInformationByUser(
         live,
@@ -207,13 +209,14 @@ export const Lives = (client: PrismaClient['live']) =>
         return false;
       }
 
-      return live.pushLastStartedAt && !live.pushLastEndedAt;
+      return live.isPushing;
     },
     createLive: async (
       tenantId: number,
       userId: number,
       title: string,
       privacy: LivePrivacy,
+      isRecording: boolean,
       description?: string,
       hashtag?: string,
       config: LiveConfig = {},
@@ -244,7 +247,8 @@ export const Lives = (client: PrismaClient['live']) =>
           hashtag,
           watchToken,
           config,
-          thumbnailId
+          thumbnailId,
+          isRecording
         },
         include: {
           thumbnail: true,
@@ -275,15 +279,15 @@ export const Lives = (client: PrismaClient['live']) =>
           id: live.id
         },
         data: {
-          pushFirstStartedAt: live.pushFirstStartedAt || new Date(),
-          pushLastEndedAt: null,
-          pushLastStartedAt: new Date()
+          isPushing: true
         },
         include: {
           thumbnail: true,
           tenant: true
         }
       });
+
+      await liveStreamProgresses.start(live.id);
 
       const { key, url } = await thumbnailStorage.getUploadUrlFromPushServer(
         live.tenantId,
@@ -312,7 +316,7 @@ export const Lives = (client: PrismaClient['live']) =>
       return data;
     },
     stopStream: async (live: Live) => {
-      if (live.endedAt && live.pushLastEndedAt) {
+      if (live.endedAt && !live.isPushing) {
         throw new Error('Live is not live');
       }
 
@@ -321,13 +325,15 @@ export const Lives = (client: PrismaClient['live']) =>
           id: live.id
         },
         data: {
-          pushLastEndedAt: new Date()
+          isPushing: false
         },
         include: {
           thumbnail: true,
           tenant: true
         }
       });
+
+      await liveStreamProgresses.stop(live.id);
 
       return data;
     },
@@ -373,6 +379,17 @@ export const Lives = (client: PrismaClient['live']) =>
             JSON.stringify(revalidateData)
           )
         }
+      });
+
+      await webhookQueue.add('system:push:action', {
+        url: pushApi(basePushStream).api.externals.v1.action.$path(),
+        postBody: {
+          liveId: live.id,
+          serverToken,
+          action: 'start',
+          isRecording: live.isRecording
+        },
+        timeout: 1000 * 60
       });
 
       return data;

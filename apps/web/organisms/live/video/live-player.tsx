@@ -5,25 +5,24 @@ import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { usePlayerTouch } from '~/utils/hooks/use-player-touch';
 import { Blocking } from './blocking';
 import { Controller } from './controller';
-import { PlayUrl } from 'api-types/api/v1/lives/_liveId@number/url';
+import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useVideoStream } from '~/utils/hooks/use-video-stream';
 
 type Props = {
-  thumbnailUrl?: string;
-  url?: PlayUrl;
+  thumbnailUrl: string;
+  url?: LiveUrls;
   updateUrl: () => Promise<unknown | undefined>;
   onToggleContainerSize?: () => void;
   isStreamer?: boolean;
   streamerUserId: number;
 };
 
-export const Video: FC<Props> = ({
+export const LivePlayer: FC<Props> = ({
   thumbnailUrl,
   url,
   updateUrl,
   onToggleContainerSize,
-  isStreamer,
-  streamerUserId
+  isStreamer
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +33,7 @@ export const Video: FC<Props> = ({
   const { show, events } = usePlayerTouch();
   const [canPlay, setCanPlay] = useState(false);
   const [maybeBlocked, setMaybeBlocked] = useState(false);
-  const { playType, setPlayType, play } = useVideoStream(videoRef, url);
+  const { playType, setPlayType, play } = useVideoStream('live', videoRef, url);
 
   const autoSeek = useCallback(() => {
     void (async () => {
@@ -165,10 +164,7 @@ export const Video: FC<Props> = ({
       <VideoContainer
         ratio={16 / 9}
         style={{
-          backgroundImage: `url(${
-            thumbnailUrl ||
-            `/api/default-thumbnail.png?userId=${streamerUserId}`
-          })`
+          backgroundImage: `url(${thumbnailUrl})`
         }}
       >
         <video ref={videoRef} autoPlay playsInline controls={false} />
@@ -183,6 +179,7 @@ export const Video: FC<Props> = ({
       {maybeBlocked && canPlay && <Blocking onClick={autoSeek} />}
 
       <Controller
+        isLive
         onLive={autoSeek}
         onToggleContainerSize={onToggleContainerSize}
         onToggleMaximize={toggleMaximize}

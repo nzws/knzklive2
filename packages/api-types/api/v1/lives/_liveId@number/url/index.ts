@@ -1,6 +1,6 @@
 import { AuthorizationHeader } from '../../../../../common/types';
 
-export type PlayUrl = {
+export type LiveUrls = {
   flv: string;
   hlsHq: string;
   hlsLq: string;
@@ -11,6 +11,6 @@ export type Methods = {
   get: {
     reqHeaders?: AuthorizationHeader;
 
-    resBody: PlayUrl;
+    resBody: LiveUrls;
   };
 };

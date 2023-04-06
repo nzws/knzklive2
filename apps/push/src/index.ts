@@ -8,6 +8,20 @@ import { apiInternalOnPlay } from './controllers/internal/on_play';
 import { apiInternalOnPublish } from './controllers/internal/on_publish';
 import { apiInternalOnUnPublish } from './controllers/internal/on_unpublish';
 import { Streaming } from './streaming';
+import * as Sentry from '@sentry/node';
+
+const dsn = process.env.SENTRY_DSN;
+
+if (dsn) {
+  Sentry.init({
+    dsn,
+
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0
+  });
+}
 
 const app = new Koa();
 app.use(bodyParser());

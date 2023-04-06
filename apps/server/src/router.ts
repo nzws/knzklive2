@@ -50,6 +50,11 @@ import { getV1TenantsAutoMod } from './controllers/v1/tenants/get-auto-mod';
 import { postV1TenantsAutoMod } from './controllers/v1/tenants/create-auto-mod';
 import { deleteV1TenantsAutoMod } from './controllers/v1/tenants/delete-auto-mod';
 import { postV1LivesCheckRelation } from './controllers/v1/lives/check-relation';
+import { postV1InternalsVideoCheckOutdated } from './controllers/v1/internals/video/check-outdated';
+import { postV1InternalsVideoSignal } from './controllers/v1/internals/video/signal';
+import { getV1Video } from './controllers/v1/videos/get-video';
+import { postV1VideoEvent } from './controllers/v1/videos/post-event';
+import { postV1StreamsRecording } from './controllers/v1/streams/post-recording';
 
 const multer = Multer({
   limits: {
@@ -143,6 +148,9 @@ export const router = (): Router => {
   );
   route.post('/v1/lives/:liveId/check-relation', postV1LivesCheckRelation);
 
+  route.get('/v1/videos/:liveId', middlewareLive, getV1Video);
+  route.post('/v1/videos/:liveId/event', middlewareLive, postV1VideoEvent);
+
   route.post('/v1/streams', middlewareAuthorizeUser, postV1Streams);
   route.post(
     '/v1/streams/thumbnail',
@@ -185,6 +193,13 @@ export const router = (): Router => {
     middlewareMyStream,
     postV1StreamsAction
   );
+  route.post(
+    '/v1/streams/:liveId/recording',
+    middlewareAuthorizeUser,
+    middlewareLive,
+    middlewareMyStream,
+    postV1StreamsRecording
+  );
 
   route.get('/v1/invites', middlewareAuthorizeUser, getV1InvitesGetList);
   route.post('/v1/invites', middlewareAuthorizeUser, postV1Invites);
@@ -200,6 +215,17 @@ export const router = (): Router => {
     '/v1/internals/push/action',
     middlewareAuthorizeServer,
     postV1InternalsPushAction
+  );
+
+  route.post(
+    '/v1/internals/video/check-outdated',
+    middlewareAuthorizeServer,
+    postV1InternalsVideoCheckOutdated
+  );
+  route.post(
+    '/v1/internals/video/signal',
+    middlewareAuthorizeServer,
+    postV1InternalsVideoSignal
   );
 
   return route;

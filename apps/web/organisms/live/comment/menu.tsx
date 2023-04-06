@@ -1,4 +1,4 @@
-import { FC, Fragment, useCallback, useMemo, useState } from 'react';
+import { FC, Fragment, useCallback, useState } from 'react';
 import {
   Menu,
   MenuButton,
@@ -51,16 +51,6 @@ export const CommentMenu: FC<Props> = ({
   const relativeTime = useRelativeTime(comment.createdAt, isOpen);
 
   const domain = user?.account.split('@')[1];
-
-  // todo: 仮
-  const streamerUrl = useMemo(() => {
-    if (!user?.account) {
-      return;
-    }
-    const [id, domain] = user.account.split('@');
-
-    return `https://${domain}/@${id}`;
-  }, [user?.account]);
 
   const handleDelete = useCallback(async () => {
     try {
@@ -168,7 +158,7 @@ export const CommentMenu: FC<Props> = ({
               )}
 
               <LinkBox as={MenuItem}>
-                <LinkOverlay href={streamerUrl} isExternal>
+                <LinkOverlay href={user?.url} isExternal>
                   <FormattedMessage id="live.comment.account-page" />
                   <ExternalLinkIcon mb={1} ml={2} />
                 </LinkOverlay>

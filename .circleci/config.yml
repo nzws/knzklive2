@@ -33,7 +33,7 @@ jobs:
           at: ~/project
       - run: yarn turbo:lint
 
-  test-push:
+  push-test:
     executor: arm
     steps:
       - node/install:
@@ -42,7 +42,7 @@ jobs:
           at: ~/project
       - run: yarn workspace push test
 
-  build-and-publish:
+  push-build-and-publish:
     executor: arm
     steps:
       - attach_workspace:
@@ -50,6 +50,24 @@ jobs:
       - run: docker build -t ghcr.io/nzws/knzklive2-push:$TAG-arm64 -f ./apps/push/Dockerfile .
       - run: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
       - run: docker push ghcr.io/nzws/knzklive2-push:$TAG-arm64
+
+  video-test:
+    executor: arm
+    steps:
+      - node/install:
+          install-yarn: true
+      - attach_workspace:
+          at: ~/project
+      - run: yarn workspace video test
+
+  video-build-and-publish:
+    executor: arm
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: docker build -t ghcr.io/nzws/knzklive2-video:$TAG-arm64 -f ./apps/video/Dockerfile .
+      - run: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
+      - run: docker push ghcr.io/nzws/knzklive2-video:$TAG-arm64
 
 workflows:
   staging:
@@ -63,16 +81,27 @@ workflows:
           requires:
             - setup
 
-      - test-push:
+      - push-test:
           requires:
             - setup
 
-      - build-and-publish:
+      - push-build-and-publish:
           pre-steps:
             - run: echo 'export TAG=staging' >> "$BASH_ENV"
           requires:
             - lint
-            - test-push
+            - push-test
+
+      - video-test:
+          requires:
+            - setup
+
+      - video-build-and-publish:
+          pre-steps:
+            - run: echo 'export TAG=staging' >> "$BASH_ENV"
+          requires:
+            - lint
+            - video-test
 
   production:
     jobs:
@@ -85,13 +114,24 @@ workflows:
           requires:
             - setup
 
-      - test-push:
+      - push-test:
           requires:
             - setup
 
-      - build-and-publish:
+      - push-build-and-publish:
           pre-steps:
             - run: echo 'export TAG=latest' >> "$BASH_ENV"
           requires:
             - lint
-            - test-push
+            - push-test
+
+      - video-test:
+          requires:
+            - setup
+
+      - video-build-and-publish:
+          pre-steps:
+            - run: echo 'export TAG=latest' >> "$BASH_ENV"
+          requires:
+            - lint
+            - video-test

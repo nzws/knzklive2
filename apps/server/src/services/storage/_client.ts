@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 class StorageClient {
@@ -22,7 +26,7 @@ class StorageClient {
     });
   }
 
-  protected async getSignedUploadUrl(key: string) {
+  async getSignedUploadUrl(key: string) {
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: key,
@@ -31,6 +35,19 @@ class StorageClient {
 
     const signedUrl = await getSignedUrl(this.s3, command, {
       expiresIn: 60 * 5
+    });
+
+    return signedUrl;
+  }
+
+  async getSignedDownloadUrl(key: string) {
+    const command = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: key
+    });
+
+    const signedUrl = await getSignedUrl(this.s3, command, {
+      expiresIn: 60 * 60
     });
 
     return signedUrl;
@@ -57,6 +74,23 @@ export class StaticStorageClient extends StorageClient {
       process.env.STATIC_STORAGE_S3_REGION || '',
       process.env.STATIC_STORAGE_S3_BUCKET || '',
       process.env.STATIC_STORAGE_S3_OVERRIDE_ACL
+    );
+  }
+
+  static getUrl(key: string) {
+    return `${process.env.STATIC_STORAGE_S3_URL_PREFIX || ''}/${key}`;
+  }
+}
+
+export class VideoStorageClient extends StorageClient {
+  constructor() {
+    super(
+      process.env.VIDEO_STORAGE_S3_ID || '',
+      process.env.VIDEO_STORAGE_S3_SECRET || '',
+      process.env.VIDEO_STORAGE_S3_ENDPOINT || '',
+      process.env.VIDEO_STORAGE_S3_REGION || '',
+      process.env.VIDEO_STORAGE_S3_BUCKET || '',
+      process.env.VIDEO_STORAGE_S3_OVERRIDE_ACL || 'private'
     );
   }
 

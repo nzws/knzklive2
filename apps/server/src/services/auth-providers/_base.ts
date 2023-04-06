@@ -2,6 +2,7 @@ export type ExternalUser = {
   account: string; // 全プラットフォームの中でユニークになる ID (e.g. nzws@don.nzws.me, nzws_me@twitter.com)
   displayName?: string;
   avatarUrl?: string;
+  url?: string;
 };
 
 export interface RelationData {

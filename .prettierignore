@@ -156,6 +156,5 @@ dist
 .yarn/**
 
 Caddyfile
-push-web/
-
+dockerdata/
 packages/api-types/dist

@@ -1,7 +1,7 @@
 import { Middleware } from 'koa';
 import { SRSUnPublishCallback } from '../../types';
 import { client, serverToken } from '../../utils/api';
-import { rejectSession } from '../../utils/sessions';
+import { Action } from '../../services/action';
 
 export const apiInternalOnUnPublish: Middleware = async ctx => {
   const body = ctx.request.body as SRSUnPublishCallback;
@@ -25,15 +25,15 @@ export const apiInternalOnUnPublish: Middleware = async ctx => {
     return;
   }
 
-  await client.v1.internals.push.action.$post({
+  await Action.stopStream(liveId);
+
+  void client.v1.internals.push.action.$post({
     body: {
       liveId,
-      action: 'stop',
+      action: 'stream:stop',
       serverToken
     }
   });
-
-  await rejectSession(liveId);
 
   ctx.status = 200;
   ctx.body = {

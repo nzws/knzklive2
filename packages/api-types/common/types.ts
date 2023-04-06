@@ -15,7 +15,8 @@ const errorCodes = [
   'invalid_authorization_type',
   'forbidden_live',
   'live_already_ended',
-  'live_not_ended'
+  'live_not_ended',
+  'recording_not_found'
 ] as const;
 type ErrorCode = (typeof errorCodes)[number];
 
@@ -51,7 +52,7 @@ export type LiveConfig = {
   isRequiredFollower?: boolean;
 };
 
-export type LivePrivacy = 'Public' | 'Private';
+export type LivePrivacy = 'Public' | 'Private' | 'Hidden';
 
 export type LivePublic = {
   id: number;
@@ -71,10 +72,12 @@ export type LivePublic = {
   thumbnail?: ImagePublic;
   isRequiredFollowing: boolean;
   isRequiredFollower: boolean;
+  isRecording: boolean;
 };
 
 export type LivePrivate = LivePublic & {
   config: Required<LiveConfig>;
+  isRecording: boolean;
 };
 
 export type TenantConfig = {
@@ -96,7 +99,7 @@ export type InvitePublic = {
 };
 
 export type UserConfig = {
-  //
+  allowUnstableFeatures?: boolean;
 };
 
 export type UserPrivate = UserPublic & {
@@ -108,6 +111,7 @@ export type UserPublic = {
   account: string;
   displayName?: string;
   avatarUrl?: string;
+  url: string;
 };
 
 export type ImagePublic = {

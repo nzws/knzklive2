@@ -1,23 +1,32 @@
 import type Mpegts from 'mpegts.js';
 import type Hls from 'hls.js';
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { PlayUrl } from 'api-types/api/v1/lives/_liveId@number/url';
+import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useAPIError } from './api/use-api-error';
+import { VideoUrls } from 'api-types/api/v1/videos/_liveId@number';
 
-export enum PlayType {
+export enum LivePlayType {
   Flv = 'flv',
   HlsHq = 'hlsHq',
   HlsLq = 'hlsLq',
   Audio = 'audio'
 }
 
-export const useVideoStream = (
+export enum VideoPlayType {
+  HlsHq = 'hlsHq'
+}
+
+export type PlayType<T> = T extends 'live' ? LivePlayType : VideoPlayType;
+type UrlType<T> = T extends 'live' ? LiveUrls : VideoUrls;
+
+export const useVideoStream = <T extends 'live' | 'video'>(
+  entityType: T,
   videoTagRef: RefObject<HTMLVideoElement>,
-  url: PlayUrl | undefined
+  url?: UrlType<T>
 ) => {
   const mpegtsPlayerRef = useRef<Mpegts.Player>();
   const hlsPlayerRef = useRef<Hls>();
-  const [playType, setPlayType] = useState<PlayType>(PlayType.Flv);
+  const [playType, setPlayType] = useState<PlayType<T>>();
   const [error, setError] = useState<unknown>();
   useAPIError(error);
 
@@ -29,56 +38,49 @@ export const useVideoStream = (
     }
   }, [videoTagRef]);
 
-  const handleFlv = useCallback(async () => {
-    if (!videoTagRef.current || !url?.flv) {
-      return;
-    }
-
-    try {
-      const Mpegts = (await import('mpegts.js')).default;
-
-      if (!Mpegts.getFeatureList().mseLivePlayback) {
-        setPlayType(PlayType.HlsHq);
+  const handleFlv = useCallback(
+    async (url: string) => {
+      if (!videoTagRef.current) {
         return;
       }
 
-      const player = Mpegts.createPlayer(
-        {
-          type: 'flv',
-          isLive: true,
-          url: url.flv
-        },
-        {
-          enableStashBuffer: false,
-          stashInitialSize: 1024 * 64,
-          enableWorker: true,
-          autoCleanupSourceBuffer: true,
-          liveBufferLatencyChasing: true,
-          liveBufferLatencyMaxLatency: 2,
-          liveBufferLatencyMinRemain: 0.5
-        }
-      );
-      mpegtsPlayerRef.current = player;
+      try {
+        const Mpegts = (await import('mpegts.js')).default;
 
-      player.attachMediaElement(videoTagRef.current);
-      player.load();
-    } catch (e) {
-      setError(e);
-    }
-  }, [url, videoTagRef]);
+        if (!Mpegts.getFeatureList().mseLivePlayback) {
+          throw new FlvNotSupportedError();
+        }
+
+        const player = Mpegts.createPlayer(
+          {
+            type: 'flv',
+            isLive: true,
+            url
+          },
+          {
+            enableStashBuffer: false,
+            stashInitialSize: 1024 * 64,
+            enableWorker: true,
+            autoCleanupSourceBuffer: true,
+            liveBufferLatencyChasing: true,
+            liveBufferLatencyMaxLatency: 2,
+            liveBufferLatencyMinRemain: 0.5
+          }
+        );
+        mpegtsPlayerRef.current = player;
+
+        player.attachMediaElement(videoTagRef.current);
+        player.load();
+      } catch (e) {
+        setError(e);
+      }
+    },
+    [videoTagRef]
+  );
 
   const handleHls = useCallback(
-    async (type: PlayType) => {
-      if (
-        !videoTagRef.current ||
-        (type !== PlayType.HlsHq &&
-          type !== PlayType.HlsLq &&
-          type !== PlayType.Audio)
-      ) {
-        return;
-      }
-      const hlsUrl = url?.[type];
-      if (!hlsUrl) {
+    async (url: string) => {
+      if (!videoTagRef.current) {
         return;
       }
 
@@ -100,7 +102,7 @@ export const useVideoStream = (
           });
           hlsPlayerRef.current = player;
 
-          player.loadSource(hlsUrl);
+          player.loadSource(url);
           player.attachMedia(videoTagRef.current);
           player.startLoad();
 
@@ -111,7 +113,7 @@ export const useVideoStream = (
                 case Hls.ErrorTypes.NETWORK_ERROR: {
                   if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR) {
                     setTimeout(() => {
-                      player.loadSource(hlsUrl);
+                      player.loadSource(url);
                       player.startLoad();
                     }, 500);
                   } else {
@@ -131,7 +133,7 @@ export const useVideoStream = (
         } else if (
           videoTagRef.current.canPlayType('application/vnd.apple.mpegurl')
         ) {
-          videoTagRef.current.src = hlsUrl;
+          videoTagRef.current.src = url;
           return;
         } else {
           throw new Error('HLS is not supported');
@@ -140,7 +142,7 @@ export const useVideoStream = (
         setError(e);
       }
     },
-    [url, videoTagRef]
+    [videoTagRef]
   );
 
   useEffect(() => {
@@ -149,14 +151,37 @@ export const useVideoStream = (
       return;
     }
 
-    if (playType === PlayType.Flv) {
-      void handleFlv();
-    } else if (playType === PlayType.HlsHq) {
-      void handleHls(PlayType.HlsHq);
-    } else if (playType === PlayType.HlsLq) {
-      void handleHls(PlayType.HlsLq);
-    } else if (playType === PlayType.Audio) {
-      void handleHls(PlayType.Audio);
+    if (entityType === 'live') {
+      const live = url as LiveUrls;
+      if (playType === LivePlayType.Flv) {
+        void (async () => {
+          try {
+            await handleFlv(live.flv);
+          } catch (e) {
+            if (e instanceof FlvNotSupportedError) {
+              setPlayType(LivePlayType.HlsHq as PlayType<T>);
+            }
+          }
+        })();
+      } else if (playType === LivePlayType.HlsHq) {
+        void handleHls(live.hlsHq);
+      } else if (playType === LivePlayType.HlsLq) {
+        void handleHls(live.hlsLq);
+      } else if (playType === LivePlayType.Audio) {
+        void handleHls(live.audio);
+      } else {
+        setPlayType(LivePlayType.Flv as PlayType<T>);
+      }
+    } else {
+      const video = url as VideoUrls;
+      if (playType === VideoPlayType.HlsHq) {
+        // todo: lq でフォールバック？
+        if (video.hlsHq) {
+          void handleHls(video.hlsHq);
+        }
+      } else {
+        setPlayType(VideoPlayType.HlsHq as PlayType<T>);
+      }
     }
 
     return () => {
@@ -173,7 +198,7 @@ export const useVideoStream = (
         video.src = '';
       }
     };
-  }, [videoTagRef, url, playType, handleFlv, handleHls]);
+  }, [videoTagRef, url, playType, handleFlv, handleHls, entityType]);
 
   return {
     playType,
@@ -181,3 +206,9 @@ export const useVideoStream = (
     play
   } as const;
 };
+
+class FlvNotSupportedError extends Error {
+  constructor() {
+    super('FLV is not supported');
+  }
+}

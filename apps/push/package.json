@@ -30,9 +30,12 @@
   },
   "dependencies": {
     "@aspida/fetch": "1.11.0",
+    "@aws-sdk/client-s3": "3.306.0",
     "@koa/router": "12.0.0",
+    "@sentry/node": "7.47.0",
     "ajv": "8.12.0",
     "api-types": "workspace:^",
+    "ffmpeg-ffprobe-static": "4.4.0-rc.11",
     "ffmpeg-static": "5.1.0",
     "fluent-ffmpeg": "2.1.2",
     "jose": "4.13.1",

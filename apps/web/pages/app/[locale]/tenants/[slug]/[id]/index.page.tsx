@@ -20,10 +20,11 @@ import {
 } from '~/utils/data-fetching/live';
 import { Navbar } from '~/organisms/navbar';
 import { useLivePermissionCheck } from '~/utils/hooks/api/use-live-permission-check';
-import { Live } from '~/organisms/live';
+import { LiveApp } from '~/organisms/live/live-app';
 import { useLive } from '~/utils/hooks/api/use-live';
 import { useUser } from '~/utils/hooks/api/use-user';
 import { SensitiveWarning } from '~/organisms/live/sensitive-warning';
+import { RecordingApp } from '~/organisms/live/recording-app';
 
 type Props = LocaleProps & LiveProps;
 type PathProps = { slug: string } & LocalePathProps & LivePathProps;
@@ -64,7 +65,11 @@ const Page: NextPage<PageProps<Props, PathProps>> = ({
       )}
 
       {live && (!live.sensitive || isSensitiveAgreed) ? (
-        <Live live={live} streamer={streamer} />
+        live.endedAt && live.isRecording ? (
+          <RecordingApp live={live} streamer={streamer} />
+        ) : (
+          <LiveApp live={live} streamer={streamer} />
+        )
       ) : (
         <Box textAlign="center" py="12">
           <Spinner size="lg" />

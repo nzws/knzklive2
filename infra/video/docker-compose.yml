@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./video-web/static:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file:
+      - .env
+
+  video_agent:
+    image: ghcr.io/nzws/knzklive2-video:latest-amd64
+    # build: .
+    restart: unless-stopped
+    container_name: video
+    expose:
+      - 8000
+    env_file:
+      - .env
+    volumes:
+      - ./video-web/static:/home/node/static
+      - ./video:/home/node/persistent
+
+volumes:
+  caddy_data:
+    external: true
+  caddy_config:

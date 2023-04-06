@@ -36,6 +36,14 @@ export const getV1LivesUrl: APIRoute<
 
   const token = await jwtEdge.generateTokenAsStream(live.id);
 
+  if (live.endedAt) {
+    ctx.status = 400;
+    ctx.body = {
+      errorCode: 'live_already_ended'
+    };
+    return;
+  }
+
   ctx.body = {
     flv: `${basePushStream}/streaming/live/${live.id}_${live.watchToken}.flv?token=${token}`,
     hlsHq: `${basePushStream}/static/live/${live.id}_${live.watchToken}/source/stream.m3u8?token=${token}`,
