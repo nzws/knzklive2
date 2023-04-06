@@ -24,3 +24,11 @@ jobs:
     with:
       tag: latest
       environment: production
+
+  build-video:
+    name: Build push
+    needs: check
+    uses: ./.github/workflows/_build_video.yml
+    with:
+      tag: latest
+      environment: production
