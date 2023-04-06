@@ -80,6 +80,7 @@
   "live.viewers-count": "{sum} viewed",
   "live.viewers-count.with-current": "{current} viewers (Total: {sum})",
   "live.is-private": "Required login",
+  "live.is-hidden": "Only you can watch",
   "live.is-private.with-attr": "Required login ({attr})",
   "live.is-private.require-follower": "Streamer is following",
   "live.is-private.require-following": "Watcher is following",

@@ -8,8 +8,12 @@ export const REDIS_CONNECTION = {
 
 export const PROTOCOL = `http${process.env.USE_HTTP ? '' : 's'}`;
 export const basePushStream = `${PROTOCOL}://${process.env.PUSH_DOMAIN || ''}`;
+export const baseVideoStream = `${PROTOCOL}://${
+  process.env.VIDEO_DOMAIN || ''
+}`;
 export const frontendUrl = process.env.FRONTEND_ENDPOINT || '';
-export const getPushUrl = () => `rtmp://${process.env.PUSH_DOMAIN || ''}/live`;
+export const getPushUrl = () =>
+  `rtmp://${(process.env.PUSH_DOMAIN || '').split(':')[0]}/live`;
 export const getPushStreamKey = (
   liveId: number,
   pushToken: string,

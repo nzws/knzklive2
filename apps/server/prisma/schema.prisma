@@ -64,33 +64,34 @@ enum AuthProviderType {
 }
 
 model Live {
-  id                 Int         @id @default(autoincrement())
-  idInTenant         Int
-  userId             Int
-  tenantId           Int
-  createdAt          DateTime    @default(now())
-  startedAt          DateTime?
-  endedAt            DateTime?
-  pushFirstStartedAt DateTime?
-  pushLastStartedAt  DateTime?
-  pushLastEndedAt    DateTime?
-  title              String      @db.VarChar(200)
-  description        String?     @db.Text
-  privacy            LivePrivacy
-  hashtag            String?     @db.VarChar(100)
-  sensitive          Boolean     @default(false)
-  watchingSumCount   Int?
-  watchToken         String?     @db.VarChar(100)
-  thumbnailId        Int?
-  config             Json        @default("{}")
-  isDeleted          Boolean     @default(false)
+  id               Int         @id @default(autoincrement())
+  idInTenant       Int
+  userId           Int
+  tenantId         Int
+  createdAt        DateTime    @default(now())
+  startedAt        DateTime?
+  endedAt          DateTime?
+  title            String      @db.VarChar(200)
+  description      String?     @db.Text
+  privacy          LivePrivacy
+  hashtag          String?     @db.VarChar(100)
+  sensitive        Boolean     @default(false)
+  watchingSumCount Int?
+  watchToken       String?     @db.VarChar(100)
+  thumbnailId      Int?
+  config           Json        @default("{}")
+  isDeleted        Boolean     @default(false)
+  isRecording      Boolean     @default(false)
+  isPushing        Boolean     @default(false)
 
-  user      User   @relation(fields: [userId], references: [id])
-  tenant    Tenant @relation(fields: [tenantId], references: [id])
-  thumbnail Image? @relation(fields: [thumbnailId], references: [id])
+  user      User           @relation(fields: [userId], references: [id])
+  tenant    Tenant         @relation(fields: [tenantId], references: [id])
+  thumbnail Image?         @relation(fields: [thumbnailId], references: [id])
+  recording LiveRecording?
 
-  comments      Comment[]
-  createdImages Image[]   @relation("LiveCreatedImages")
+  comments         Comment[]
+  createdImages    Image[]              @relation("LiveCreatedImages")
+  streamProgresses LiveStreamProgress[]
 
   @@unique([idInTenant, tenantId])
 }
@@ -98,6 +99,40 @@ model Live {
 enum LivePrivacy {
   Public
   Private
+  Hidden
+}
+
+model LiveStreamProgress {
+  id        Int       @id @default(autoincrement())
+  liveId    Int
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  live Live @relation(fields: [liveId], references: [id])
+
+  @@index([liveId, startedAt])
+}
+
+enum LiveRecordingStatus {
+  NotFound
+  Processing
+  Completed
+  Failed
+  Deleted
+}
+
+model LiveRecording {
+  id             Int                 @id
+  originalUrl    String?             @db.VarChar(200)
+  originalStatus LiveRecordingStatus @default(NotFound)
+  originalSize   BigInt?
+  originalCompletedAt DateTime?
+  cacheStatus  LiveRecordingStatus @default(NotFound)
+  cacheSize      BigInt?
+  cacheCompletedAt DateTime?
+  watchCount     Int                 @default(0)
+
+  live Live @relation(fields: [id], references: [id])
 }
 
 model Image {

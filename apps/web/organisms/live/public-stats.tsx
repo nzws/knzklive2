@@ -2,13 +2,14 @@ import { Box, Icon, Stack, Text } from '@chakra-ui/react';
 import { FC, Fragment } from 'react';
 import { FiLock } from 'react-icons/fi';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { LivePrivacy } from 'api-types/common/types';
 import { FormattedDateTime } from '~/atoms/formatted-date-time';
 import { RelativeTime } from '~/atoms/relative-time';
 
 type Props = {
   startedAt?: Date;
   endedAt?: Date;
-  privacy: 'Public' | 'Private';
+  privacy: LivePrivacy;
   isRequiredFollowing: boolean;
   isRequiredFollower: boolean;
   currentViewers?: number;
@@ -90,6 +91,13 @@ export const PublicStats: FC<Props> = ({
           ) : (
             <FormattedMessage id="live.is-private" />
           )}
+        </Text>
+      )}
+
+      {privacy === 'Hidden' && (
+        <Text>
+          <Icon as={FiLock} mt={1} mr={1} />
+          <FormattedMessage id="live.is-hidden" />
         </Text>
       )}
     </Stack>

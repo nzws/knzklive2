@@ -48,6 +48,7 @@ const guidelineDocs =
   'https://nzws.notion.site/knzk-live-cbc2512a7ced4c80b93536d5ab671d13';
 
 const livePermissionDocs = getDocsUrl('help/live-privacy-setting');
+const liveRecordingDocs = getDocsUrl('help/live-recording');
 
 export const LiveInfoModal: FC<Props> = ({
   isOpen,
@@ -70,9 +71,7 @@ export const LiveInfoModal: FC<Props> = ({
   );
   const [hashTag, setHashTag] = useState(live?.hashtag || '');
   const [sensitive, setSensitive] = useState(live?.sensitive || false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<unknown>();
-  useAPIError(error);
+  const [isRecording, setIsRecording] = useState(live?.isRecording ?? true);
   const [preferThumbnailType, setPreferThumbnailType] = useState(
     live?.config?.preferThumbnailType || 'generate'
   );
@@ -81,6 +80,10 @@ export const LiveInfoModal: FC<Props> = ({
   >(
     live?.config?.preferThumbnailType === 'custom' ? live?.thumbnail : undefined
   );
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<unknown>();
+  useAPIError(error);
 
   const handleSubmit = useCallback(
     async (preferMoveTo?: 'broadcast-via-browser') => {
@@ -104,6 +107,7 @@ export const LiveInfoModal: FC<Props> = ({
               hashtag: hashTag,
               sensitive,
               tenantId,
+              isRecording,
               config: {
                 preferThumbnailType,
                 isRequiredFollowing,
@@ -169,7 +173,8 @@ export const LiveInfoModal: FC<Props> = ({
       preferThumbnailType,
       hashTag,
       isRequiredFollowing,
-      isRequiredFollower
+      isRequiredFollower,
+      isRecording
     ]
   );
 
@@ -187,6 +192,9 @@ export const LiveInfoModal: FC<Props> = ({
       live.config.preferThumbnailType === 'custom' ? live.thumbnail : undefined
     );
     setHashTag(live.hashtag || '');
+    setIsRequiredFollowing(live.config.isRequiredFollowing ?? false);
+    setIsRequiredFollower(live.config.isRequiredFollower ?? false);
+    setIsRecording(live.isRecording ?? true);
   }, [
     live?.title,
     live?.description,
@@ -194,7 +202,10 @@ export const LiveInfoModal: FC<Props> = ({
     live?.sensitive,
     live?.config,
     live?.thumbnail,
-    live?.hashtag
+    live?.hashtag,
+    live?.config.isRequiredFollowing,
+    live?.config.isRequiredFollower,
+    live?.isRecording
   ]);
 
   return (
@@ -306,6 +317,29 @@ export const LiveInfoModal: FC<Props> = ({
 
                   <FormHelperText>
                     <FormattedMessage id="create-live.hashtag.note" />
+                  </FormHelperText>
+                </FormControl>
+
+                <FormControl>
+                  <Checkbox
+                    isChecked={isRecording}
+                    onChange={e => setIsRecording(e.target.checked)}
+                  >
+                    配信を録画する (最長約1時間)
+                    <NewFeature />
+                  </Checkbox>
+
+                  <FormHelperText>
+                    1時間以上配信をすると録画は途中でカットされます。
+                    <Link
+                      href={liveRecordingDocs}
+                      isExternal
+                      fontWeight="normal"
+                      fontSize="sm"
+                      ml={1}
+                    >
+                      録画について <ExternalLinkIcon mx="2px" />
+                    </Link>
                   </FormHelperText>
                 </FormControl>
               </Fragment>

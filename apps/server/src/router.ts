@@ -50,6 +50,8 @@ import { getV1TenantsAutoMod } from './controllers/v1/tenants/get-auto-mod';
 import { postV1TenantsAutoMod } from './controllers/v1/tenants/create-auto-mod';
 import { deleteV1TenantsAutoMod } from './controllers/v1/tenants/delete-auto-mod';
 import { postV1LivesCheckRelation } from './controllers/v1/lives/check-relation';
+import { postV1InternalsVideoCheckOutdated } from './controllers/v1/internals/video/check-outdated';
+import { postV1InternalsVideoSignal } from './controllers/v1/internals/video/signal';
 
 const multer = Multer({
   limits: {
@@ -200,6 +202,17 @@ export const router = (): Router => {
     '/v1/internals/push/action',
     middlewareAuthorizeServer,
     postV1InternalsPushAction
+  );
+
+  route.post(
+    '/v1/internals/video/check-outdated',
+    middlewareAuthorizeServer,
+    postV1InternalsVideoCheckOutdated
+  );
+  route.post(
+    '/v1/internals/video/signal',
+    middlewareAuthorizeServer,
+    postV1InternalsVideoSignal
   );
 
   return route;

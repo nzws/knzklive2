@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { PlayUrl } from 'api-types/api/v1/lives/_liveId@number/url';
+import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { client } from '~/utils/api/client';
 import { useAuth } from '../use-auth';
 import { getAPIError, useAPIError } from './use-api-error';
@@ -7,7 +7,7 @@ import { getAPIError, useAPIError } from './use-api-error';
 export const useStreamUrl = (liveId?: number) => {
   const { token } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout>();
-  const [url, setUrl] = useState<PlayUrl | undefined>();
+  const [url, setUrl] = useState<LiveUrls | undefined>();
   const [error, setError] = useState<unknown>();
   useAPIError(error);
 

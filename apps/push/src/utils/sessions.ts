@@ -10,6 +10,15 @@ export const sessions = new Map<
   }
 >();
 
+export const lives = new Map<
+  number,
+  {
+    isRecording: boolean;
+    recordingSeconds: number;
+    lastRecordStartAt?: number;
+  }
+>();
+
 export const rejectSession = async (liveId: number) => {
   const session = sessions.get(liveId);
   if (!session) {
@@ -29,5 +38,5 @@ export const rejectSession = async (liveId: number) => {
     console.warn('kickoff client failed', e);
   }
 
-  sessions.delete(liveId);
+  return session;
 };

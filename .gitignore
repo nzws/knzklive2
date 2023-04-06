@@ -153,4 +153,5 @@ dist
 !*/.yarn/versions
 
 push-web/
+video-web/
 .turbo

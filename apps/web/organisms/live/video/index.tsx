@@ -5,12 +5,12 @@ import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { usePlayerTouch } from '~/utils/hooks/use-player-touch';
 import { Blocking } from './blocking';
 import { Controller } from './controller';
-import { PlayUrl } from 'api-types/api/v1/lives/_liveId@number/url';
+import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useVideoStream } from '~/utils/hooks/use-video-stream';
 
 type Props = {
   thumbnailUrl?: string;
-  url?: PlayUrl;
+  url?: LiveUrls;
   updateUrl: () => Promise<unknown | undefined>;
   onToggleContainerSize?: () => void;
   isStreamer?: boolean;

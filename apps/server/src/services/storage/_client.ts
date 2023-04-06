@@ -64,3 +64,20 @@ export class StaticStorageClient extends StorageClient {
     return `${process.env.STATIC_STORAGE_S3_URL_PREFIX || ''}/${key}`;
   }
 }
+
+export class VideoStorageClient extends StorageClient {
+  constructor() {
+    super(
+      process.env.VIDEO_STORAGE_S3_ID || '',
+      process.env.VIDEO_STORAGE_S3_SECRET || '',
+      process.env.VIDEO_STORAGE_S3_ENDPOINT || '',
+      process.env.VIDEO_STORAGE_S3_REGION || '',
+      process.env.VIDEO_STORAGE_S3_BUCKET || '',
+      process.env.VIDEO_STORAGE_S3_OVERRIDE_ACL
+    );
+  }
+
+  static getUrl(key: string) {
+    return `${process.env.STATIC_STORAGE_S3_URL_PREFIX || ''}/${key}`;
+  }
+}

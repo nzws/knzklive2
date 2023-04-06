@@ -61,9 +61,19 @@ const reqBodySchema: JSONSchemaType<Request> = {
     customThumbnailId: {
       type: 'number',
       nullable: true
+    },
+    isRecording: {
+      type: 'boolean'
     }
   },
-  required: ['title', 'privacy', 'sensitive', 'tenantId', 'config'],
+  required: [
+    'title',
+    'privacy',
+    'sensitive',
+    'tenantId',
+    'config',
+    'isRecording'
+  ],
   additionalProperties: false
 };
 
@@ -110,6 +120,7 @@ export const postV1Streams: APIRoute<
       ctx.state.user.id,
       body.title,
       body.privacy,
+      body.isRecording,
       body.description,
       body.hashtag,
       body.config,

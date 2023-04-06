@@ -1,4 +1,4 @@
-type Event = 'end';
+type Event = 'end' | 'start';
 
 export type Methods = {
   post: {
@@ -6,6 +6,8 @@ export type Methods = {
       liveId: number;
       action: Event;
       serverToken: string;
+      // start
+      isRecording?: boolean;
     };
 
     resBody: {

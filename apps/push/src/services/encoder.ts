@@ -1,6 +1,6 @@
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
-import { mkdir, rm } from 'fs/promises';
+import { mkdir, readdir, rm } from 'fs/promises';
 import { Readable } from 'stream';
 
 if (!ffmpegPath) {
@@ -12,16 +12,21 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 export class Encoder {
   private rtmp: string;
   private dir: string;
-  private streams: ffmpeg.FfmpegCommand[] = [];
+  private persistentDir: string;
+  private streams: {
+    type: string;
+    stream: ffmpeg.FfmpegCommand;
+  }[] = [];
 
   constructor(private liveId: number, watchToken: string, pushToken: string) {
     this.rtmp = `rtmp://srs:1935/live/${liveId}_${watchToken}?token=${pushToken}`;
     this.dir = `/home/node/static/live/${liveId}_${watchToken}`;
+    this.persistentDir = `/home/node/persistent/${liveId}_${watchToken}`;
   }
 
   async cleanup(removeDir = true) {
     this.streams.forEach(stream => {
-      stream.kill('SIGKILL');
+      stream.stream.kill('SIGKILL');
     });
 
     if (removeDir) {
@@ -46,7 +51,111 @@ export class Encoder {
     return path;
   }
 
+  async encodeToMp4() {
+    if (this.streams.find(s => s.type === 'mp4')) {
+      return;
+    }
+
+    const chunkDir = this.persistentDir + '/chunks';
+    await mkdir(chunkDir, { recursive: true });
+
+    const timestamp = Math.round(Date.now() / 1000);
+
+    const stream = ffmpeg(this.rtmp)
+      .audioCodec('copy')
+      .videoCodec('libx264')
+      .format('mp4')
+      .outputFPS(30)
+      .output(`${chunkDir}/${timestamp}.mp4`)
+      .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency'])
+      .outputOptions([
+        '-preset veryfast',
+        '-crf 22',
+        `-vf scale='if(gt(iw\\,1920)\\,1920\\,iw)':-2`
+      ]);
+
+    stream.on('start', (cmd: string) => {
+      console.log('Start MP4', this.liveId, cmd);
+    });
+
+    stream.on('error', err => {
+      console.warn('Error MP4', this.liveId, err);
+    });
+
+    stream.on('end', () => {
+      console.log('End MP4', this.liveId);
+      this.streams = this.streams.filter(s => s.stream !== stream);
+    });
+
+    stream.run();
+    this.streams.push({
+      type: 'mp4',
+      stream
+    });
+
+    return stream;
+  }
+
+  killMp4() {
+    const mp4Stream = this.streams.find(s => s.type === 'mp4');
+    if (mp4Stream) {
+      mp4Stream.stream.kill('SIGKILL');
+    }
+  }
+
+  async mergeAndCleanupMp4() {
+    const mp4Stream = this.streams.find(s => s.type === 'mp4');
+    if (mp4Stream) {
+      mp4Stream.stream.kill('SIGKILL');
+    }
+
+    const chunkDir = this.persistentDir + '/chunks';
+    const files = (await readdir(chunkDir))
+      .map(f => parseInt(f.split('.')[0], 10))
+      .sort((a, b) => a - b)
+      .map(f => `${chunkDir}/${f}.mp4`);
+    if (files.length === 0) {
+      return;
+    }
+
+    if (files.length === 1) {
+      return files[0];
+    }
+
+    return new Promise<string>((resolve, reject) => {
+      const stream = ffmpeg();
+      files.forEach(f => {
+        stream.input(f);
+      });
+      stream.mergeToFile(`./recording.mp4`, this.persistentDir);
+
+      stream.on('start', (cmd: string) => {
+        console.log('Start Merge MP4', this.liveId, cmd);
+      });
+
+      stream.on('error', (err: Error) => {
+        console.warn('Error Merge MP4', this.liveId, err);
+        reject(err);
+      });
+
+      stream.on('end', () => {
+        console.log('End Merge MP4', this.liveId);
+
+        void rm(chunkDir, { recursive: true });
+        resolve(`${this.persistentDir}/recording.mp4`);
+      });
+    });
+  }
+
+  async cleanupMergedMp4() {
+    await rm(this.persistentDir, { recursive: true });
+  }
+
   async encodeToLowQualityHls() {
+    if (this.streams.find(s => s.type === 'low')) {
+      return;
+    }
+
     const path = await this.cleanupDirectory('low');
 
     const stream = ffmpeg(this.rtmp)
@@ -78,16 +187,23 @@ export class Encoder {
 
     stream.on('end', () => {
       console.log('End LQ-HLS', this.liveId);
-      this.streams = this.streams.filter(s => s !== stream);
+      this.streams = this.streams.filter(s => s.stream !== stream);
     });
 
     stream.run();
-    this.streams.push(stream);
+    this.streams.push({
+      type: 'low',
+      stream
+    });
 
     return stream;
   }
 
-  async encodeAudio() {
+  async encodeToAudio() {
+    if (this.streams.find(s => s.type === 'audio')) {
+      return;
+    }
+
     const path = await this.cleanupDirectory('audio');
 
     const stream = ffmpeg(this.rtmp)
@@ -113,11 +229,14 @@ export class Encoder {
 
     stream.on('end', () => {
       console.log('End Audio', this.liveId);
-      this.streams = this.streams.filter(s => s !== stream);
+      this.streams = this.streams.filter(s => s.stream !== stream);
     });
 
     stream.run();
-    this.streams.push(stream);
+    this.streams.push({
+      type: 'audio',
+      stream
+    });
 
     return stream;
   }
@@ -144,11 +263,14 @@ export class Encoder {
 
     stream.on('end', () => {
       console.log('End RTMP', this.liveId);
-      this.streams = this.streams.filter(s => s !== stream);
+      this.streams = this.streams.filter(s => s.stream !== stream);
     });
 
     stream.run();
-    this.streams.push(stream);
+    this.streams.push({
+      type: 'rtmp',
+      stream
+    });
 
     return stream;
   }

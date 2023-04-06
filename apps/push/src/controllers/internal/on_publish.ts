@@ -1,9 +1,7 @@
-import crypto from 'crypto';
 import { Middleware } from 'koa';
-import { Encoder } from '../../services/encoder';
 import { SRSPublishCallback } from '../../types';
 import { checkToken, client, serverToken } from '../../utils/api';
-import { rejectSession, sessions } from '../../utils/sessions';
+import { Action } from '../../services/action';
 
 export const apiInternalOnPublish: Middleware = async ctx => {
   const body = ctx.request.body as SRSPublishCallback;
@@ -39,25 +37,14 @@ export const apiInternalOnPublish: Middleware = async ctx => {
     return;
   }
 
-  const currentSession = sessions.get(liveId);
-  if (currentSession) {
-    await rejectSession(liveId);
-  }
+  await Action.startStream(liveId, watchToken, body.client_id);
 
-  await client.v1.internals.push.action.$post({
+  void client.v1.internals.push.action.$post({
     body: {
       liveId,
-      action: 'start',
+      action: 'stream:start',
       serverToken
     }
-  });
-  const internalToken = crypto.randomBytes(32).toString('hex');
-  const encoder = new Encoder(liveId, watchToken, internalToken);
-
-  sessions.set(liveId, {
-    clientId: body.client_id,
-    encoder,
-    internalToken
   });
 
   ctx.status = 200;
@@ -65,10 +52,4 @@ export const apiInternalOnPublish: Middleware = async ctx => {
     code: 0,
     message: 'OK'
   };
-
-  setTimeout(() => {
-    // todo: 公開開始
-    void encoder.encodeToLowQualityHls();
-    void encoder.encodeAudio();
-  }, 500);
 };

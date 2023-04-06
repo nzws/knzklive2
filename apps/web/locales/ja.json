@@ -80,6 +80,7 @@
   "live.viewers-count": "{sum} 人が視聴",
   "live.viewers-count.with-current": "{current} 人が視聴中 (合計: {sum} 人)",
   "live.is-private": "ログインが必要",
+  "live.is-hidden": "あなたのみ視聴可能",
   "live.is-private.with-attr": "ログインが必要 ({attr})",
   "live.is-private.require-follower": "視聴者をフォロー中",
   "live.is-private.require-following": "配信者をフォロー中",

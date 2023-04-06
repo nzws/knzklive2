@@ -1,7 +1,10 @@
 import type Mpegts from 'mpegts.js';
 import type Hls from 'hls.js';
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { PlayUrl } from 'api-types/api/v1/lives/_liveId@number/url';
+import {
+  LiveUrls,
+  PlaybackUrls
+} from 'api-types/api/v1/lives/_liveId@number/url';
 import { useAPIError } from './api/use-api-error';
 
 export enum PlayType {
@@ -13,7 +16,7 @@ export enum PlayType {
 
 export const useVideoStream = (
   videoTagRef: RefObject<HTMLVideoElement>,
-  url: PlayUrl | undefined
+  url: LiveUrls | undefined
 ) => {
   const mpegtsPlayerRef = useRef<Mpegts.Player>();
   const hlsPlayerRef = useRef<Hls>();
