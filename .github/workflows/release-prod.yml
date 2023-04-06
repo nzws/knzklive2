@@ -26,7 +26,7 @@ jobs:
       environment: production
 
   build-video:
-    name: Build push
+    name: Build video
     needs: check
     uses: ./.github/workflows/_build_video.yml
     with:
