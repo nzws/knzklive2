@@ -114,26 +114,27 @@ export const useVideoStream = <T extends 'live' | 'video'>(
 
           player.on(Hls.Events.ERROR, (event, data) => {
             console.warn(event, data);
-            if (data.fatal) {
-              switch (data.type) {
-                case Hls.ErrorTypes.NETWORK_ERROR: {
-                  if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR) {
-                    setTimeout(() => {
-                      player.loadSource(url);
-                      player.startLoad();
-                    }, 500);
-                  } else {
+
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR: {
+                if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR) {
+                  setTimeout(() => {
+                    player.loadSource(url);
                     player.startLoad();
-                  }
-                  break;
+                  }, 500);
+                } else {
+                  player.startLoad();
                 }
-                case Hls.ErrorTypes.MEDIA_ERROR:
-                  player.recoverMediaError();
-                  break;
-                default:
-                  player.destroy();
-                  break;
+                break;
               }
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                player.recoverMediaError();
+                break;
+              default:
+                if (data.fatal) {
+                  player.destroy();
+                }
+                break;
             }
           });
         } else if (

@@ -22,7 +22,6 @@ export const usePlaybackComments = (
       seeked += duration.duration;
     }
     const currentDurationSeek = seek - seeked;
-    console.log(currentDurationSeek);
     const currentStart = new Date(currentDuration.startedAt).getTime();
 
     return currentStart + currentDurationSeek * 1000;
