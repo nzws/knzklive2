@@ -36,13 +36,15 @@ class StorageClient {
 
   protected async putObjectFromStream(
     key: string,
-    stream: ReadStream | ReadableStream
+    stream: ReadStream | ReadableStream,
+    contentType?: string
   ) {
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: key,
       Body: stream,
-      ACL: this.acl
+      ACL: this.acl,
+      ContentType: contentType
     });
 
     await this.s3.send(command);
@@ -70,7 +72,7 @@ export class VideoStorageClient extends StorageClient {
     const key = `video_original/${liveId}_${token}/recording.mp4`;
     const stream = createReadStream(filePath);
 
-    await this.putObjectFromStream(key, stream);
+    await this.putObjectFromStream(key, stream, 'video/mp4');
 
     return { key };
   }

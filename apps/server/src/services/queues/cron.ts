@@ -20,7 +20,7 @@ const dailyVideoWatchingLog = async () => {
   await Promise.all(
     ids.map(async id => {
       const cache = new VideoWatchingLogCache(id);
-      const count = await cache.getActiveCount();
+      const count = await cache.getActiveCount(true);
 
       await liveRecordings.incrementCount(id, count);
       await cache.cleanupAll();

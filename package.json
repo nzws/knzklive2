@@ -15,7 +15,7 @@
     "lint": "prettier --check --cache .",
     "format": "prettier --write --cache .",
     "dev-all": "docker compose up -d db redis && yarn dev:migrate && dotenv -- yarn workspaces foreach --verbose --parallel -j unlimited --interlaced run dev",
-    "dev": "docker compose up",
+    "dev": "docker compose up --build",
     "dev:migrate": "dotenv -- yarn workspace server prisma migrate dev",
     "dev:sql": "dotenv -- yarn workspace server prisma studio",
     "turbo:build": "turbo run build",

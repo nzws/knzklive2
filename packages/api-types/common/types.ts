@@ -16,8 +16,7 @@ const errorCodes = [
   'forbidden_live',
   'live_already_ended',
   'live_not_ended',
-  'recording_not_found',
-  'recording_cache_not_found'
+  'recording_not_found'
 ] as const;
 type ErrorCode = (typeof errorCodes)[number];
 
@@ -100,7 +99,7 @@ export type InvitePublic = {
 };
 
 export type UserConfig = {
-  //
+  allowUnstableFeatures?: boolean;
 };
 
 export type UserPrivate = UserPublic & {

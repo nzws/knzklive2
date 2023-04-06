@@ -3,11 +3,11 @@ import { client } from '~/utils/api/client';
 import { useAuth } from '../use-auth';
 import { useAPIError } from './use-api-error';
 
-export const useVideo = (liveId: number) => {
+export const useComments = (liveId: number) => {
   const { headers } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { data, error, mutate } = useAspidaSWR(
-    client.v1.videos._liveId(liveId),
+    client.v1.lives._liveId(liveId).comments,
     {
       key: liveId ? undefined : null,
       headers,

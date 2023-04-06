@@ -1,13 +1,15 @@
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
+import { ffprobePath } from 'ffmpeg-ffprobe-static';
 import { mkdir, readdir, rm } from 'fs/promises';
 import { Readable } from 'stream';
 
-if (!ffmpegPath) {
-  throw new Error('ffmpeg-static path not found');
+if (!ffmpegPath || !ffprobePath) {
+  throw new Error('ffmpeg or ffprobe path not found');
 }
 
 ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfprobePath(ffprobePath);
 
 export class Encoder {
   private rtmp: string;
@@ -16,6 +18,7 @@ export class Encoder {
   private streams: {
     type: string;
     stream: ffmpeg.FfmpegCommand;
+    onRequestClose: () => Promise<void>;
   }[] = [];
 
   constructor(private liveId: number, watchToken: string, pushToken: string) {
@@ -25,9 +28,7 @@ export class Encoder {
   }
 
   async cleanup(removeDir = true) {
-    this.streams.forEach(stream => {
-      stream.stream.kill('SIGKILL');
-    });
+    await Promise.all(this.streams.map(s => s.onRequestClose()));
 
     if (removeDir) {
       try {
@@ -51,8 +52,8 @@ export class Encoder {
     return path;
   }
 
-  async encodeToMp4() {
-    if (this.streams.find(s => s.type === 'mp4')) {
+  async encodeToRecording(remainingSeconds: number) {
+    if (this.streams.find(s => s.type === 'recording')) {
       return;
     }
 
@@ -62,49 +63,63 @@ export class Encoder {
     const timestamp = Math.round(Date.now() / 1000);
 
     const stream = ffmpeg(this.rtmp)
-      .audioCodec('copy')
-      .videoCodec('libx264')
       .format('mp4')
-      .outputFPS(30)
       .output(`${chunkDir}/${timestamp}.mp4`)
       .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency'])
       .outputOptions([
         '-preset veryfast',
         '-crf 22',
         `-vf scale='if(gt(iw\\,1920)\\,1920\\,iw)':-2`
-      ]);
+      ])
+      .duration(remainingSeconds);
 
     stream.on('start', (cmd: string) => {
-      console.log('Start MP4', this.liveId, cmd);
+      console.log('Start Recording', this.liveId, cmd);
     });
 
     stream.on('error', err => {
-      console.warn('Error MP4', this.liveId, err);
+      console.warn('Error Recording', this.liveId, err);
     });
 
     stream.on('end', () => {
-      console.log('End MP4', this.liveId);
+      console.log('End Recording', this.liveId);
       this.streams = this.streams.filter(s => s.stream !== stream);
     });
 
     stream.run();
     this.streams.push({
-      type: 'mp4',
-      stream
+      type: 'recording',
+      stream,
+      onRequestClose: () => {
+        return new Promise((resolve, reject) => {
+          console.log('Request close Recording', this.liveId);
+          const timeout = setTimeout(() => {
+            console.warn('Timeout Recording', this.liveId);
+            stream.kill('SIGKILL');
+          }, 1000 * 60 * 60); // 1 hour
+
+          stream.on('end', () => {
+            clearTimeout(timeout);
+            resolve();
+          });
+
+          stream.on('error', err => {
+            clearTimeout(timeout);
+            reject(err);
+          });
+
+          // @ts-expect-error: https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/900
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+          stream.ffmpegProc.stdin.write('q');
+        });
+      }
     });
 
     return stream;
   }
 
-  killMp4() {
-    const mp4Stream = this.streams.find(s => s.type === 'mp4');
-    if (mp4Stream) {
-      mp4Stream.stream.kill('SIGKILL');
-    }
-  }
-
-  async mergeAndCleanupMp4() {
-    const mp4Stream = this.streams.find(s => s.type === 'mp4');
+  async mergeAndCleanupRecording() {
+    const mp4Stream = this.streams.find(s => s.type === 'recording');
     if (mp4Stream) {
       mp4Stream.stream.kill('SIGKILL');
     }
@@ -123,26 +138,27 @@ export class Encoder {
     }
 
     return new Promise<string>((resolve, reject) => {
-      const stream = ffmpeg();
+      const filePath = `${this.persistentDir}/recording.mp4`;
+      const stream = ffmpeg().outputFPS(30);
       files.forEach(f => {
         stream.input(f);
       });
-      stream.mergeToFile(`./recording.mp4`, this.persistentDir);
+      stream.mergeToFile(filePath, this.persistentDir);
 
       stream.on('start', (cmd: string) => {
-        console.log('Start Merge MP4', this.liveId, cmd);
+        console.log('Start Merge Recording', this.liveId, cmd);
       });
 
       stream.on('error', (err: Error) => {
-        console.warn('Error Merge MP4', this.liveId, err);
+        console.warn('Error Merge Recording', this.liveId, err);
         reject(err);
       });
 
       stream.on('end', () => {
-        console.log('End Merge MP4', this.liveId);
+        console.log('End Merge Recording', this.liveId);
 
         void rm(chunkDir, { recursive: true });
-        resolve(`${this.persistentDir}/recording.mp4`);
+        resolve(filePath);
       });
     });
   }
@@ -193,7 +209,12 @@ export class Encoder {
     stream.run();
     this.streams.push({
       type: 'low',
-      stream
+      stream,
+      onRequestClose() {
+        stream.kill('SIGKILL');
+
+        return Promise.resolve();
+      }
     });
 
     return stream;
@@ -235,7 +256,12 @@ export class Encoder {
     stream.run();
     this.streams.push({
       type: 'audio',
-      stream
+      stream,
+      onRequestClose() {
+        stream.kill('SIGKILL');
+
+        return Promise.resolve();
+      }
     });
 
     return stream;
@@ -269,7 +295,12 @@ export class Encoder {
     stream.run();
     this.streams.push({
       type: 'rtmp',
-      stream
+      stream,
+      onRequestClose() {
+        stream.kill('SIGKILL');
+
+        return Promise.resolve();
+      }
     });
 
     return stream;

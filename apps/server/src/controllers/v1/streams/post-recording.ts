@@ -63,7 +63,8 @@ export const postV1StreamsRecording: APIRoute<
       liveId: live.id,
       watchToken: live.watchToken,
       serverToken,
-      downloadUrl
+      downloadUrl,
+      originalBytes: recording.originalSize?.toString()
     },
     timeout: 1000 * 60
   });

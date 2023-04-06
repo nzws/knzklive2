@@ -3,6 +3,7 @@ import { AuthorizationHeader } from '../../../../common/types';
 export type PlaybackTimestamp = {
   startedAt: string;
   endedAt: string;
+  duration: number;
 };
 
 export type VideoUrls = {

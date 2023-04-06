@@ -32,7 +32,7 @@ export const getV1Video: APIRoute<
     return;
   }
 
-  const isAccessible = await lives.isAccessibleStreamByUser(
+  const isAccessible = await lives.isAccessibleInformationByUser(
     live,
     ctx.state.userId
   );
@@ -47,19 +47,11 @@ export const getV1Video: APIRoute<
   const token = await jwtEdge.generateTokenAsStream(live.id);
   const recording = await liveRecordings.get(live.id);
   const timestamps = await liveStreamProgresses.getList(live.id);
-  if (!recording) {
-    ctx.status = 404;
-    ctx.body = {
-      errorCode: 'recording_not_found'
-    };
-    return;
-  }
 
   const hqUrl = `${baseVideoStream}/static/${live.id}_${live.watchToken}/hq/index.m3u8?token=${token}`;
   const isCacheDeleted =
     recording?.cacheHqStatus === LiveRecordingStatus.Deleted ||
-    recording?.cacheHqStatus === LiveRecordingStatus.Failed ||
-    recording?.cacheHqStatus === LiveRecordingStatus.NotFound;
+    recording?.cacheHqStatus === LiveRecordingStatus.Failed;
   // ) && (recording?.cacheLqStatus === LiveRecordingStatus.Deleted ...)
   const isOriginalDeleted =
     recording?.originalStatus === LiveRecordingStatus.Deleted ||
@@ -67,15 +59,21 @@ export const getV1Video: APIRoute<
     recording?.originalStatus === LiveRecordingStatus.NotFound;
 
   const todayCount = await new VideoWatchingLogCache(live.id).getActiveCount();
-  const watchCount = recording.watchCount + todayCount;
+  const watchCount = (recording?.watchCount || 0) + todayCount;
 
   if (timestamps.some(timestamp => timestamp.endedAt === null)) {
-    ctx.status = 500;
+    ctx.status = 400;
     ctx.body = {
-      errorCode: 'internal_server_error',
-      message: '予期せぬタイムスタンプの欠落'
+      errorCode: 'invalid_request',
+      message:
+        'タイムスタンプの収集中です。数分経っても変化しない場合はお問い合わせください'
     };
     return;
+  }
+
+  // 最初のタイムスタンプは配信開始前の正確なデータが入っているので workaround
+  if (live.startedAt) {
+    timestamps[0].startedAt = live.startedAt;
   }
 
   ctx.body = {
@@ -88,11 +86,17 @@ export const getV1Video: APIRoute<
     isCacheDeleted,
     isOriginalDeleted,
     watchCount,
-    timestamps: timestamps
-      .filter(x => x.endedAt)
-      .map(timestamp => ({
-        startedAt: timestamp.startedAt.toISOString(),
-        endedAt: timestamp.endedAt?.toISOString() ?? ''
-      }))
+    timestamps: (timestamps as Timestamp[]).map(timestamp => ({
+      startedAt: timestamp.startedAt.toISOString(),
+      endedAt: timestamp.endedAt.toISOString(),
+      duration: Math.floor(
+        (timestamp.endedAt.getTime() - timestamp.startedAt.getTime()) / 1000
+      )
+    }))
   };
+};
+
+type Timestamp = {
+  startedAt: Date;
+  endedAt: Date;
 };

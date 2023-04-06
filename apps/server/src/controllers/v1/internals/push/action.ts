@@ -116,7 +116,8 @@ export const postV1InternalsPushAction: APIRoute<
           liveId: live.id,
           watchToken: live.watchToken,
           serverToken,
-          downloadUrl
+          downloadUrl,
+          originalBytes: body.fileSize
         },
         timeout: 1000 * 60
       });

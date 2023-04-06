@@ -38,8 +38,17 @@ export class Action {
 
   static async stopStream(liveId: number) {
     await rejectSession(liveId);
-    this.stopRecording(liveId);
     sessions.delete(liveId);
+
+    const live = lives.get(liveId);
+    if (live?.lastRecordStartAt) {
+      const diff = Math.floor((Date.now() - live.lastRecordStartAt) / 1000);
+      lives.set(liveId, {
+        ...live,
+        recordingSeconds: live.recordingSeconds + diff,
+        lastRecordStartAt: undefined
+      });
+    }
   }
 
   static startLive(liveId: number, isRecording: boolean) {
@@ -77,7 +86,10 @@ export class Action {
           }
         });
 
-        const path = await session.encoder.mergeAndCleanupMp4();
+        // mp4 の生成を待つ
+        await session.encoder.cleanup();
+
+        const path = await session.encoder.mergeAndCleanupRecording();
         if (!path) {
           throw new Error('merge mp4 failed');
         }
@@ -122,50 +134,16 @@ export class Action {
     }
 
     const encoder = sessions.get(liveId)?.encoder;
-    void encoder?.encodeToMp4();
+    const recordingSeconds = prev?.recordingSeconds ?? 0;
+    const remainingSeconds = RECORDING_MAX_SECONDS - recordingSeconds;
+    void encoder?.encodeToRecording(remainingSeconds);
 
     if (!prev?.lastRecordStartAt) {
-      const recordingSeconds = prev?.recordingSeconds ?? 0;
       lives.set(liveId, {
         isRecording: true,
         recordingSeconds,
         lastRecordStartAt: Date.now()
       });
-      const remainingSeconds = RECORDING_MAX_SECONDS - recordingSeconds;
-      setTimeout(() => this.timeoutRecording(liveId), remainingSeconds * 1000);
-    }
-  }
-
-  private static stopRecording(liveId: number) {
-    const encoder = sessions.get(liveId)?.encoder;
-    try {
-      void encoder?.killMp4();
-    } catch (e) {
-      console.warn('kill mp4 failed', e);
-    }
-
-    const live = lives.get(liveId);
-    if (live?.lastRecordStartAt) {
-      const diff = Math.floor((Date.now() - live.lastRecordStartAt) / 1000);
-      lives.set(liveId, {
-        ...live,
-        recordingSeconds: live.recordingSeconds + diff,
-        lastRecordStartAt: undefined
-      });
-    }
-  }
-
-  private static timeoutRecording(liveId: number) {
-    const live = lives.get(liveId);
-    if (!live || !live.lastRecordStartAt) {
-      return;
-    }
-
-    const seconds =
-      live.recordingSeconds +
-      Math.floor((Date.now() - live.lastRecordStartAt) / 1000);
-    if (seconds >= RECORDING_MAX_SECONDS) {
-      this.stopRecording(liveId);
     }
   }
 }

@@ -38,7 +38,9 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
           data: {
             originalStatus: status,
             originalKey: storageKey,
-            originalSize: size
+            originalSize: size,
+            originalCompletedAt:
+              status === LiveRecordingStatus.Completed ? new Date() : undefined
           }
         });
       } else {
@@ -47,7 +49,9 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
             id: liveId,
             originalStatus: status,
             originalKey: storageKey,
-            originalSize: size
+            originalSize: size,
+            originalCompletedAt:
+              status === LiveRecordingStatus.Completed ? new Date() : undefined
           }
         });
       }
@@ -69,7 +73,8 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
         },
         orderBy: {
           recording: {
-            watchCountUpdatedAt: 'asc'
+            watchCountUpdatedAt: 'asc',
+            watchCount: 'asc'
           }
         },
         take: 100
@@ -80,11 +85,11 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
           const watchingLogCache = new VideoWatchingLogCache(x.id);
           const todayCount = await watchingLogCache.getActiveCount();
 
-          if (todayCount > 0) {
-            return x;
-          } else {
+          if (todayCount !== 0) {
             return null;
           }
+
+          return x;
         })
       ).then(x => x.filter(x => x))) as (Live & { recording: LiveRecording })[];
 

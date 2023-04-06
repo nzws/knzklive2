@@ -81,7 +81,8 @@ export const postV1InternalsVideoSignal: APIRoute<
     },
     data: {
       cacheHqStatus,
-      cacheSize: body.cacheSize ? BigInt(body.cacheSize) : undefined
+      cacheSize: body.cacheSize ? BigInt(body.cacheSize) : undefined,
+      cacheCompletedAt: body.action === 'record:done' ? new Date() : undefined
     }
   });
 

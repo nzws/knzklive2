@@ -35,6 +35,7 @@ import {
   PlayType,
   VideoPlayType
 } from '~/utils/hooks/use-video-stream';
+import { formatSeconds } from '~/utils/time';
 
 type CommonProps = {
   onToggleContainerSize?: () => void;
@@ -193,6 +194,12 @@ export const Controller: FC<Props> = props => {
               </SliderTrack>
               <SliderThumb />
             </Slider>
+          )}
+
+          {!isLive && (
+            <Button variant="ghost" size="sm" fontWeight="normal">
+              {formatSeconds(props.seek)} / {formatSeconds(props.videoSeconds)}
+            </Button>
           )}
 
           <Spacer />

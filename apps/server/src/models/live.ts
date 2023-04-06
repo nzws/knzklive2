@@ -199,7 +199,7 @@ export const Lives = (client: PrismaClient['live']) =>
 
       return false;
     },
-    // 配信を視聴可能か？
+    // 生配信を視聴可能か？
     isAccessibleStreamByUser: async (live: Live, userId?: number) => {
       const isAccessibleInformation = await lives.isAccessibleInformationByUser(
         live,
@@ -379,6 +379,17 @@ export const Lives = (client: PrismaClient['live']) =>
             JSON.stringify(revalidateData)
           )
         }
+      });
+
+      await webhookQueue.add('system:push:action', {
+        url: pushApi(basePushStream).api.externals.v1.action.$path(),
+        postBody: {
+          liveId: live.id,
+          serverToken,
+          action: 'start',
+          isRecording: live.isRecording
+        },
+        timeout: 1000 * 60
       });
 
       return data;

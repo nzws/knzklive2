@@ -28,7 +28,9 @@ export const Comments: FC<Props> = ({
       <Heading size="sm">
         <FormattedMessage
           id={
-            hashtag ? 'live.comment.title.with-hashtag' : 'live.comment.title'
+            hashtag
+              ? `${isLive ? 'live' : 'video'}.comment.title.with-hashtag`
+              : `${isLive ? 'live' : 'video'}.comment.title`
           }
           values={{ hashtag }}
         />

@@ -15,23 +15,27 @@ type Props = {
   thumbnailUrl: string;
   url?: VideoUrls;
   onToggleContainerSize?: () => void;
+  seek: number;
+  setSeek: (seek: number) => void;
 };
 
 export const VideoPlayer: FC<Props> = ({
   liveId,
   thumbnailUrl,
   url,
-  onToggleContainerSize
+  onToggleContainerSize,
+  seek,
+  setSeek
 }) => {
   const { headers } = useAuth();
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const eventLastSentRef = useRef<'playing' | 'paused' | 'ended' | undefined>();
   const [error, setError] = useState<unknown>();
   useAPIError(error);
   const { show, events } = usePlayerTouch();
   const [canPlay, setCanPlay] = useState(false);
   const [maybeBlocked, setMaybeBlocked] = useState(false);
-  const [seek, setSeek] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const { playType, setPlayType, play } = useVideoStream(
@@ -74,6 +78,14 @@ export const VideoPlayer: FC<Props> = ({
     video.pause();
   }, [videoRef]);
 
+  const togglePlay = useCallback(() => {
+    if (playing) {
+      handlePause();
+    } else {
+      playVideo();
+    }
+  }, [playing, handlePause, playVideo]);
+
   const toggleMaximize = useCallback(() => {
     const container = containerRef.current;
     if (!container) {
@@ -93,43 +105,51 @@ export const VideoPlayer: FC<Props> = ({
       return;
     }
 
-    const send = () => {
+    const send = (ignoreDuplicate = true, ended?: boolean) => {
+      const status = ended ? 'ended' : !video.paused ? 'playing' : 'paused';
+      if (ignoreDuplicate && eventLastSentRef.current === status) {
+        return;
+      }
+
       void client.v1.videos._liveId(liveId).event.post({
         body: {
-          status: !video.paused ? 'playing' : 'paused',
-          seek: video.currentTime
+          status,
+          seek: Math.round(video.currentTime)
         },
         headers
       });
     };
 
     const handleEnded = () => {
-      void client.v1.videos._liveId(liveId).event.post({
-        body: {
-          status: 'ended',
-          seek: video.currentTime
-        },
-        headers
-      });
+      send(false, true);
+    };
+
+    const handlePlay = () => {
+      send();
+    };
+
+    const handlePause = () => {
+      send();
     };
 
     video.addEventListener('ended', handleEnded);
-    video.removeEventListener('play', send);
-    video.addEventListener('pause', send);
+    video.removeEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
 
     const timer = setInterval(() => {
       if (video.paused) {
         return;
       }
 
-      send();
+      send(false);
     }, 10000);
 
     return () => {
       clearInterval(timer);
       video.removeEventListener('ended', handleEnded);
-      video.removeEventListener('play', send);
-      video.removeEventListener('pause', send);
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+      eventLastSentRef.current = undefined;
     };
   }, [headers, liveId]);
 
@@ -138,7 +158,7 @@ export const VideoPlayer: FC<Props> = ({
     setCanPlay(false);
     setMaybeBlocked(false);
     setPlaying(false);
-  }, [liveId]);
+  }, [liveId, setSeek]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -148,10 +168,6 @@ export const VideoPlayer: FC<Props> = ({
 
     const handleError = (e: ErrorEvent) => {
       setError(e.error);
-    };
-
-    const handleEnded = () => {
-      // handle end
     };
 
     const handlePlaying = () => {
@@ -186,7 +202,6 @@ export const VideoPlayer: FC<Props> = ({
     };
 
     video.addEventListener('error', handleError);
-    video.addEventListener('ended', handleEnded);
     video.addEventListener('playing', handlePlaying);
     video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('emptied', handleStopLoad);
@@ -197,7 +212,6 @@ export const VideoPlayer: FC<Props> = ({
 
     return () => {
       video.removeEventListener('error', handleError);
-      video.removeEventListener('ended', handleEnded);
       video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('emptied', handleStopLoad);
@@ -207,7 +221,7 @@ export const VideoPlayer: FC<Props> = ({
       video.removeEventListener('pause', handlePause);
       setCanPlay(false);
     };
-  }, [playVideo]);
+  }, [playVideo, setSeek]);
 
   return (
     <Container
@@ -222,6 +236,7 @@ export const VideoPlayer: FC<Props> = ({
         style={{
           backgroundImage: `url(${thumbnailUrl})`
         }}
+        onClick={togglePlay}
       >
         <video ref={videoRef} autoPlay playsInline controls={false} />
       </VideoContainer>
@@ -239,7 +254,7 @@ export const VideoPlayer: FC<Props> = ({
         onToggleContainerSize={onToggleContainerSize}
         onToggleMaximize={toggleMaximize}
         videoRef={videoRef}
-        show={show}
+        show={show || !playing}
         onPlay={playVideo}
         playType={playType}
         onChangePlayType={setPlayType}

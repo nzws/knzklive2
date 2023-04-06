@@ -47,7 +47,7 @@ services:
       - 1935:1935
     volumes:
       - ./infra/push/srs.conf:/usr/local/srs/conf/knzklive.conf:ro
-      - ./push-web:/usr/local/srs/objs/nginx/html
+      - ./dockerdata/push-web:/usr/local/srs/objs/nginx/html
     command: ./objs/srs -c conf/knzklive.conf
 
   push_caddy:
@@ -56,7 +56,7 @@ services:
       - '8081:80'
     volumes:
       - ./infra/push/Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./push-web/static:/srv/static:ro
+      - ./dockerdata/push-web/static:/srv/static:ro
     environment:
       PUSH_DOMAIN: http://
 
@@ -70,7 +70,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./push-web/static:/home/node/static
+      - ./dockerdata/push-web/static:/home/node/static
+      - ./dockerdata/push-agent-persistent:/home/node/persistent
     environment:
       SERVER_ENDPOINT: http://host.docker.internal:8080
     extra_hosts:
@@ -82,7 +83,7 @@ services:
       - '8082:80'
     volumes:
       - ./infra/video/Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./video-web/static:/srv/static:ro
+      - ./dockerdata/video-web/static:/srv/static:ro
     environment:
       VIDEO_DOMAIN: http://
 
@@ -96,7 +97,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./video-web/static:/home/node/static
+      - ./dockerdata/video-web/static:/home/node/static
     environment:
       SERVER_ENDPOINT: http://host.docker.internal:8080
     extra_hosts:

@@ -11,20 +11,22 @@ type VideoWatchingLog = {
 export class VideoWatchingLogCache {
   constructor(private liveId: number) {}
 
-  async getActiveCount() {
+  async getActiveCount(accurate = false) {
     const keys = await redis.keys(this.getKey('*'));
     if (keys.length === 0) {
       return 0;
     }
 
-    const data = (await redis.mget(...keys))
-      .filter(d => d)
-      .map(d => JSON.parse(d as string) as VideoWatchingLog[]);
+    if (!accurate) {
+      return keys.length;
+    }
 
     // 最初と最後が10秒以上離れていれば見たとみなす
     let count = 0;
 
-    for (const logs of data) {
+    for (const key of keys) {
+      const raw = await redis.lrange(key, 0, -1);
+      const logs = raw.map(r => JSON.parse(r) as VideoWatchingLog);
       if (logs.length <= 1) {
         continue;
       }

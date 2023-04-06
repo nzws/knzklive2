@@ -152,6 +152,5 @@ dist
 !*/.yarn/sdks
 !*/.yarn/versions
 
-push-web/
-video-web/
+dockerdata/
 .turbo

@@ -22,6 +22,7 @@ import { VideoMessageBox } from './video/video-message-box';
 import { useMobileTitleEffect } from '~/utils/hooks/use-mobile-title-effect';
 import { useVideo } from '~/utils/hooks/api/use-video';
 import { VideoPlayer } from './video/video-player';
+import { usePlaybackComments } from '~/utils/hooks/use-playback-comments';
 
 type Props = {
   live: LivePublic;
@@ -39,9 +40,11 @@ export const RecordingApp: FC<Props> = ({ live, streamer }) => {
   const { isOpen, toggle: toggleMobileDescription } =
     useMobileTitleEffect(isDesktop);
   const [isContainerMaximized, setIsContainerMaximized] = useState(false);
+  const [seek, setSeek] = useState(0);
   const isStreamer = streamer && user?.id === streamer?.id;
   const [video] = useVideo(live.id);
   const [count] = useLiveRealtimeCount(!live.endedAt ? live.id : undefined);
+  const [comments] = usePlaybackComments(live.id, seek, video?.timestamps);
 
   const toggleContainerSize = useCallback(
     () => setIsContainerMaximized(v => !v),
@@ -75,6 +78,8 @@ export const RecordingApp: FC<Props> = ({ live, streamer }) => {
               url={video.url}
               thumbnailUrl={thumbnailUrl}
               onToggleContainerSize={toggleContainerSize}
+              seek={seek}
+              setSeek={setSeek}
             />
           ) : (
             <VideoMessageBox
@@ -128,8 +133,7 @@ export const RecordingApp: FC<Props> = ({ live, streamer }) => {
         <Box width={{ lg: '400px' }}>
           <Comments
             hashtag={live.hashtag}
-            // todo: implement comment playback
-            comments={[]}
+            comments={comments || []}
             isLive={false}
             isStreamer={isStreamer}
             live={live}

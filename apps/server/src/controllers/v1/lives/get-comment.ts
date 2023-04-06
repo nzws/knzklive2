@@ -66,7 +66,7 @@ export const getV1LivesComment: APIRoute<
     orderBy: {
       createdAt: 'desc'
     },
-    take: 100
+    take: 1000
   });
 
   const result = items

@@ -66,6 +66,8 @@
   "live.sensitive.enter": "観る",
   "live.comment.title": "コメント",
   "live.comment.title.with-hashtag": "コメント #{hashtag}",
+  "video.comment.title": "コメント (リプレイ)",
+  "video.comment.title.with-hashtag": "コメント (リプレイ) #{hashtag}",
   "live.comment-post.require-login": "コメントを投稿するにはログインが必要です",
   "live.comment-post.require-login.with-hashtag": "コメントを投稿するにはログインするか、#{hashtag} で公開投稿してください",
   "live.comment-post.placeholder": "Enter でコメントを投稿",

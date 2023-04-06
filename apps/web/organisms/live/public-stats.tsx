@@ -73,7 +73,7 @@ export const PublicStats: FC<Props> = ({
         <Text>
           <FormattedMessage
             id="video.watchers-count"
-            values={{ count: videoWatchers }}
+            values={{ sum: videoWatchers }}
           />
         </Text>
       )}

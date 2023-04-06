@@ -15,8 +15,15 @@ export const Users = (prismaUser: PrismaClient['user']) =>
     }),
     getPrivate: (user: User): UserPrivate => ({
       ...users.getPublic(user),
-      config: user.config as UserConfig
+      config: users.getConfig(user)
     }),
+    getConfig: (user: User): Required<UserConfig> => {
+      const config = (user.config || {}) as UserConfig;
+
+      return {
+        allowUnstableFeatures: config.allowUnstableFeatures ?? false
+      };
+    },
     createAccount: async (account: string) => {
       const acct = account.toLowerCase();
 

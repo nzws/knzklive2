@@ -55,7 +55,7 @@ export class Encoder {
       .audioCodec('copy')
       .videoCodec('copy')
       .format('hls')
-      .outputOptions(['-hls_time 5'])
+      .outputOptions(['-hls_time 5', '-hls_list_size 0'])
       .output(`${dir}/index.m3u8`);
 
     this.streams.push({

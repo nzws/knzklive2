@@ -48,7 +48,7 @@ services:
   #      - ./web:/usr/local/srs/objs/nginx/html
   #    command: ./objs/srs -c conf/knzklive.conf
 
-  agent:
+  push_agent:
     image: ghcr.io/nzws/knzklive2-push:latest-arm64
     # build: .
     restart: unless-stopped
