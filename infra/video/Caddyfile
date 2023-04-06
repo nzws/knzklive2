@@ -4,10 +4,16 @@
   handle /static/* {
     header Access-Control-Allow-Origin *
     header Access-Control-Allow-Methods *
+    cache
     file_server
   }
 
   handle /api/externals/* {
-    reverse_proxy http://video:8000
+    reverse_proxy http://video_agent:8000
+  }
+
+  mime {
+    .m3u8 application/x-mpegURL
+    .ts video/MP2T
   }
 }

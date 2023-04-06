@@ -20,14 +20,12 @@ services:
     image: ghcr.io/nzws/knzklive2-video:latest-amd64
     # build: .
     restart: unless-stopped
-    container_name: video
     expose:
       - 8000
     env_file:
       - .env
     volumes:
       - ./video-web/static:/home/node/static
-      - ./video:/home/node/persistent
 
 volumes:
   caddy_data:
