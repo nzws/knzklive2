@@ -57,9 +57,10 @@ export const getV1Video: APIRoute<
 
   const hqUrl = `${baseVideoStream}/static/${live.id}_${live.watchToken}/hq/index.m3u8?token=${token}`;
   const isCacheDeleted =
-    recording?.cacheStatus === LiveRecordingStatus.Deleted ||
-    recording?.cacheStatus === LiveRecordingStatus.Failed ||
-    recording?.cacheStatus === LiveRecordingStatus.NotFound;
+    recording?.cacheHqStatus === LiveRecordingStatus.Deleted ||
+    recording?.cacheHqStatus === LiveRecordingStatus.Failed ||
+    recording?.cacheHqStatus === LiveRecordingStatus.NotFound;
+  // ) && (recording?.cacheLqStatus === LiveRecordingStatus.Deleted ...)
   const isOriginalDeleted =
     recording?.originalStatus === LiveRecordingStatus.Deleted ||
     recording?.originalStatus === LiveRecordingStatus.Failed ||
@@ -80,8 +81,7 @@ export const getV1Video: APIRoute<
   ctx.body = {
     url: {
       hlsHq:
-        // todo: HQ以外がわからないので要修正
-        recording?.cacheStatus === LiveRecordingStatus.Completed
+        recording?.cacheHqStatus === LiveRecordingStatus.Completed
           ? hqUrl
           : undefined
     },

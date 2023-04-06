@@ -7,25 +7,21 @@ import {
   Spacer,
   Stack,
   Text,
-  useBreakpointValue,
-  useDisclosure
+  useBreakpointValue
 } from '@chakra-ui/react';
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { LivePublic, UserPublic } from 'api-types/common/types';
 import { useLiveRealtimeCount } from '~/utils/hooks/api/use-live-realtime-count';
-import { useStreamUrl } from '~/utils/hooks/api/use-stream-url';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { Footer } from '../footer';
 import { Comments } from './comment';
-import { Admin } from './admin';
-import { CommentPost } from './comment-post';
 import { MobileTitle } from './mobile-title';
 import { PublicStats } from './public-stats';
 import { Streamer } from './streamer';
-import { Video } from './video';
-import { NotPushed } from './video/not-pushed';
-import { useLiveRealtime } from '~/utils/hooks/api/use-live-realtime';
-import { useLive } from '~/utils/hooks/api/use-live';
+import { VideoMessageBox } from './video/video-message-box';
+import { useMobileTitleEffect } from '~/utils/hooks/use-mobile-title-effect';
+import { useVideo } from '~/utils/hooks/api/use-video';
+import { VideoPlayer } from './video/video-player';
 
 type Props = {
   live: LivePublic;
@@ -34,68 +30,29 @@ type Props = {
 
 const NAVBAR_HEIGHT = 56;
 
-export const Live: FC<Props> = ({ live, streamer }) => {
+export const RecordingApp: FC<Props> = ({ live, streamer }) => {
   const { user } = useAuth();
   const isDesktop = useBreakpointValue(
     { base: false, lg: true },
     { fallback: 'lg' }
   );
-  const { isOpen, onToggle, onOpen, onClose } = useDisclosure();
+  const { isOpen, toggle: toggleMobileDescription } =
+    useMobileTitleEffect(isDesktop);
   const [isContainerMaximized, setIsContainerMaximized] = useState(false);
-  const [isManuallyTapped, setIsManuallyTapped] = useState(false);
   const isStreamer = streamer && user?.id === streamer?.id;
-  const [url, updateUrl] = useStreamUrl(
-    !live.endedAt && live.isPushing ? live.id : undefined
-  );
+  const [video] = useVideo(live.id);
   const [count] = useLiveRealtimeCount(!live.endedAt ? live.id : undefined);
-  const [, mutate] = useLive(live.id);
-  const {
-    comments,
-    live: realtimeLive,
-    isConnecting: isConnectingStreaming,
-    reconnect: reconnectStreaming
-  } = useLiveRealtime(live.id);
-
-  // todo: 仮
-  const streamerUrl = useMemo(() => {
-    if (!streamer?.account) {
-      return;
-    }
-    const [user, domain] = streamer.account.split('@');
-
-    return `https://${domain}/@${user}`;
-  }, [streamer?.account]);
-
-  const toggleMobileDescription = useCallback(() => {
-    setIsManuallyTapped(true);
-    onToggle();
-  }, [onToggle]);
 
   const toggleContainerSize = useCallback(
     () => setIsContainerMaximized(v => !v),
     []
   );
 
-  useEffect(() => {
-    if (isDesktop || isManuallyTapped) {
-      return;
-    }
+  const thumbnailUrl =
+    live.thumbnail?.publicUrl ||
+    `/api/default-thumbnail.png?userId=${streamer?.id || ''}`;
 
-    onOpen();
-    const timeout = setTimeout(() => {
-      onClose();
-    }, 2 * 1000);
-
-    return () => clearInterval(timeout);
-  }, [isDesktop, isManuallyTapped, onOpen, onClose]);
-
-  useEffect(() => {
-    if (!realtimeLive) {
-      return;
-    }
-
-    void mutate(realtimeLive, { revalidate: false });
-  }, [realtimeLive, mutate]);
+  const hasCache = !!video?.url.hlsHq;
 
   return (
     <Container
@@ -112,23 +69,26 @@ export const Live: FC<Props> = ({ live, streamer }) => {
           width={{ lg: 'calc(100% - 400px)' }}
           flexShrink={0}
         >
-          {url ? (
-            <Video
-              isStreamer={isStreamer}
-              url={url}
-              thumbnailUrl={live.thumbnail?.publicUrl}
-              updateUrl={updateUrl}
+          {hasCache ? (
+            <VideoPlayer
+              liveId={live.id}
+              url={video.url}
+              thumbnailUrl={thumbnailUrl}
               onToggleContainerSize={toggleContainerSize}
-              streamerUserId={live.userId}
             />
           ) : (
-            <NotPushed
+            <VideoMessageBox
               thumbnailUrl={live.thumbnail?.publicUrl}
               streamerUserId={live.userId}
+              messageIntl={
+                video?.isOriginalDeleted
+                  ? 'video.recording-deleted'
+                  : video?.isCacheDeleted
+                  ? 'video.cache-deleted'
+                  : 'video.in-progress'
+              }
             />
           )}
-
-          <CommentPost liveId={live.id} hashtag={live.hashtag} />
 
           {!isDesktop && (
             <MobileTitle title={live.title} onClick={toggleMobileDescription} />
@@ -146,24 +106,17 @@ export const Live: FC<Props> = ({ live, streamer }) => {
                 privacy={live.privacy}
                 isRequiredFollower={live.isRequiredFollower}
                 isRequiredFollowing={live.isRequiredFollowing}
+                videoWatchers={video?.watchCount}
               />
 
               <Streamer
                 displayName={streamer?.displayName}
                 account={streamer?.account}
                 avatarUrl={streamer?.avatarUrl}
-                url={streamerUrl}
+                url={streamer?.url}
               />
 
               <Text>{live.description}</Text>
-
-              {isStreamer && !live.endedAt && (
-                <Admin
-                  liveId={live.id}
-                  tenantSlug={live.tenant.slug}
-                  idInTenant={live.idInTenant}
-                />
-              )}
             </Stack>
           </Collapse>
 
@@ -175,9 +128,9 @@ export const Live: FC<Props> = ({ live, streamer }) => {
         <Box width={{ lg: '400px' }}>
           <Comments
             hashtag={live.hashtag}
-            comments={comments}
-            isConnectingStreaming={isConnectingStreaming}
-            reconnectStreaming={reconnectStreaming}
+            // todo: implement comment playback
+            comments={[]}
+            isLive={false}
             isStreamer={isStreamer}
             live={live}
           />

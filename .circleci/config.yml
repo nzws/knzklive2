@@ -72,7 +72,7 @@ workflows:
             - run: echo 'export TAG=staging' >> "$BASH_ENV"
           requires:
             - lint
-            - test-push
+            - push-test
 
   production:
     jobs:
@@ -94,4 +94,4 @@ workflows:
             - run: echo 'export TAG=latest' >> "$BASH_ENV"
           requires:
             - lint
-            - test-push
+            - push-test

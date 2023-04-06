@@ -14,6 +14,7 @@ type Props = {
   isRequiredFollower: boolean;
   currentViewers?: number;
   sumViewers?: number;
+  videoWatchers?: number;
 };
 
 export const PublicStats: FC<Props> = ({
@@ -23,7 +24,8 @@ export const PublicStats: FC<Props> = ({
   sumViewers,
   privacy,
   isRequiredFollowing,
-  isRequiredFollower
+  isRequiredFollower,
+  videoWatchers
 }) => {
   const intl = useIntl();
 
@@ -66,6 +68,15 @@ export const PublicStats: FC<Props> = ({
           />
         )}
       </Text>
+
+      {videoWatchers !== undefined && (
+        <Text>
+          <FormattedMessage
+            id="video.watchers-count"
+            values={{ count: videoWatchers }}
+          />
+        </Text>
+      )}
 
       {privacy === 'Private' && (
         <Text>

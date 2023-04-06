@@ -9,8 +9,9 @@ type Props = {
   live: LivePublic;
   comments: CommentPublic[];
   isStreamer?: boolean;
-  isConnectingStreaming: boolean;
-  reconnectStreaming: () => void;
+  isLive: boolean;
+  isConnectingStreaming?: boolean;
+  reconnectStreaming?: () => void;
 };
 
 export const Comments: FC<Props> = ({
@@ -19,7 +20,8 @@ export const Comments: FC<Props> = ({
   comments,
   isConnectingStreaming,
   reconnectStreaming,
-  isStreamer
+  isStreamer,
+  isLive
 }) => (
   <Flex flexDirection="column" height={{ base: '700px', lg: '100%' }}>
     <Box p={4}>
@@ -35,7 +37,7 @@ export const Comments: FC<Props> = ({
 
     <Box overflowY="auto">
       <VStack spacing={2} p={2} align="stretch">
-        {!isConnectingStreaming && (
+        {!isConnectingStreaming && isLive && (
           <Button
             colorScheme="blue"
             variant="outline"

@@ -29,6 +29,11 @@ const reqBodySchema: JSONSchemaType<Request> = {
     cacheSize: {
       type: 'string',
       nullable: true
+    },
+    type: {
+      type: 'string',
+      enum: ['hq'],
+      nullable: true
     }
   },
   required: ['liveId', 'action', 'serverToken'],
@@ -59,20 +64,24 @@ export const postV1InternalsVideoSignal: APIRoute<
     return;
   }
 
+  const cacheHqStatus =
+    body.action === 'record:processing'
+      ? 'Processing'
+      : body.action === 'record:done' && body.type === 'hq'
+      ? 'Completed'
+      : body.action === 'record:failed' && body.type === 'hq'
+      ? 'Failed'
+      : body.action === 'record:deleted'
+      ? 'Deleted'
+      : undefined;
+
   await liveRecordings.update({
     where: {
       id: live.id
     },
     data: {
-      cacheStatus:
-        body.action === 'record:processing'
-          ? 'Processing'
-          : body.action === 'record:done'
-          ? 'Completed'
-          : body.action === 'record:failed'
-          ? 'Failed'
-          : 'Deleted',
-      cacheSize: BigInt(body.cacheSize || 0)
+      cacheHqStatus,
+      cacheSize: body.cacheSize ? BigInt(body.cacheSize) : undefined
     }
   });
 

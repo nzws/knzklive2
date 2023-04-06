@@ -1,5 +1,5 @@
 import { FC, Fragment, useCallback, useEffect, useState } from 'react';
-import { NotPushed } from '~/organisms/live/video/not-pushed';
+import { VideoMessageBox } from '~/organisms/live/video/video-message-box';
 import { UploadThumbnail } from '~/organisms/live/admin/live-info-modal/upload-thumbnail';
 import { useAuth } from '~/utils/hooks/use-auth';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
@@ -83,9 +83,10 @@ export const LivePreview: FC<Props> = ({
           hideButton
         />
       ) : (
-        <NotPushed
+        <VideoMessageBox
           thumbnailUrl={thumbnailUrl}
           streamerUserId={streamerUserId}
+          messageIntl="live.not-pushed"
         />
       )}
     </Fragment>

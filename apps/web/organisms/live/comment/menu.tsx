@@ -52,16 +52,6 @@ export const CommentMenu: FC<Props> = ({
 
   const domain = user?.account.split('@')[1];
 
-  // todo: 仮
-  const streamerUrl = useMemo(() => {
-    if (!user?.account) {
-      return;
-    }
-    const [id, domain] = user.account.split('@');
-
-    return `https://${domain}/@${id}`;
-  }, [user?.account]);
-
   const handleDelete = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -168,7 +158,7 @@ export const CommentMenu: FC<Props> = ({
               )}
 
               <LinkBox as={MenuItem}>
-                <LinkOverlay href={streamerUrl} isExternal>
+                <LinkOverlay href={user?.url} isExternal>
                   <FormattedMessage id="live.comment.account-page" />
                   <ExternalLinkIcon mb={1} ml={2} />
                 </LinkOverlay>

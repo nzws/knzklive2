@@ -42,7 +42,8 @@ export const postV1VideoEvent: APIRoute<
   }
 
   const recording = await liveRecordings.get(ctx.state.live.id);
-  if (!recording || recording.cacheStatus !== LiveRecordingStatus.Completed) {
+  if (!recording || recording.cacheHqStatus !== LiveRecordingStatus.Completed) {
+    // && recording.cacheLqStatus !== LiveRecordingStatus.Completed
     ctx.status = 404;
     ctx.body = {
       errorCode: 'not_found'

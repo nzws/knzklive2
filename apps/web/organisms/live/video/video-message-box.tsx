@@ -6,9 +6,14 @@ import { FormattedMessage } from 'react-intl';
 type Props = {
   thumbnailUrl?: string;
   streamerUserId: number;
+  messageIntl: string;
 };
 
-export const NotPushed: FC<Props> = ({ thumbnailUrl, streamerUserId }) => (
+export const VideoMessageBox: FC<Props> = ({
+  thumbnailUrl,
+  streamerUserId,
+  messageIntl
+}) => (
   <Container
     ratio={16 / 9}
     style={{
@@ -21,7 +26,7 @@ export const NotPushed: FC<Props> = ({ thumbnailUrl, streamerUserId }) => (
       <Flex>
         <Alert status="info" borderRadius={6}>
           <AlertIcon />
-          <FormattedMessage id="live.not-pushed" />
+          <FormattedMessage id={messageIntl} />
         </Alert>
       </Flex>
     </Inner>

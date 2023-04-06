@@ -21,7 +21,7 @@ WORKDIR /home/node/app
 
 COPY --chown=node:node ./*.json ./*.yml ./yarn.lock ./
 COPY --chown=node:node ./.yarn ./.yarn
-COPY --chown=node:node ./apps/push/*.json ./apps/video/
+COPY --chown=node:node ./apps/video/*.json ./apps/video/
 COPY --chown=node:node ./packages/api-types ./packages/api-types
 RUN yarn workspaces focus video --production
 

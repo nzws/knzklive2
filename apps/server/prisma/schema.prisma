@@ -128,7 +128,7 @@ model LiveRecording {
   originalStatus LiveRecordingStatus @default(NotFound)
   originalSize   BigInt?
   originalCompletedAt DateTime?
-  cacheStatus  LiveRecordingStatus @default(NotFound)
+  cacheHqStatus  LiveRecordingStatus @default(NotFound)
   cacheSize      BigInt?
   cacheCompletedAt DateTime?
   watchCount     Int                 @default(0)

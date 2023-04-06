@@ -41,8 +41,9 @@ export const postV1StreamsRecording: APIRoute<
   }
 
   if (
-    recording.cacheStatus === LiveRecordingStatus.Completed ||
-    recording.cacheStatus === LiveRecordingStatus.Processing
+    recording.cacheHqStatus === LiveRecordingStatus.Completed ||
+    recording.cacheHqStatus === LiveRecordingStatus.Processing
+    // || recording.cacheLqStatus === LiveRecordingStatus.Completed ...
   ) {
     ctx.status = 400;
     ctx.body = {

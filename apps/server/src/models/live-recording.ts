@@ -57,7 +57,7 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
         where: {
           isRecording: true,
           recording: {
-            cacheStatus: LiveRecordingStatus.Completed,
+            cacheHqStatus: LiveRecordingStatus.Completed,
             cacheCompletedAt: {
               // 7日以上前に生成したキャッシュを対象とする
               lt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7)

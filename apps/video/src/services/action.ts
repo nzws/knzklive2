@@ -40,6 +40,32 @@ export class Action {
 
       await encoder.encodeToHqHls();
 
+      await Promise.all([
+        (async () => {
+          try {
+            await encoder.encodeToHqHls();
+
+            await client.v1.internals.video.signal.$post({
+              body: {
+                liveId,
+                action: 'record:done',
+                serverToken,
+                type: 'hq'
+              }
+            });
+          } catch (e) {
+            void client.v1.internals.video.signal.$post({
+              body: {
+                liveId,
+                action: 'record:failed',
+                serverToken,
+                type: 'hq'
+              }
+            });
+          }
+        })()
+      ]);
+
       try {
         await rm(path);
       } catch (e) {

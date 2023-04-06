@@ -19,61 +19,55 @@ import {
   Portal
 } from '@chakra-ui/react';
 import styled from '@emotion/styled';
-import { FC, RefObject, useEffect, useState } from 'react';
+import { FC, Fragment, RefObject, useEffect, useState } from 'react';
 import {
   FiChevronsUp,
   FiMaximize,
+  FiPause,
+  FiPlay,
   FiRefreshCw,
   FiVolume2,
   FiVolumeX
 } from 'react-icons/fi';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { PlayType } from '~/utils/hooks/use-video-stream';
+import {
+  LivePlayType,
+  PlayType,
+  VideoPlayType
+} from '~/utils/hooks/use-video-stream';
 
-type Props = {
-  onLive: () => void;
-  onReload: () => void;
+type CommonProps = {
   onToggleContainerSize?: () => void;
   onToggleMaximize: () => void;
   videoRef: RefObject<HTMLVideoElement>;
-  isStreamer?: boolean;
   show: boolean;
-  latency: number;
-  playType: PlayType;
-  onChangePlayType: (type: PlayType) => void;
 };
 
-const playTypes: { id: PlayType; badge: string }[] = [
-  {
-    id: PlayType.Flv,
-    badge: 'FLV'
-  },
-  {
-    id: PlayType.HlsHq,
-    badge: 'HLS'
-  },
-  {
-    id: PlayType.HlsLq,
-    badge: 'HLS'
-  },
-  {
-    id: PlayType.Audio,
-    badge: 'HLS'
-  }
-];
+type LiveProps = {
+  isLive: true;
+  onLive: () => void;
+  onReload: () => void;
+  isStreamer?: boolean;
+  latency: number;
+  playType: PlayType<'live'> | undefined;
+  onChangePlayType: (type: PlayType<'live'>) => void;
+};
 
-export const Controller: FC<Props> = ({
-  onLive,
-  onReload,
-  onToggleContainerSize,
-  onToggleMaximize,
-  isStreamer,
-  videoRef,
-  show,
-  latency,
-  playType,
-  onChangePlayType
-}) => {
+type VideoProps = {
+  isLive: false;
+  onPlay: () => void;
+  playType: PlayType<'video'> | undefined;
+  onChangePlayType: (type: PlayType<'video'>) => void;
+  seek: number;
+  videoSeconds: number;
+  onSeek: (seek: number) => void;
+  onPause: () => void;
+  isPlaying: boolean;
+};
+
+type Props = CommonProps & (LiveProps | VideoProps);
+
+export const Controller: FC<Props> = props => {
   const intl = useIntl();
   const [isMuted, setIsMuted] = useState<boolean>();
   const [volume, setVolume] = useState<number>();
@@ -82,8 +76,11 @@ export const Controller: FC<Props> = ({
     { fallback: 'lg' }
   );
 
+  const isLive = props.isLive;
+  const forceMuteFirst = props.isLive ? props.isStreamer : false;
+
   useEffect(() => {
-    const video = videoRef.current;
+    const video = props.videoRef.current;
     if (!video) {
       return;
     }
@@ -94,44 +91,85 @@ export const Controller: FC<Props> = ({
     if (isMuted !== undefined) {
       window.localStorage.setItem('live-volume', String(volume));
     }
-    if (!isStreamer && volume !== undefined) {
+    if (forceMuteFirst && volume !== undefined) {
       window.localStorage.setItem('live-mute', String(isMuted));
     }
-  }, [isMuted, volume, isStreamer, videoRef]);
+  }, [isMuted, volume, props.videoRef, props.isLive, forceMuteFirst]);
 
   useEffect(() => {
-    if (isStreamer === undefined) {
+    if (forceMuteFirst === undefined) {
       return;
     }
 
     const mute = window.localStorage.getItem('live-mute') || 'false';
     const volume = window.localStorage.getItem('live-volume') || '100';
 
-    if (mute || isStreamer) {
-      setIsMuted(isStreamer || mute === 'true');
+    if (mute || forceMuteFirst) {
+      setIsMuted(forceMuteFirst || mute === 'true');
     }
     if (volume) {
       setVolume(Number(volume));
     }
-  }, [isStreamer]);
+  }, [forceMuteFirst]);
 
   return (
-    <Fade in={show}>
+    <Fade in={props.show}>
       <Container>
-        <Flex minWidth="max-content" alignItems="center" gap="2" p={2}>
-          <Tooltip
-            label={intl.formatMessage({ id: 'live.player.seek-latest' })}
+        {!isLive && (
+          <Flex
+            minWidth="max-content"
+            alignItems="center"
+            gap="2"
+            p={2}
+            paddingBottom={0}
           >
-            <Button variant="ghost" onClick={onLive} size="sm">
-              {latency === -1 ? 'BUFFERING' : `LIVE (${latency}s)`}
-            </Button>
-          </Tooltip>
+            <Slider
+              aria-label="seek"
+              value={(props.seek / props.videoSeconds) * 100}
+              onChange={e => props.onSeek((e / 100) * props.videoSeconds)}
+            >
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </Flex>
+        )}
 
-          <Tooltip label={intl.formatMessage({ id: 'live.player.reload' })}>
-            <Button variant="ghost" onClick={onReload} size="sm">
-              <FiRefreshCw />
+        <Flex
+          minWidth="max-content"
+          alignItems="center"
+          gap="2"
+          p={2}
+          paddingTop={isLive ? 1 : 2}
+        >
+          {isLive ? (
+            <Fragment>
+              <Tooltip
+                label={intl.formatMessage({ id: 'live.player.seek-latest' })}
+              >
+                <Button variant="ghost" onClick={props.onLive} size="sm">
+                  {props.latency === -1
+                    ? 'BUFFERING'
+                    : `LIVE (${props.latency}s)`}
+                </Button>
+              </Tooltip>
+
+              <Tooltip label={intl.formatMessage({ id: 'live.player.reload' })}>
+                <Button variant="ghost" onClick={props.onReload} size="sm">
+                  <FiRefreshCw />
+                </Button>
+              </Tooltip>
+            </Fragment>
+          ) : (
+            <Button
+              variant="ghost"
+              onClick={props.isPlaying ? props.onPause : props.onPlay}
+              size="sm"
+            >
+              {props.isPlaying ? <FiPause /> : <FiPlay />}
             </Button>
-          </Tooltip>
+          )}
 
           <Button
             variant="ghost"
@@ -159,52 +197,71 @@ export const Controller: FC<Props> = ({
 
           <Spacer />
 
-          <Menu>
-            <MenuButton as={Button} variant="ghost" size="sm">
-              <FormattedMessage
-                id={`live.player.settings.type.${playType}.title`}
-              />
-            </MenuButton>
+          {props.playType && (
+            <Menu>
+              <MenuButton as={Button} variant="ghost" size="sm">
+                <FormattedMessage
+                  id={`${isLive ? 'live' : 'video'}.player.settings.type.${
+                    props.playType
+                  }.title`}
+                />
+              </MenuButton>
 
-            <Portal>
-              <MenuList zIndex={99999}>
-                <MenuOptionGroup
-                  title={intl.formatMessage({
-                    id: 'live.player.settings.type'
-                  })}
-                  value={playType}
-                  onChange={e => onChangePlayType(e as PlayType)}
-                  type="radio"
-                >
-                  {playTypes.map(playType => (
-                    <MenuItemOption value={playType.id} key={playType.id}>
-                      <Badge mr="1">{playType.badge}</Badge>
-                      <FormattedMessage
-                        id={`live.player.settings.type.${playType.id}.title`}
-                      />
+              <Portal>
+                <MenuList zIndex={99999}>
+                  <MenuOptionGroup
+                    title={intl.formatMessage({
+                      id: 'live.player.settings.type'
+                    })}
+                    value={props.playType}
+                    onChange={e =>
+                      isLive
+                        ? props.onChangePlayType(e as LivePlayType)
+                        : props.onChangePlayType(e as VideoPlayType)
+                    }
+                    type="radio"
+                  >
+                    {(isLive ? livePlayTypes : videoPlayTypes).map(playType => (
+                      <MenuItemOption value={playType.id} key={playType.id}>
+                        {playType.badge && (
+                          <Badge mr="1">{playType.badge}</Badge>
+                        )}
 
-                      <Text fontSize="xs" color="gray.500">
                         <FormattedMessage
-                          id={`live.player.settings.type.${playType.id}.note`}
+                          id={`${
+                            isLive ? 'live' : 'video'
+                          }.player.settings.type.${playType.id}.title`}
                         />
-                      </Text>
-                    </MenuItemOption>
-                  ))}
-                </MenuOptionGroup>
-              </MenuList>
-            </Portal>
-          </Menu>
 
-          {isDesktop && onToggleContainerSize && (
+                        <Text fontSize="xs" color="gray.500">
+                          <FormattedMessage
+                            id={`${
+                              isLive ? 'live' : 'video'
+                            }.player.settings.type.${playType.id}.note`}
+                          />
+                        </Text>
+                      </MenuItemOption>
+                    ))}
+                  </MenuOptionGroup>
+                </MenuList>
+              </Portal>
+            </Menu>
+          )}
+
+          {isDesktop && props.onToggleContainerSize && (
             <Tooltip label={intl.formatMessage({ id: 'live.player.wide' })}>
-              <Button variant="ghost" size="sm" onClick={onToggleContainerSize}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={props.onToggleContainerSize}
+              >
                 <FiChevronsUp />
               </Button>
             </Tooltip>
           )}
 
           <Tooltip label={intl.formatMessage({ id: 'live.player.maximize' })}>
-            <Button variant="ghost" size="sm" onClick={onToggleMaximize}>
+            <Button variant="ghost" size="sm" onClick={props.onToggleMaximize}>
               <FiMaximize />
             </Button>
           </Tooltip>
@@ -230,3 +287,28 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: flex-end;
 `;
+
+const livePlayTypes: { id: LivePlayType; badge?: string }[] = [
+  {
+    id: LivePlayType.Flv,
+    badge: 'FLV'
+  },
+  {
+    id: LivePlayType.HlsHq,
+    badge: 'HLS'
+  },
+  {
+    id: LivePlayType.HlsLq,
+    badge: 'HLS'
+  },
+  {
+    id: LivePlayType.Audio,
+    badge: 'HLS'
+  }
+];
+
+const videoPlayTypes: { id: VideoPlayType; badge?: string }[] = [
+  {
+    id: VideoPlayType.HlsHq
+  }
+];

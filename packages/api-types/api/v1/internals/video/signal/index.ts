@@ -12,6 +12,8 @@ export type Methods = {
       serverToken: string;
       // record:done
       cacheSize?: string;
+      // record:done, record:failed
+      type?: 'hq';
     };
 
     resBody: {

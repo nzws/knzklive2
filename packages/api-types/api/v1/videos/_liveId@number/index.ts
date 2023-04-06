@@ -5,14 +5,16 @@ export type PlaybackTimestamp = {
   endedAt: string;
 };
 
+export type VideoUrls = {
+  hlsHq?: string;
+};
+
 export type Methods = {
   get: {
     reqHeaders?: AuthorizationHeader;
 
     resBody: {
-      url: {
-        hlsHq?: string;
-      };
+      url: VideoUrls;
       isCacheDeleted: boolean;
       isOriginalDeleted: boolean;
       watchCount: number;

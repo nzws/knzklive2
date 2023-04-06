@@ -9,7 +9,7 @@ import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useVideoStream } from '~/utils/hooks/use-video-stream';
 
 type Props = {
-  thumbnailUrl?: string;
+  thumbnailUrl: string;
   url?: LiveUrls;
   updateUrl: () => Promise<unknown | undefined>;
   onToggleContainerSize?: () => void;
@@ -17,13 +17,12 @@ type Props = {
   streamerUserId: number;
 };
 
-export const Video: FC<Props> = ({
+export const LivePlayer: FC<Props> = ({
   thumbnailUrl,
   url,
   updateUrl,
   onToggleContainerSize,
-  isStreamer,
-  streamerUserId
+  isStreamer
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +33,7 @@ export const Video: FC<Props> = ({
   const { show, events } = usePlayerTouch();
   const [canPlay, setCanPlay] = useState(false);
   const [maybeBlocked, setMaybeBlocked] = useState(false);
-  const { playType, setPlayType, play } = useVideoStream(videoRef, url);
+  const { playType, setPlayType, play } = useVideoStream('live', videoRef, url);
 
   const autoSeek = useCallback(() => {
     void (async () => {
@@ -165,10 +164,7 @@ export const Video: FC<Props> = ({
       <VideoContainer
         ratio={16 / 9}
         style={{
-          backgroundImage: `url(${
-            thumbnailUrl ||
-            `/api/default-thumbnail.png?userId=${streamerUserId}`
-          })`
+          backgroundImage: `url(${thumbnailUrl})`
         }}
       >
         <video ref={videoRef} autoPlay playsInline controls={false} />
@@ -183,6 +179,7 @@ export const Video: FC<Props> = ({
       {maybeBlocked && canPlay && <Blocking onClick={autoSeek} />}
 
       <Controller
+        isLive
         onLive={autoSeek}
         onToggleContainerSize={onToggleContainerSize}
         onToggleMaximize={toggleMaximize}
