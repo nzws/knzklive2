@@ -8,6 +8,7 @@ import { middlewareCatch } from './middlewares/catch';
 import { middlewareGetUserId } from './middlewares/user-id';
 import { MastodonStreaming } from './streaming/mastodon';
 import { createBoard } from './services/queues/_board';
+import { initializeCronQueue } from './services/queues/cron';
 
 export const app = async (): Promise<void> => {
   const app = new Koa();
@@ -34,6 +35,8 @@ export const app = async (): Promise<void> => {
   const mastodon = new MastodonStreaming();
   await mastodon.prepareHashtag();
   mastodon.connect();
+
+  await initializeCronQueue();
 
   process.on('SIGTERM', () => {
     server.close();

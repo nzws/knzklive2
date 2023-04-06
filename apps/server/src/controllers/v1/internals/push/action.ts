@@ -10,6 +10,7 @@ import { validateWithType } from '../../../../utils/validate';
 import { webhookQueue } from '../../../../services/queues/webhook';
 import { videoApi } from '../../../../services/video-api';
 import { baseVideoStream, serverToken } from '../../../../utils/constants';
+import { VideoStorageClient } from '../../../../services/storage/_client';
 
 type Request = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
@@ -102,6 +103,10 @@ export const postV1InternalsPushAction: APIRoute<
       BigInt(body.fileSize)
     );
 
+    const downloadUrl = await new VideoStorageClient().getSignedDownloadUrl(
+      body.recordingKey
+    );
+
     if (live.watchToken) {
       await webhookQueue.add('system:video:publish', {
         url: videoApi(
@@ -110,7 +115,8 @@ export const postV1InternalsPushAction: APIRoute<
         postBody: {
           liveId: live.id,
           watchToken: live.watchToken,
-          serverToken
+          serverToken,
+          downloadUrl
         },
         timeout: 1000 * 60
       });

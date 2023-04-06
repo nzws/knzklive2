@@ -46,14 +46,16 @@ export class Action {
         console.warn(e);
       }
 
+      const currentCacheSize = await getDirectorySize(
+        getDirectory(liveId, watchToken)
+      );
+
       void client.v1.internals.video.signal.$post({
         body: {
           liveId,
           action: 'record:done',
           serverToken,
-          cacheSize: (
-            await getDirectorySize(getDirectory(liveId, watchToken))
-          ).toString()
+          cacheSize: currentCacheSize.toString()
         }
       });
 
@@ -96,7 +98,7 @@ export class Action {
         void Action.unpublishRecording(live.liveId, live.watchToken);
       }
     } catch (e) {
-      console.warn(e);
+      console.warn('checkQuota failed', e);
     }
   }
 

@@ -4,7 +4,7 @@ export type Methods = {
       liveId: number;
       watchToken: string;
       serverToken: string;
-      originalUrl: string;
+      downloadUrl: string;
       // bigint
       originalBytes: string;
     };

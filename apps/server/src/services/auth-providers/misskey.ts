@@ -102,7 +102,9 @@ export class AuthMisskey extends AuthProvider {
     return {
       account: `${body.username}@${this.domain}`.toLowerCase(),
       displayName: body.name,
-      avatarUrl: body.avatarUrl
+      avatarUrl: body.avatarUrl,
+      // fixme: なんか知らんけど Misskey API 上で分からない
+      url: `https://${this.domain}/@${body.username}`
     };
   }
 

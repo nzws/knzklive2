@@ -6,7 +6,7 @@ export type Methods = {
   patch: {
     reqHeaders: AuthorizationHeader;
 
-    reqBody: Partial<Omit<LiveSetting, 'hashtag' | 'privacy' | 'isRecording'>>;
+    reqBody: Partial<Omit<LiveSetting, 'hashtag' | 'isRecording'>>;
 
     resBody: {
       success: boolean;
@@ -18,6 +18,15 @@ export type Methods = {
 
     resBody: {
       live: LivePrivate;
+    };
+  };
+
+  // todo: not implemented
+  delete: {
+    reqHeaders: AuthorizationHeader;
+
+    resBody: {
+      success: boolean;
     };
   };
 };

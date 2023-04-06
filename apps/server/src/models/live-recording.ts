@@ -1,6 +1,11 @@
-import { LiveRecordingStatus, PrismaClient } from '@prisma/client';
+import {
+  Live,
+  LiveRecording,
+  LiveRecordingStatus,
+  PrismaClient
+} from '@prisma/client';
 import { lives } from '.';
-import { LiveLastWatchedAt } from '../services/redis/live-last-watched-at';
+import { VideoWatchingLogCache } from '../services/redis/video-watching-log-cache';
 
 export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
   Object.assign(client, {
@@ -16,7 +21,7 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
     createOrUpdateOriginalStatus: async (
       liveId: number,
       status: LiveRecordingStatus,
-      url?: string,
+      storageKey?: string,
       size?: bigint
     ) => {
       const liveRecording = await client.findUnique({
@@ -32,7 +37,7 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
           },
           data: {
             originalStatus: status,
-            originalUrl: url,
+            originalKey: storageKey,
             originalSize: size
           }
         });
@@ -41,7 +46,7 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
           data: {
             id: liveId,
             originalStatus: status,
-            originalUrl: url,
+            originalKey: storageKey,
             originalSize: size
           }
         });
@@ -64,37 +69,30 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
         },
         orderBy: {
           recording: {
-            cacheCompletedAt: 'asc'
+            watchCountUpdatedAt: 'asc'
           }
         },
         take: 100
       });
 
-      const watchedAtCache = new LiveLastWatchedAt();
-      const watchedAtList = await Promise.all(
-        live.map(async x => ({
-          live: x,
-          watchedAt: await watchedAtCache.get(x.id)
-        }))
-      );
+      const outdatedLives = (await Promise.all(
+        live.map(async x => {
+          const watchingLogCache = new VideoWatchingLogCache(x.id);
+          const todayCount = await watchingLogCache.getActiveCount();
 
-      const outdatedLives = watchedAtList.sort((a, b) => {
-        if (!a.watchedAt) {
-          return -1;
-        }
-
-        if (!b.watchedAt) {
-          return 1;
-        }
-
-        return a.watchedAt.getTime() - b.watchedAt.getTime();
-      });
+          if (todayCount > 0) {
+            return x;
+          } else {
+            return null;
+          }
+        })
+      ).then(x => x.filter(x => x))) as (Live & { recording: LiveRecording })[];
 
       let totalSize = 0n;
       const removingLives = [];
 
       for (const live of outdatedLives) {
-        const recording = live.live.recording;
+        const recording = live.recording;
         if (!recording) {
           continue;
         }
@@ -112,6 +110,19 @@ export const LiveRecordings = (client: PrismaClient['liveRecording']) =>
         }
       }
 
-      return removingLives.map(x => x.live);
+      return removingLives;
+    },
+    async incrementCount(liveId: number, increment: number) {
+      await client.update({
+        where: {
+          id: liveId
+        },
+        data: {
+          watchCount: {
+            increment
+          },
+          watchCountUpdatedAt: new Date()
+        }
+      });
     }
   });

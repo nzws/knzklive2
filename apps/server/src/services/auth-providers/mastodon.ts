@@ -23,6 +23,7 @@ type MastodonApiV1AccountsVerifyCredentials = {
   acct?: string;
   display_name?: string;
   avatar?: string;
+  url?: string;
 };
 
 type MastodonApiV1Accounts = {
@@ -31,6 +32,7 @@ type MastodonApiV1Accounts = {
   acct?: string;
   display_name?: string;
   avatar?: string;
+  url?: string;
 };
 
 type MastodonApiV1AccountsRelationships = {
@@ -119,7 +121,8 @@ export class AuthMastodon extends AuthProvider {
     return {
       account: `${body.username}@${this.domain}`.toLowerCase(),
       displayName: body.display_name,
-      avatarUrl: body.avatar
+      avatarUrl: body.avatar,
+      url: body.url
     };
   }
 

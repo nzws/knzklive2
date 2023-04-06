@@ -112,6 +112,7 @@ export type UserPublic = {
   account: string;
   displayName?: string;
   avatarUrl?: string;
+  url: string;
 };
 
 export type ImagePublic = {

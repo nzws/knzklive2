@@ -30,6 +30,11 @@ const reqBodySchema: JSONSchemaType<Request> = {
       type: 'boolean',
       nullable: true
     },
+    privacy: {
+      type: 'string',
+      enum: ['Public', 'Private', 'Hidden'],
+      nullable: true
+    },
     config: {
       type: 'object',
       properties: {
@@ -38,8 +43,6 @@ const reqBodySchema: JSONSchemaType<Request> = {
           enum: ['generate', 'custom'],
           nullable: true
         },
-        // 権限周りの途中編集は挙動として想定通りに動かせないので、
-        // 型定義的には一応入れられるがサポートしない
         isRequiredFollowing: {
           type: 'boolean',
           nullable: true
@@ -98,6 +101,7 @@ export const patchV1Streams: APIRoute<
       title: body.title,
       description: body.description,
       sensitive: body.sensitive,
+      privacy: body.privacy,
       config: {
         ...oldConfig,
         ...body.config

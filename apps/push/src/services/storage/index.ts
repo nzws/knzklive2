@@ -57,7 +57,7 @@ export class VideoStorageClient extends StorageClient {
       process.env.VIDEO_STORAGE_S3_ENDPOINT || '',
       process.env.VIDEO_STORAGE_S3_REGION || '',
       process.env.VIDEO_STORAGE_S3_BUCKET || '',
-      process.env.VIDEO_STORAGE_S3_OVERRIDE_ACL
+      process.env.VIDEO_STORAGE_S3_OVERRIDE_ACL || 'private'
     );
   }
 

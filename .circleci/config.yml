@@ -33,7 +33,7 @@ jobs:
           at: ~/project
       - run: yarn turbo:lint
 
-  test-push:
+  push-test:
     executor: arm
     steps:
       - node/install:
@@ -42,7 +42,7 @@ jobs:
           at: ~/project
       - run: yarn workspace push test
 
-  build-and-publish:
+  push-build-and-publish:
     executor: arm
     steps:
       - attach_workspace:
@@ -63,11 +63,11 @@ workflows:
           requires:
             - setup
 
-      - test-push:
+      - push-test:
           requires:
             - setup
 
-      - build-and-publish:
+      - push-build-and-publish:
           pre-steps:
             - run: echo 'export TAG=staging' >> "$BASH_ENV"
           requires:
@@ -85,11 +85,11 @@ workflows:
           requires:
             - setup
 
-      - test-push:
+      - push-test:
           requires:
             - setup
 
-      - build-and-publish:
+      - push-build-and-publish:
           pre-steps:
             - run: echo 'export TAG=latest' >> "$BASH_ENV"
           requires:

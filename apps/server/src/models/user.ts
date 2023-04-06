@@ -10,7 +10,8 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       id: user.id,
       account: user.account,
       displayName: user.displayName || undefined,
-      avatarUrl: user.avatarUrl || undefined
+      avatarUrl: user.avatarUrl || undefined,
+      url: user.url || getFallbackUrl(user.account)
     }),
     getPrivate: (user: User): UserPrivate => ({
       ...users.getPublic(user),
@@ -102,3 +103,9 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       return newUser;
     }
   });
+
+const getFallbackUrl = (acct: string) => {
+  const [username, domain] = acct.split('@');
+
+  return `https://${domain}/@${username}`;
+};

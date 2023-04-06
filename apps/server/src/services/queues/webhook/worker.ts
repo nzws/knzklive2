@@ -38,11 +38,7 @@ const doPostAction = async <U extends JobData>(
   }
 };
 
-export const webhookWorker = new Worker<
-  JobData['data'],
-  JobResult,
-  JobData['name']
->(
+const worker = new Worker<JobData['data'], JobResult, JobData['name']>(
   name,
   async job => {
     const { url, postBody, timeout } = job.data as Job['data'];
@@ -74,3 +70,7 @@ export const webhookWorker = new Worker<
   },
   { connection: queueRedis }
 );
+
+worker.on('error', err => {
+  console.error('worker error', err);
+});

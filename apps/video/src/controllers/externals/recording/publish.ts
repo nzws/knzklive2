@@ -13,14 +13,14 @@ const schema: JSONSchemaType<Requests> = {
     liveId: { type: 'number' },
     watchToken: { type: 'string' },
     serverToken: { type: 'string' },
-    originalUrl: { type: 'string' },
+    downloadUrl: { type: 'string' },
     originalBytes: { type: 'string' }
   },
   required: [
     'liveId',
     'watchToken',
     'serverToken',
-    'originalUrl',
+    'downloadUrl',
     'originalBytes'
   ],
   additionalProperties: false
@@ -48,7 +48,7 @@ export const apiExternalRecordingPublish: Middleware = ctx => {
   void Action.publishRecording(
     body.liveId,
     body.watchToken,
-    body.originalUrl,
+    body.downloadUrl,
     body.originalBytes
   );
 

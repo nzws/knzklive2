@@ -1,10 +1,7 @@
 import type Mpegts from 'mpegts.js';
 import type Hls from 'hls.js';
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  LiveUrls,
-  PlaybackUrls
-} from 'api-types/api/v1/lives/_liveId@number/url';
+import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useAPIError } from './api/use-api-error';
 
 export enum PlayType {

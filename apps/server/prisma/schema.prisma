@@ -25,6 +25,7 @@ model User {
   displayName    String?   @db.VarChar(200)
   avatarUrl      String?   @db.VarChar(200)
   config         Json
+  url            String?   @db.VarChar(200)
 
   tenants     Tenant[]
   lives       Live[]
@@ -123,7 +124,7 @@ enum LiveRecordingStatus {
 
 model LiveRecording {
   id             Int                 @id
-  originalUrl    String?             @db.VarChar(200)
+  originalKey    String?             @db.VarChar(200)
   originalStatus LiveRecordingStatus @default(NotFound)
   originalSize   BigInt?
   originalCompletedAt DateTime?
@@ -131,6 +132,7 @@ model LiveRecording {
   cacheSize      BigInt?
   cacheCompletedAt DateTime?
   watchCount     Int                 @default(0)
+  watchCountUpdatedAt DateTime       @default(now())
 
   live Live @relation(fields: [id], references: [id])
 }
