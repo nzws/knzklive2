@@ -89,7 +89,7 @@ export class Action {
         // 録画データの生成を待つ
         await session.encoder.cleanup();
 
-        const path = await session.encoder.mergeAndCleanupRecording();
+        const path = await session.encoder.mergeRecording();
         if (!path) {
           throw new Error('merge recording failed');
         }

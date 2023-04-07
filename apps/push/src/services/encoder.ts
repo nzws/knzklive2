@@ -64,9 +64,16 @@ export class Encoder {
 
     const stream = ffmpeg(this.rtmp)
       .outputFPS(30)
+      .audioCodec('aac')
+      .audioBitrate('128k')
+      .audioChannels(2)
+      .videoCodec('libx264')
+      .videoBitrate('2500k')
+      .size('1920x1080')
+      .autopad()
       .format('mp4')
       .output(`${chunkDir}/${timestamp}.mp4`)
-      .outputOptions([`-vf scale='if(gt(iw\\,1920)\\,1920\\,iw)':-2`])
+      .outputOptions(['-async 1', '-vsync 1'])
       .duration(remainingSeconds);
 
     stream.on('start', (cmd: string) => {
@@ -114,18 +121,17 @@ export class Encoder {
     return stream;
   }
 
-  async mergeAndCleanupRecording() {
+  async mergeRecording() {
     const recordingStream = this.streams.find(s => s.type === 'recording');
     if (recordingStream) {
       recordingStream.stream.kill('SIGKILL');
     }
-    const ext = 'mp4';
 
     const chunkDir = this.persistentDir + '/chunks';
     const files = (await readdir(chunkDir))
       .map(f => parseInt(f.split('.')[0], 10))
       .sort((a, b) => a - b)
-      .map(f => `${chunkDir}/${f}.${ext}`);
+      .map(f => `${chunkDir}/${f}.mp4`);
     if (files.length === 0) {
       return;
     }
@@ -135,7 +141,7 @@ export class Encoder {
     }
 
     return new Promise<string>((resolve, reject) => {
-      const filePath = `${this.persistentDir}/recording.${ext}`;
+      const filePath = `${this.persistentDir}/recording.mp4`;
       const stream = ffmpeg();
       files.forEach(f => {
         stream.input(f);
@@ -146,6 +152,18 @@ export class Encoder {
         console.log('Start Merge Recording', this.liveId, cmd);
       });
 
+      stream.on(
+        'progress',
+        (progress: { frames: number; percent?: string }) => {
+          console.log(
+            'Progress Merge Recording',
+            this.liveId,
+            progress.frames,
+            progress.percent
+          );
+        }
+      );
+
       stream.on('error', (err: Error) => {
         console.warn('Error Merge Recording', this.liveId, err);
         reject(err);
@@ -154,7 +172,6 @@ export class Encoder {
       stream.on('end', () => {
         console.log('End Merge Recording', this.liveId);
 
-        void rm(chunkDir, { recursive: true });
         resolve(filePath);
       });
     });

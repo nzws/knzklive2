@@ -66,9 +66,17 @@ export class Encoder {
         console.log('Start HQ', this.liveId, cmd);
       });
 
-      stream.on('progress', progress => {
-        console.log('Progress HQ', this.liveId, progress);
-      });
+      stream.on(
+        'progress',
+        (progress: { frames: number; percent?: string }) => {
+          console.log(
+            'Progress HQ',
+            this.liveId,
+            progress.frames,
+            progress.percent
+          );
+        }
+      );
 
       stream.on('error', err => {
         console.warn('Error HQ', this.liveId, err);
