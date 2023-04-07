@@ -166,7 +166,7 @@ export const useVideoStream = <T extends 'live' | 'video'>(
             await handleFlv(live.flv);
           } catch (e) {
             if (e instanceof FlvNotSupportedError) {
-              setPlayType(LivePlayType.HlsHq as PlayType<T>);
+              setPlayType(LivePlayType.HlsLq as PlayType<T>);
             }
           }
         })();

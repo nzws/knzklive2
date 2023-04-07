@@ -63,14 +63,10 @@ export class Encoder {
     const timestamp = Math.round(Date.now() / 1000);
 
     const stream = ffmpeg(this.rtmp)
+      .outputFPS(30)
       .format('mp4')
       .output(`${chunkDir}/${timestamp}.mp4`)
-      .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency'])
-      .outputOptions([
-        '-preset veryfast',
-        '-crf 22',
-        `-vf scale='if(gt(iw\\,1920)\\,1920\\,iw)':-2`
-      ])
+      .outputOptions([`-vf scale='if(gt(iw\\,1920)\\,1920\\,iw)':-2`])
       .duration(remainingSeconds);
 
     stream.on('start', (cmd: string) => {
@@ -119,16 +115,17 @@ export class Encoder {
   }
 
   async mergeAndCleanupRecording() {
-    const mp4Stream = this.streams.find(s => s.type === 'recording');
-    if (mp4Stream) {
-      mp4Stream.stream.kill('SIGKILL');
+    const recordingStream = this.streams.find(s => s.type === 'recording');
+    if (recordingStream) {
+      recordingStream.stream.kill('SIGKILL');
     }
+    const ext = 'mp4';
 
     const chunkDir = this.persistentDir + '/chunks';
     const files = (await readdir(chunkDir))
       .map(f => parseInt(f.split('.')[0], 10))
       .sort((a, b) => a - b)
-      .map(f => `${chunkDir}/${f}.mp4`);
+      .map(f => `${chunkDir}/${f}.${ext}`);
     if (files.length === 0) {
       return;
     }
@@ -138,8 +135,8 @@ export class Encoder {
     }
 
     return new Promise<string>((resolve, reject) => {
-      const filePath = `${this.persistentDir}/recording.mp4`;
-      const stream = ffmpeg().outputFPS(30);
+      const filePath = `${this.persistentDir}/recording.${ext}`;
+      const stream = ffmpeg();
       files.forEach(f => {
         stream.input(f);
       });
@@ -163,7 +160,7 @@ export class Encoder {
     });
   }
 
-  async cleanupMergedMp4() {
+  async cleanupMergedRecording() {
     await rm(this.persistentDir, { recursive: true });
   }
 

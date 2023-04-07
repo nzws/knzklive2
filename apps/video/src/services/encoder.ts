@@ -19,7 +19,7 @@ export class Encoder {
   }[] = [];
 
   constructor(
-    private mp4Path: string,
+    private videoPath: string,
     private liveId: number,
     watchToken: string
   ) {
@@ -51,9 +51,7 @@ export class Encoder {
     }
     const dir = await this.cleanupDirectory('hq');
 
-    const stream = ffmpeg(this.mp4Path)
-      .audioCodec('copy')
-      .videoCodec('copy')
+    const stream = ffmpeg(this.videoPath)
       .format('hls')
       .outputOptions(['-hls_time 5', '-hls_list_size 0'])
       .output(`${dir}/index.m3u8`);
@@ -66,6 +64,10 @@ export class Encoder {
     return new Promise<void>((resolve, reject) => {
       stream.on('start', (cmd: string) => {
         console.log('Start HQ', this.liveId, cmd);
+      });
+
+      stream.on('progress', progress => {
+        console.log('Progress HQ', this.liveId, progress);
       });
 
       stream.on('error', err => {

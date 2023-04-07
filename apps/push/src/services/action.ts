@@ -86,16 +86,16 @@ export class Action {
           }
         });
 
-        // mp4 の生成を待つ
+        // 録画データの生成を待つ
         await session.encoder.cleanup();
 
         const path = await session.encoder.mergeAndCleanupRecording();
         if (!path) {
-          throw new Error('merge mp4 failed');
+          throw new Error('merge recording failed');
         }
         const { size } = await stat(path, { bigint: true });
         const { key } = await new VideoStorageClient().putMp4(liveId, path);
-        await session.encoder.cleanupMergedMp4();
+        await session.encoder.cleanupMergedRecording();
 
         void client.v1.internals.push.action.$post({
           body: {
@@ -107,7 +107,7 @@ export class Action {
           }
         });
       } catch (e) {
-        console.warn('merge mp4 failed', e);
+        console.warn('merge recording failed', e);
 
         void client.v1.internals.push.action.$post({
           body: {

@@ -9,7 +9,7 @@ export class Action {
   static async publishRecording(
     liveId: number,
     watchToken: string,
-    originalMp4Url: string,
+    originalVideoUrl: string,
     originalBytes: string
   ) {
     try {
@@ -23,7 +23,7 @@ export class Action {
 
       await mkdir(`/home/node/recordings`, { recursive: true });
       const path = `/home/node/recordings/${liveId}_${watchToken}.mp4`;
-      await download(originalMp4Url, path);
+      await download(originalVideoUrl, path);
       const { size } = await stat(path, { bigint: true });
       if (size.toString() !== originalBytes) {
         console.warn({
