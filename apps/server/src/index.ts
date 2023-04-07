@@ -1,14 +1,16 @@
 import * as Sentry from '@sentry/node';
+import { CaptureConsole } from '@sentry/integrations';
 
 const dsn = process.env.SENTRY_DSN;
 
 if (dsn) {
   Sentry.init({
     dsn,
-
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    // We recommend adjusting this value in production
+    integrations: [
+      new CaptureConsole({
+        levels: ['error', 'warn']
+      })
+    ],
     tracesSampleRate: 1.0
   });
 }
