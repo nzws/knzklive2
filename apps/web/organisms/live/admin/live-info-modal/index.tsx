@@ -42,6 +42,7 @@ type Props = {
     preferMoveTo?: 'broadcast-via-browser'
   ) => void;
   isCreate?: boolean;
+  allowUnstable?: boolean;
 };
 
 const guidelineDocs =
@@ -56,7 +57,8 @@ export const LiveInfoModal: FC<Props> = ({
   live,
   tenantId,
   onSubmitted,
-  isCreate
+  isCreate,
+  allowUnstable
 }) => {
   const { token } = useAuth();
   const intl = useIntl();
@@ -320,28 +322,30 @@ export const LiveInfoModal: FC<Props> = ({
                   </FormHelperText>
                 </FormControl>
 
-                <FormControl>
-                  <Checkbox
-                    isChecked={isRecording}
-                    onChange={e => setIsRecording(e.target.checked)}
-                  >
-                    配信を録画する (最長約1時間)
-                    <NewFeature />
-                  </Checkbox>
-
-                  <FormHelperText>
-                    1時間以上配信をすると録画は途中でカットされます。
-                    <Link
-                      href={liveRecordingDocs}
-                      isExternal
-                      fontWeight="normal"
-                      fontSize="sm"
-                      ml={1}
+                {allowUnstable && (
+                  <FormControl>
+                    <Checkbox
+                      isChecked={isRecording}
+                      onChange={e => setIsRecording(e.target.checked)}
                     >
-                      録画について <ExternalLinkIcon mx="2px" />
-                    </Link>
-                  </FormHelperText>
-                </FormControl>
+                      配信を録画する (最長約1時間)
+                      <NewFeature />
+                    </Checkbox>
+
+                    <FormHelperText>
+                      1時間以上配信をすると録画は途中でカットされます。
+                      <Link
+                        href={liveRecordingDocs}
+                        isExternal
+                        fontWeight="normal"
+                        fontSize="sm"
+                        ml={1}
+                      >
+                        録画について <ExternalLinkIcon mx="2px" />
+                      </Link>
+                    </FormHelperText>
+                  </FormControl>
+                )}
               </Fragment>
             )}
 

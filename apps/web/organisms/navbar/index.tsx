@@ -82,6 +82,7 @@ export const Navbar: FC = () => {
           live={liveCreatingPrevious}
           tenantId={liveCreatingTenant?.id}
           isCreate
+          allowUnstable={me?.config.allowUnstableFeatures}
         />
       )}
 
