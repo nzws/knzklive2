@@ -9860,13 +9860,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mpegts.js@npm:1.7.2":
-  version: 1.7.2
-  resolution: "mpegts.js@npm:1.7.2"
+"mpegts.js@npm:1.7.3":
+  version: 1.7.3
+  resolution: "mpegts.js@npm:1.7.3"
   dependencies:
     es6-promise: ^4.2.5
     webworkify-webpack: ^2.1.5
-  checksum: a773f0cbabb4be3ebd5f790025b2f85bc5744c33d668dd4a5427736d35e6bc313e31df3daa282a1cd72f7f48d280e9f030f2db23fa59bf998d2d4e73cc0e6cc3
+  checksum: 102a11b701b75657ef89bff329255c168101e322a6232397a10e91c013c14dfad96581f2a614847ce22934cd8822eecd0c3d96a1bdd42a60114f36456b26f13f
   languageName: node
   linkType: hard
 
@@ -13102,7 +13102,7 @@ __metadata:
     jest: 29.5.0
     jest-environment-jsdom: 29.5.0
     jose: 4.13.1
-    mpegts.js: 1.7.2
+    mpegts.js: 1.7.3
     next: 13.2.4
     nextjs-progressbar: 0.0.16
     npm-run-all: 4.1.5
