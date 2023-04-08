@@ -119,6 +119,10 @@ export const Admin: FC<Props> = ({
                       間隔が大きい/オートだと視聴がカクつきます)
                     </ListItem>
                     <ListItem>出力解像度: 1920x1080</ListItem>
+                    <ListItem>
+                      ビットレート: 2000 kbps 前後
+                      (重くなる場合は落としてください)
+                    </ListItem>
                   </UnorderedList>
                 </Stack>
 

@@ -120,6 +120,11 @@ export class Action {
         });
       console.log('checkQuota: outdatedLives', outdatedLives);
 
+      if (outdatedLives.length === 0) {
+        console.warn('checkQuota: no outdated lives, but quota exceeded');
+        return;
+      }
+
       for (const live of outdatedLives) {
         void Action.unpublishRecording(live.liveId, live.watchToken);
       }

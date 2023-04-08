@@ -10,7 +10,7 @@
     header @isM3u8 Content-Type "application/x-mpegURL"
     header @isTs Content-Type "video/MP2T"
 
-    header Cache-Control "public, max-age=31536000"
+    header @isTs Cache-Control "public, max-age=31536000"
 
     file_server
   }

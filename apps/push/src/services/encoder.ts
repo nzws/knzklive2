@@ -63,7 +63,6 @@ export class Encoder {
     const timestamp = Math.round(Date.now() / 1000);
 
     const stream = ffmpeg(this.rtmp)
-      .outputFPS(30)
       .audioCodec('aac')
       .audioBitrate('128k')
       .audioChannels(2)
@@ -77,7 +76,12 @@ export class Encoder {
       .duration(remainingSeconds);
 
     stream.on('start', (cmd: string) => {
-      console.log('Start Recording', this.liveId, cmd);
+      console.log(
+        'Start Recording',
+        this.liveId,
+        `remaining: ${remainingSeconds}s`,
+        cmd
+      );
     });
 
     stream.on('error', err => {
@@ -99,7 +103,7 @@ export class Encoder {
           const timeout = setTimeout(() => {
             console.warn('Timeout Recording', this.liveId);
             stream.kill('SIGKILL');
-          }, 1000 * 60 * 60); // 1 hour
+          }, 1000 * 60 * 5); // 5 minutes
 
           stream.on('end', () => {
             clearTimeout(timeout);
@@ -186,6 +190,7 @@ export class Encoder {
       return;
     }
 
+    const idx = Math.round(Date.now() / 1000);
     const path = await this.cleanupDirectory('low');
 
     const stream = ffmpeg(this.rtmp)
@@ -197,12 +202,12 @@ export class Encoder {
       .size('640x360')
       .autopad()
       .format('hls')
-      .outputFPS(30)
       .outputOptions([
         '-g 30',
         '-hls_time 1',
         '-hls_list_size 10',
-        '-hls_flags delete_segments+omit_endlist'
+        '-hls_flags delete_segments+omit_endlist',
+        `-hls_segment_filename ${path}/${idx}-%d.ts`
       ])
       .output(`${path}/stream.m3u8`)
       .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency']);
@@ -239,6 +244,7 @@ export class Encoder {
       return;
     }
 
+    const idx = Math.round(Date.now() / 1000);
     const path = await this.cleanupDirectory('audio');
 
     const stream = ffmpeg(this.rtmp)
@@ -249,7 +255,8 @@ export class Encoder {
         '-g 30',
         '-hls_time 1',
         '-hls_list_size 10',
-        '-hls_flags delete_segments+omit_endlist'
+        '-hls_flags delete_segments+omit_endlist',
+        `-hls_segment_filename ${path}/${idx}-%d.ts`
       ])
       .output(`${path}/stream.m3u8`)
       .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency']);

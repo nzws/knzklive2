@@ -20,7 +20,7 @@ export type Methods = {
       isOriginalDeleted: boolean;
       watchCount: number;
 
-      timestamps: PlaybackTimestamp[];
+      timestamps?: PlaybackTimestamp[];
     };
   };
 };

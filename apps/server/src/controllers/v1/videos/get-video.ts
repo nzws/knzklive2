@@ -61,15 +61,9 @@ export const getV1Video: APIRoute<
   const todayCount = await new VideoWatchingLogCache(live.id).getActiveCount();
   const watchCount = (recording?.watchCount || 0) + todayCount;
 
-  if (timestamps.some(timestamp => timestamp.endedAt === null)) {
-    ctx.status = 400;
-    ctx.body = {
-      errorCode: 'invalid_request',
-      message:
-        'タイムスタンプの収集中です。数分経っても変化しない場合はお問い合わせください'
-    };
-    return;
-  }
+  const isTimestampInProgress = timestamps.some(
+    timestamp => timestamp.endedAt === null
+  );
 
   // 最初のタイムスタンプは配信開始前の正確なデータが入っているので workaround
   if (live.startedAt) {
@@ -86,13 +80,15 @@ export const getV1Video: APIRoute<
     isCacheDeleted,
     isOriginalDeleted,
     watchCount,
-    timestamps: (timestamps as Timestamp[]).map(timestamp => ({
-      startedAt: timestamp.startedAt.toISOString(),
-      endedAt: timestamp.endedAt.toISOString(),
-      duration: Math.floor(
-        (timestamp.endedAt.getTime() - timestamp.startedAt.getTime()) / 1000
-      )
-    }))
+    timestamps: isTimestampInProgress
+      ? (timestamps as Timestamp[]).map(timestamp => ({
+          startedAt: timestamp.startedAt.toISOString(),
+          endedAt: timestamp.endedAt.toISOString(),
+          duration: Math.floor(
+            (timestamp.endedAt.getTime() - timestamp.startedAt.getTime()) / 1000
+          )
+        }))
+      : undefined
   };
 };
 
