@@ -44,6 +44,11 @@ export const useVideoStream = <T extends 'live' | 'video'>(
         return;
       }
 
+      if (mpegtsPlayerRef.current) {
+        mpegtsPlayerRef.current.destroy();
+        mpegtsPlayerRef.current = undefined;
+      }
+
       try {
         const Mpegts = (await import('mpegts.js')).default;
 
@@ -83,6 +88,10 @@ export const useVideoStream = <T extends 'live' | 'video'>(
       if (!videoTagRef.current) {
         return;
       }
+      if (hlsPlayerRef.current) {
+        hlsPlayerRef.current.destroy();
+        hlsPlayerRef.current = undefined;
+      }
 
       let player: Hls;
       try {
@@ -98,7 +107,16 @@ export const useVideoStream = <T extends 'live' | 'video'>(
               liveMaxLatencyDuration: 5,
               liveDurationInfinity: true,
               highBufferWatchdogPeriod: 1,
-              manifestLoadingMaxRetry: 4,
+              manifestLoadingTimeOut: 3000,
+              manifestLoadingMaxRetry: 10,
+              manifestLoadingMaxRetryTimeout: 3000,
+              levelLoadingTimeOut: 3000,
+              levelLoadingMaxRetry: 10,
+              levelLoadingMaxRetryTimeout: 3000,
+              fragLoadingTimeOut: 3000,
+              fragLoadingMaxRetry: 10,
+              fragLoadingMaxRetryTimeout: 3000,
+              startFragPrefetch: false,
               progressive: true
             });
           } else {
@@ -121,14 +139,19 @@ export const useVideoStream = <T extends 'live' | 'video'>(
                   setTimeout(() => {
                     player.loadSource(url);
                     player.startLoad();
-                  }, 500);
+                  }, 1000);
                 } else {
-                  player.startLoad();
+                  setTimeout(() => {
+                    player.startLoad();
+                  }, 1000);
                 }
                 break;
               }
               case Hls.ErrorTypes.MEDIA_ERROR:
-                player.recoverMediaError();
+                setTimeout(() => {
+                  player.recoverMediaError();
+                }, 1000);
+
                 break;
               default:
                 if (data.fatal) {
