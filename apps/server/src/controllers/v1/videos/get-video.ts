@@ -81,14 +81,14 @@ export const getV1Video: APIRoute<
     isOriginalDeleted,
     watchCount,
     timestamps: isTimestampInProgress
-      ? (timestamps as Timestamp[]).map(timestamp => ({
+      ? undefined
+      : (timestamps as Timestamp[]).map(timestamp => ({
           startedAt: timestamp.startedAt.toISOString(),
           endedAt: timestamp.endedAt.toISOString(),
           duration: Math.floor(
             (timestamp.endedAt.getTime() - timestamp.startedAt.getTime()) / 1000
           )
         }))
-      : undefined
   };
 };
 
