@@ -66,6 +66,8 @@
   "live.sensitive.enter": "Watch",
   "live.comment.title": "Comment",
   "live.comment.title.with-hashtag": "Comment #{hashtag}",
+  "video.comment.title": "Comment (replay)",
+  "video.comment.title.with-hashtag": "Comment (replay) #{hashtag}",
   "live.comment-post.require-login": "To post a comment, please sign in",
   "live.comment-post.require-login.with-hashtag": "To post a comment, please sign in or post as publicly with #{hashtag}",
   "live.comment-post.placeholder": "Enter to comment",
