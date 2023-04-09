@@ -72,7 +72,7 @@ export class Encoder {
       .autopad()
       .format('mp4')
       .output(`${chunkDir}/${timestamp}.mp4`)
-      .outputOptions(['-async 1', '-vsync 1'])
+      .outputOptions(['-async 1', '-vsync 1', '-filter:v fps=30'])
       .duration(remainingSeconds);
 
     stream.on('start', (cmd: string) => {
@@ -207,7 +207,8 @@ export class Encoder {
         '-hls_time 1',
         '-hls_list_size 10',
         '-hls_flags delete_segments+omit_endlist',
-        `-hls_segment_filename ${path}/${idx}-%d.ts`
+        `-hls_segment_filename ${path}/${idx}-%d.ts`,
+        '-filter:v fps=30'
       ])
       .output(`${path}/stream.m3u8`)
       .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency']);
