@@ -1,7 +1,7 @@
 import { Methods } from 'api-types/api/v1/videos/_liveId@number';
 import { liveRecordings, lives } from '../../../models';
 import { jwtEdge } from '../../../services/jwt';
-import { baseVideoStream } from '../../../utils/constants';
+import { baseVideoPlay } from '../../../utils/constants';
 import { APIRoute, LiveState } from '../../../utils/types';
 import { LiveRecordingStatus } from '@prisma/client';
 import { liveStreamProgresses } from '../../../models';
@@ -48,7 +48,7 @@ export const getV1Video: APIRoute<
   const recording = await liveRecordings.get(live.id);
   const timestamps = await liveStreamProgresses.getList(live.id);
 
-  const hqUrl = `${baseVideoStream}/static/${live.id}_${live.watchToken}/hq/index.m3u8?token=${token}`;
+  const hqUrl = `${baseVideoPlay}/static/${live.id}_${live.watchToken}/hq/index.m3u8?token=${token}`;
   const isCacheDeleted =
     recording?.cacheHqStatus === LiveRecordingStatus.Deleted ||
     recording?.cacheHqStatus === LiveRecordingStatus.Failed;

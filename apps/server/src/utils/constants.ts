@@ -11,6 +11,12 @@ export const basePushStream = `${PROTOCOL}://${process.env.PUSH_DOMAIN || ''}`;
 export const baseVideoStream = `${PROTOCOL}://${
   process.env.VIDEO_DOMAIN || ''
 }`;
+export const basePushPlay = `${PROTOCOL}://${
+  process.env.PUSH_CDN_DOMAIN || process.env.PUSH_DOMAIN || ''
+}`;
+export const baseVideoPlay = `${PROTOCOL}://${
+  process.env.VIDEO_CDN_DOMAIN || process.env.VIDEO_DOMAIN || ''
+}`;
 export const frontendUrl = process.env.FRONTEND_ENDPOINT || '';
 export const getPushUrl = () =>
   `rtmp://${(process.env.PUSH_DOMAIN || '').split(':')[0]}/live`;

@@ -1,7 +1,7 @@
 import { Methods } from 'api-types/api/v1/lives/_liveId@number/url';
 import { lives } from '../../../models';
 import { jwtEdge } from '../../../services/jwt';
-import { basePushStream } from '../../../utils/constants';
+import { basePushPlay } from '../../../utils/constants';
 import { APIRoute, LiveState } from '../../../utils/types';
 
 type Response = Methods['get']['resBody'];
@@ -45,9 +45,9 @@ export const getV1LivesUrl: APIRoute<
   }
 
   ctx.body = {
-    flv: `${basePushStream}/streaming/live/${live.id}_${live.watchToken}.flv?token=${token}`,
-    hlsHq: `${basePushStream}/static/live/${live.id}_${live.watchToken}/source/stream.m3u8?token=${token}`,
-    hlsLq: `${basePushStream}/static/live/${live.id}_${live.watchToken}/low/stream.m3u8?token=${token}`,
-    audio: `${basePushStream}/static/live/${live.id}_${live.watchToken}/audio/stream.m3u8?token=${token}`
+    flv: `${basePushPlay}/streaming/live/${live.id}_${live.watchToken}.flv?token=${token}`,
+    hlsHq: `${basePushPlay}/static/live/${live.id}_${live.watchToken}/source/stream.m3u8?token=${token}`,
+    hlsLq: `${basePushPlay}/static/live/${live.id}_${live.watchToken}/low/stream.m3u8?token=${token}`,
+    audio: `${basePushPlay}/static/live/${live.id}_${live.watchToken}/audio/stream.m3u8?token=${token}`
   };
 };
