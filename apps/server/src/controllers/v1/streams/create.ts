@@ -6,6 +6,7 @@ import { pubsub } from '../../../services/redis/pubsub/client';
 import { RelationCache } from '../../../services/redis/relation-cache';
 import { APIRoute, UserState } from '../../../utils/types';
 import { validateWithType } from '../../../utils/validate';
+import { enableVideo } from '../../../utils/constants';
 
 type Request = Methods['post']['reqBody'];
 type Response = Methods['post']['resBody'];
@@ -112,6 +113,15 @@ export const postV1Streams: APIRoute<
       };
       return;
     }
+  }
+
+  if (!enableVideo && body.isRecording) {
+    ctx.status = 400;
+    ctx.body = {
+      errorCode: 'invalid_request',
+      message: 'レコーディングは現在無効になっています。'
+    };
+    return;
   }
 
   try {
