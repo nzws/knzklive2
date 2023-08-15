@@ -5049,7 +5049,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.57.1
     "@typescript-eslint/experimental-utils": 5.57.1
     "@typescript-eslint/parser": 5.57.1
-    aspida: 1.11.0
+    aspida: 1.14.0
     eslint: 8.37.0
     eslint-config-prettier: 8.8.0
     eslint-plugin-aspida: 0.1.0
@@ -5201,7 +5201,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aspida@npm:1.11.0, aspida@npm:^1.7.1":
+"aspida@npm:1.14.0":
+  version: 1.14.0
+  resolution: "aspida@npm:1.14.0"
+  dependencies:
+    "@types/minimist": ^1.2.2
+    chokidar: ^3.5.3
+    form-data: ^4.0.0
+    minimist: ^1.2.8
+  bin:
+    aspida: bin/index.js
+  checksum: 2da6c8327c715dbcb17038b6db90244804158948749270ae83b75838d6767cb428164407fe737132d73bbb93828a867e6a9dd5050de6a7b0dae1bd09ccaee9d9
+  languageName: node
+  linkType: hard
+
+"aspida@npm:^1.7.1":
   version: 1.11.0
   resolution: "aspida@npm:1.11.0"
   dependencies:
@@ -9749,7 +9763,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.3, minimist@npm:^1.2.6":
+"minimist@npm:^1.2.0, minimist@npm:^1.2.3, minimist@npm:^1.2.6, minimist@npm:^1.2.8":
   version: 1.2.8
   resolution: "minimist@npm:1.2.8"
   checksum: 75a6d645fb122dad29c06a7597bddea977258957ed88d7a6df59b5cd3fe4a527e253e9bbf2e783e4b73657f9098b96a5fe96ab8a113655d4109108577ecf85b0
