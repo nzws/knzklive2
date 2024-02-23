@@ -22,7 +22,7 @@
     "@typescript-eslint/experimental-utils": "5.57.1",
     "@typescript-eslint/parser": "5.57.1",
     "aspida": "1.11.0",
-    "eslint": "8.37.0",
+    "eslint": "8.57.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-aspida": "0.1.0",
     "npm-run-all": "4.1.5",
