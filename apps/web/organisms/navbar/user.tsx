@@ -47,7 +47,7 @@ export const User: FC<Props> = ({ onCreateLive }) => {
             <FormattedMessage id="navbar.menu.account-settings" />
           </MenuItem>
 
-          <MenuItem onClick={signOut}>
+          <MenuItem onClick={() => void signOut?.()}>
             <FormattedMessage id="navbar.logout" />
           </MenuItem>
         </MenuGroup>

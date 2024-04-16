@@ -60,6 +60,7 @@ export const useAPIError = (error?: unknown): [APIError | undefined] => {
 
         return;
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const message = error.toString();
         if (lastMessageRef.current === message) {
           return;

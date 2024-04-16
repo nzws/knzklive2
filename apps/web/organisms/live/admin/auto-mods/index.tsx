@@ -108,8 +108,8 @@ export const AutoMods: FC<Props> = ({ live }) => {
                   {item.type === 'Account'
                     ? 'アカウント'
                     : item.type === 'Domain'
-                    ? 'ドメイン'
-                    : 'テキスト'}
+                      ? 'ドメイン'
+                      : 'テキスト'}
                 </Td>
                 <Td>{item.value}</Td>
                 <Td>
@@ -144,8 +144,8 @@ export const AutoMods: FC<Props> = ({ live }) => {
             type === 'Text'
               ? 'テキスト'
               : type === 'Account'
-              ? 'アカウント 例: knzk@knzk.me'
-              : 'ドメイン 例: knzk.me'
+                ? 'アカウント 例: knzk@knzk.me'
+                : 'ドメイン 例: knzk.me'
           }
           value={value}
           onChange={e => setValue(e.target.value)}

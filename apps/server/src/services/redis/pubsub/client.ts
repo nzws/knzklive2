@@ -22,7 +22,7 @@ class PubSub {
     subClient.on('message', (channelName: string, message) => {
       this.callbacks.forEach(cb => {
         if (cb.event && cb.event === channelName) {
-          cb.callback(message as string);
+          cb.callback(message);
         }
       });
     });

@@ -6,7 +6,6 @@
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "next/core-web-vitals",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
     "plugin:react/jsx-runtime",
     "plugin:jest-dom/recommended",
     "plugin:testing-library/react",

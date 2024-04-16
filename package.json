@@ -14,19 +14,18 @@
   "scripts": {
     "lint": "prettier --check --cache .",
     "format": "prettier --write --cache .",
-    "dev-all": "docker compose up -d db redis && yarn dev:migrate && dotenv -- yarn workspaces foreach --verbose --parallel -j unlimited --interlaced run dev",
+    "dev-all": "docker compose up -d db redis && yarn dev:migrate && yarn workspaces foreach --verbose --parallel -j unlimited --interlaced run dev",
     "dev": "docker compose up --build",
-    "dev:migrate": "dotenv -- yarn workspace server prisma migrate dev",
-    "dev:sql": "dotenv -- yarn workspace server prisma studio",
+    "dev:migrate": "yarn workspace server prisma migrate dev",
+    "dev:sql": "yarn workspace server prisma studio",
     "turbo:build": "turbo run build",
     "turbo:test": "turbo run test",
     "turbo:lint": "turbo run lint"
   },
   "devDependencies": {
     "@knzk/prettier-config": "1.0.0",
-    "dotenv-cli": "7.2.1",
-    "prettier": "2.8.7",
-    "turbo": "1.8.8"
+    "prettier": "3.2.5",
+    "turbo": "1.13.2"
   },
   "prettier": "@knzk/prettier-config"
 }

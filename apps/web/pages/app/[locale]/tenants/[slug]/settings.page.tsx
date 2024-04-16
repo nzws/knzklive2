@@ -116,7 +116,7 @@ const Page: NextPage<PageProps<Props, { slug: string } & PathProps>> = ({
         <title>{['配信に関する設定', 'KnzkLive'].join(' - ')}</title>
       </Head>
 
-      <Container py={6}>
+      <Container py={6} maxW="container.lg">
         <Stack spacing={6}>
           <Heading>配信に関する設定</Heading>
 

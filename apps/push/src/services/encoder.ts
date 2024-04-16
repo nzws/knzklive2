@@ -21,7 +21,11 @@ export class Encoder {
     onRequestClose: () => Promise<void>;
   }[] = [];
 
-  constructor(private liveId: number, watchToken: string, pushToken: string) {
+  constructor(
+    private liveId: number,
+    watchToken: string,
+    pushToken: string
+  ) {
     this.rtmp = `rtmp://srs:1935/live/${liveId}_${watchToken}?token=${pushToken}`;
     this.dir = `/home/node/static/live/${liveId}_${watchToken}`;
     this.persistentDir = `/home/node/persistent/${liveId}_${watchToken}`;
@@ -100,10 +104,13 @@ export class Encoder {
       onRequestClose: () => {
         return new Promise((resolve, reject) => {
           console.log('Request close Recording', this.liveId);
-          const timeout = setTimeout(() => {
-            console.warn('Timeout Recording', this.liveId);
-            stream.kill('SIGKILL');
-          }, 1000 * 60 * 5); // 5 minutes
+          const timeout = setTimeout(
+            () => {
+              console.warn('Timeout Recording', this.liveId);
+              stream.kill('SIGKILL');
+            },
+            1000 * 60 * 5
+          ); // 5 minutes
 
           stream.on('end', () => {
             clearTimeout(timeout);

@@ -1,7 +1,8 @@
 import {
   S3Client,
   PutObjectCommand,
-  GetObjectCommand
+  GetObjectCommand,
+  ObjectCannedACL
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -14,7 +15,7 @@ class StorageClient {
     endpoint: string,
     region: string,
     protected bucket: string,
-    protected acl = 'public-read'
+    protected acl: ObjectCannedACL = 'public-read'
   ) {
     this.s3 = new S3Client({
       credentials: {
@@ -73,7 +74,7 @@ export class StaticStorageClient extends StorageClient {
       process.env.STATIC_STORAGE_S3_ENDPOINT || '',
       process.env.STATIC_STORAGE_S3_REGION || '',
       process.env.STATIC_STORAGE_S3_BUCKET || '',
-      process.env.STATIC_STORAGE_S3_OVERRIDE_ACL
+      process.env.STATIC_STORAGE_S3_OVERRIDE_ACL as ObjectCannedACL
     );
   }
 
@@ -90,7 +91,8 @@ export class VideoStorageClient extends StorageClient {
       process.env.VIDEO_STORAGE_S3_ENDPOINT || '',
       process.env.VIDEO_STORAGE_S3_REGION || '',
       process.env.VIDEO_STORAGE_S3_BUCKET || '',
-      process.env.VIDEO_STORAGE_S3_OVERRIDE_ACL || 'private'
+      (process.env.VIDEO_STORAGE_S3_OVERRIDE_ACL as ObjectCannedACL) ||
+        'private'
     );
   }
 

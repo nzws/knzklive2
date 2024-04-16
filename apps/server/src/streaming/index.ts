@@ -93,6 +93,7 @@ export class Streaming {
     };
 
     socket.on('message', message => {
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       if (message.toString() === 'ping') {
         socket.send('pong');
       }

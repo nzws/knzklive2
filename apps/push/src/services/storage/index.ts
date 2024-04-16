@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  ObjectCannedACL
+} from '@aws-sdk/client-s3';
 import { ReadStream, createReadStream } from 'fs';
 import { generateToken } from '../../utils/token';
 
@@ -11,7 +15,7 @@ class StorageClient {
     endpoint: string,
     region: string,
     protected bucket: string,
-    protected acl = 'public-read'
+    protected acl: ObjectCannedACL = 'public-read'
   ) {
     this.s3 = new S3Client({
       credentials: {
@@ -59,7 +63,8 @@ export class VideoStorageClient extends StorageClient {
       process.env.VIDEO_STORAGE_S3_ENDPOINT || '',
       process.env.VIDEO_STORAGE_S3_REGION || '',
       process.env.VIDEO_STORAGE_S3_BUCKET || '',
-      process.env.VIDEO_STORAGE_S3_OVERRIDE_ACL || 'private'
+      (process.env.VIDEO_STORAGE_S3_OVERRIDE_ACL as ObjectCannedACL) ||
+        'private'
     );
   }
 

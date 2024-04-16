@@ -68,12 +68,12 @@ export const postV1InternalsVideoSignal: APIRoute<
     body.action === 'record:processing'
       ? 'Processing'
       : body.action === 'record:done' && body.type === 'hq'
-      ? 'Completed'
-      : body.action === 'record:failed' && body.type === 'hq'
-      ? 'Failed'
-      : body.action === 'record:deleted'
-      ? 'Deleted'
-      : undefined;
+        ? 'Completed'
+        : body.action === 'record:failed' && body.type === 'hq'
+          ? 'Failed'
+          : body.action === 'record:deleted'
+            ? 'Deleted'
+            : undefined;
 
   await liveRecordings.update({
     where: {

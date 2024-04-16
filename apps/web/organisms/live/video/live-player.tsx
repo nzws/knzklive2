@@ -11,7 +11,7 @@ import { useVideoStream } from '~/utils/hooks/use-video-stream';
 type Props = {
   thumbnailUrl: string;
   url?: LiveUrls;
-  updateUrl: () => Promise<unknown | undefined>;
+  updateUrl: () => Promise<unknown>;
   onToggleContainerSize?: () => void;
   isStreamer?: boolean;
   streamerUserId: number;

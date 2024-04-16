@@ -53,10 +53,23 @@ const GlobalStyle = css`
 
   p {
     /* credit: https://qiita.com/NoxGit/items/eb0904822c0f0fe97650 */
-    text-shadow: black 2px 0, black -2px 0, black 0 -2px, black 0 2px,
-      black 2px 2px, black -2px 2px, black 2px -2px, black -2px -2px,
-      black 1px 2px, black -1px 2px, black 1px -2px, black -1px -2px,
-      black 2px 1px, black -2px 1px, black 2px -1px, black -2px -1px;
+    text-shadow:
+      black 2px 0,
+      black -2px 0,
+      black 0 -2px,
+      black 0 2px,
+      black 2px 2px,
+      black -2px 2px,
+      black 2px -2px,
+      black -2px -2px,
+      black 1px 2px,
+      black -1px 2px,
+      black 1px -2px,
+      black -1px -2px,
+      black 2px 1px,
+      black -2px 1px,
+      black 2px -1px,
+      black -2px -1px;
 
     font-size: 2.3rem !important;
     line-height: 1 !important;

@@ -41,7 +41,7 @@ const Page: NextPage<PageProps<Props, PathProps>> = () => {
         </title>
       </Head>
 
-      <Container py={6}>
+      <Container py={6} maxW="container.lg">
         <Stack spacing={5}>
           <Heading>
             <FormattedMessage id="page.about.title" />

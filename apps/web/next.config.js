@@ -11,7 +11,7 @@ const injectRule = rule => {
   }
 
   const injectPath = path.resolve(__dirname, '../../packages/api-types');
-  if (!rule.include.includes(injectPath)) {
+  if (rule.include && !rule.include.includes(injectPath)) {
     rule.include.push(injectPath);
     //console.log('rule detected', rule);
   }

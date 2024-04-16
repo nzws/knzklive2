@@ -40,6 +40,7 @@ export class MastodonStreaming {
 
       ws.on('message', message => {
         try {
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string
           void this.handleMessage(message.toString());
         } catch (e) {
           console.warn(e);

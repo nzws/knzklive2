@@ -13,7 +13,10 @@ export class Jwt {
   timestamp?: number;
   cache?: APIResponse;
 
-  constructor(private readonly url: string, private readonly subject: string) {}
+  constructor(
+    private readonly url: string,
+    private readonly subject: string
+  ) {}
 
   async verify(token: string): Promise<JWTPayload | undefined> {
     try {

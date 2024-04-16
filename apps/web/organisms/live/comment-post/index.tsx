@@ -82,8 +82,8 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
                   ? 'live.comment-post.require-login.with-hashtag'
                   : 'live.comment-post.require-login'
                 : hashtag
-                ? 'live.comment-post.placeholder.with-hashtag'
-                : 'live.comment-post.placeholder'
+                  ? 'live.comment-post.placeholder.with-hashtag'
+                  : 'live.comment-post.placeholder'
             },
             { hashtag }
           )}

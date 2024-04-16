@@ -106,6 +106,10 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
 
       ws.onopen = () => {
         console.log('open');
+        setIsConnecting(true);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
       };
 
       ws.onmessage = e => {
@@ -134,6 +138,10 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
         }
       };
 
+      ws.onerror = e => {
+        console.warn(e);
+      };
+
       ws.onclose = () => {
         console.log('close');
         setIsConnecting(false);
@@ -153,8 +161,9 @@ export const useLiveRealtime = (liveId?: number, viewerToken?: string) => {
 
   const reconnect = useCallback(() => {
     needConnectingRef.current = true;
+    disconnect();
     connect();
-  }, [connect]);
+  }, [disconnect, connect]);
 
   useEffect(() => {
     tokenRef.current = token;

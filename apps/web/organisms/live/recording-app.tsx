@@ -89,8 +89,8 @@ export const RecordingApp: FC<Props> = ({ live, streamer }) => {
                 video?.isOriginalDeleted
                   ? 'video.recording-deleted'
                   : video?.isCacheDeleted
-                  ? 'video.cache-deleted'
-                  : 'video.in-progress'
+                    ? 'video.cache-deleted'
+                    : 'video.in-progress'
               }
             />
           )}
