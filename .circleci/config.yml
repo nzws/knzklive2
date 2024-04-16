@@ -19,6 +19,8 @@ jobs:
           install-yarn: true
       # https://qiita.com/nouernet/items/ffe0615c14147863de7a
       - run: echo "\$nrconf{restart} = 'a';" | sudo tee /etc/needrestart/conf.d/50local.conf
+      # https://github.com/nodejs/node-gyp/issues/2869
+      - run: pip install setuptools
       - run: sudo apt-get update -y
       # https://github.com/Automattic/node-canvas
       - run: sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
