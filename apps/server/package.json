@@ -33,7 +33,7 @@
     "aspida": "1.14.0",
     "bullmq": "5.7.1",
     "dotenv": "16.4.5",
-    "ioredis": "5.3.2",
+    "ioredis": "5.4.1",
     "is-valid-domain": "0.1.6",
     "jose": "5.2.4",
     "koa": "2.15.3",
