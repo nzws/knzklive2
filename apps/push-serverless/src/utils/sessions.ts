@@ -20,6 +20,7 @@ export const lives = new Map<
 >();
 
 export const isServerIdling = () => {
+  console.log('sessions', sessions.size, 'lives', lives.size);
   return sessions.size === 0 && lives.size === 0;
 };
 

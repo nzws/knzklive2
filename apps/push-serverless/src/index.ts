@@ -54,8 +54,6 @@ const port = process.env.PORT || 8000;
 const server = app.listen(port);
 console.log(`Listening on port ${port}`);
 
-new Streaming(server);
-
 const autoSleep = setInterval(() => {
   if (isServerIdling()) {
     console.log('all lives ended, stopping server');
@@ -70,3 +68,5 @@ process.on('SIGTERM', () => {
   server.close();
   process.exit(0);
 });
+
+new Streaming(server);
