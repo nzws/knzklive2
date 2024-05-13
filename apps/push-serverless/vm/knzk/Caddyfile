@@ -16,6 +16,9 @@
   }
 
   handle /streaming/* {
+    header Access-Control-Allow-Origin *
+    header Access-Control-Allow-Methods *
+
     reverse_proxy http://localhost:8080
   }
 
