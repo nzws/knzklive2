@@ -51,3 +51,15 @@ jobs:
           tags: ghcr.io/nzws/knzklive2-push:${{ inputs.tag }}-amd64
           cache-from: type=registry,ref=ghcr.io/nzws/knzklive2-push:${{ inputs.tag }}-amd64
           cache-to: type=inline
+
+      - uses: docker/build-push-action@v5
+        env:
+          DOCKER_BUILDKIT: 1
+        with:
+          context: .
+          file: ./apps/push-serverless/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ghcr.io/nzws/knzklive2-push-serverless:${{ inputs.tag }}-amd64
+          cache-from: type=registry,ref=ghcr.io/nzws/knzklive2-push-serverless:${{ inputs.tag }}-amd64
+          cache-to: type=inline
