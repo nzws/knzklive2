@@ -76,7 +76,6 @@ export class Action {
           return;
         }
 
-
         void client.v1.internals.push.action.$post({
           body: {
             liveId,
@@ -88,7 +87,7 @@ export class Action {
         // 録画データの生成を待つ
         await session.encoder.cleanup();
 
-        throw new Error("Not implemented");
+        throw new Error('Not implemented');
 
         /*
 
