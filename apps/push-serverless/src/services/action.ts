@@ -122,11 +122,6 @@ export class Action {
       } finally {
         sessions.delete(liveId);
         lives.delete(liveId);
-
-        if (lives.size === 0) {
-          console.log('all lives ended, stopping server');
-          process.exit(0);
-        }
       }
     })();
   }

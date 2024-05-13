@@ -7,7 +7,7 @@ app = 'knzklive2-push-prd'
 primary_region = 'nrt'
 
 [build]
-image = "ghcr.io/nzws/knzklive2-push-serverless:production-amd64"
+image = "ghcr.io/nzws/knzklive2-push-serverless:latest-amd64"
 
 [processes]
 app = "/knzk/entry.sh"
@@ -27,6 +27,7 @@ protocol = "tcp"
 auto_stop_machines = true
 auto_start_machines = true
 min_machines_running = 0
+processes = ['app']
 [[services.ports]]
 handlers = ["tls"]
 port = 1936
@@ -38,6 +39,7 @@ protocol = "tcp"
 auto_stop_machines = true
 auto_start_machines = true
 min_machines_running = 0
+processes = ['app']
 [[services.ports]]
 port = 1935
 

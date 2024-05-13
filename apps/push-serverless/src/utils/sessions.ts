@@ -19,6 +19,10 @@ export const lives = new Map<
   }
 >();
 
+export const isServerIdling = () => {
+  return sessions.size === 0 && lives.size === 0;
+};
+
 export const rejectSession = async (liveId: number) => {
   const session = sessions.get(liveId);
   if (!session) {

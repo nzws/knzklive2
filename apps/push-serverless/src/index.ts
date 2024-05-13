@@ -10,6 +10,7 @@ import { apiInternalOnUnPublish } from './controllers/internal/on_unpublish';
 import { Streaming } from './streaming';
 import * as Sentry from '@sentry/node';
 import { CaptureConsole } from '@sentry/integrations';
+import { isServerIdling } from './utils/sessions';
 
 const dsn = process.env.SENTRY_DSN;
 
@@ -55,7 +56,17 @@ console.log(`Listening on port ${port}`);
 
 new Streaming(server);
 
+const autoSleep = setInterval(() => {
+  if (isServerIdling()) {
+    console.log('all lives ended, stopping server');
+    clearInterval(autoSleep);
+    server.close();
+    process.exit(0);
+  }
+}, 1000 * 60);
+
 process.on('SIGTERM', () => {
+  clearInterval(autoSleep);
   server.close();
   process.exit(0);
 });
