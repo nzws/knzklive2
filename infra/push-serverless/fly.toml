@@ -20,6 +20,7 @@ auto_start_machines = true
 min_machines_running = 0
 processes = ['app']
 
+# (Experimental) RTMPS
 [[services]]
 internal_port = 1935
 protocol = "tcp"
@@ -28,6 +29,16 @@ auto_start_machines = true
 min_machines_running = 0
 [[services.ports]]
 handlers = ["tls"]
+port = 1936
+
+# RTMP (IPv6 only)
+[[services]]
+internal_port = 1935
+protocol = "tcp"
+auto_stop_machines = true
+auto_start_machines = true
+min_machines_running = 0
+[[services.ports]]
 port = 1935
 
 [[vm]]
