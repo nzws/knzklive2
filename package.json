@@ -4,7 +4,7 @@
   "repository": "https://github.com/nzws/knzklive2",
   "license": "AGPL-3.0",
   "private": true,
-  "packageManager": "yarn@3.5.0",
+  "packageManager": "yarn@3.8.2",
   "workspaces": {
     "packages": [
       "./apps/*",
