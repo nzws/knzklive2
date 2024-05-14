@@ -27,7 +27,7 @@ curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /
   rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
-ENV FFMPEG_PATH=/usr/bin/ffmpeg
+ENV FFMPEG_PATH=/usr/local/srs/objs/ffmpeg/bin/ffmpeg
 ENV FFPROBE_PATH=/usr/bin/ffprobe
 
 COPY ./apps/push-serverless/vm/usr/local/srs/conf/knzklive.conf /usr/local/srs/conf/knzklive.conf

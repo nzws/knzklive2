@@ -30,7 +30,7 @@ export class Action {
       void encoder.encodeToLowQualityHls();
       void encoder.encodeToAudio();
 
-      this.startRecording(liveId);
+      // this.startRecording(liveId);
     }, 500);
   }
 
@@ -56,7 +56,7 @@ export class Action {
     });
 
     if (isRecording) {
-      this.startRecording(liveId);
+      // this.startRecording(liveId);
     }
   }
 

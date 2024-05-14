@@ -1,5 +1,5 @@
 import { Server } from 'http';
-import WebSocket from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 import { pathToRegexp } from 'path-to-regexp';
 import { Encoder } from '../services/encoder';
 import { Readable } from 'stream';
@@ -11,7 +11,7 @@ const streamPushRegexp = pathToRegexp(
 
 export class Streaming {
   constructor(server: Server) {
-    const ws = new WebSocket.Server({
+    const ws = new WebSocketServer({
       server
     });
 

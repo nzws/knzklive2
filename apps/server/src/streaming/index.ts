@@ -1,5 +1,5 @@
 import { Server } from 'http';
-import WebSocket from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 import { pathToRegexp } from 'path-to-regexp';
 import { comments, lives } from '../models';
 import { pubsub } from '../services/redis/pubsub/client';
@@ -14,7 +14,7 @@ const liveUpdateRegexp = pathToRegexp('/websocket/v1/live/:liveId');
 
 export class Streaming {
   constructor(server: Server) {
-    const ws = new WebSocket.Server({
+    const ws = new WebSocketServer({
       server
     });
 
@@ -50,11 +50,10 @@ export class Streaming {
   ) {
     const token = params.get('token');
     const commentAfter = Number(params.get('commentAfter') || 0);
-    const verifyAsStreamer =
+    const verifyAsViewer =
       token && (await jwtCommentViewer.verifyToken(token, liveId));
-    console.log(token, verifyAsStreamer);
 
-    if (!verifyAsStreamer) {
+    if (!verifyAsViewer) {
       let userId: number | undefined;
       if (token) {
         userId = await userToken.get(token);

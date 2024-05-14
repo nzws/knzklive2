@@ -55,7 +55,7 @@ const server = app.listen(port);
 console.log(`Listening on port ${port}`);
 
 const autoSleep = setInterval(() => {
-  if (isServerIdling()) {
+  if (isServerIdling() && !process.env.DISABLE_AUTO_SLEEP) {
     console.log('all lives ended, stopping server');
     clearInterval(autoSleep);
     server.close();

@@ -1,5 +1,6 @@
 import * as jose from 'jose';
 import type { KeyLike } from 'jose';
+import { logDebug } from '../../utils/logger';
 
 export const ISSUER = 'github.com/nzws/knzklive2';
 export const alg = 'PS256';
@@ -35,7 +36,6 @@ export class JWT {
         return { publicKey, privateKey };
       } else {
         const { publicKey, privateKey } = await jose.generateKeyPair(alg);
-        console.log('generated key pair');
         this.privateKey = privateKey;
         this.publicKey = publicKey;
 
@@ -56,7 +56,7 @@ export class JWT {
     payload: jose.JWTPayload,
     expirationTime: string
   ): Promise<string> {
-    const { privateKey } = await this.getKey();
+    const { privateKey, publicKey } = await this.getKey();
 
     const jwt = await new jose.SignJWT(payload)
       .setProtectedHeader({ alg })
@@ -66,17 +66,32 @@ export class JWT {
       .setExpirationTime(expirationTime)
       .sign(privateKey);
 
+    try {
+      const { payload } = await jose.jwtVerify(jwt, publicKey, {
+        issuer: ISSUER,
+        subject: this.subject
+      });
+      logDebug(this.subject, 'sign test passed', payload);
+    } catch (e) {
+      logDebug(this.subject, 'sign test failed', e);
+    }
+
     return jwt;
   }
 
-  async verify(jwt: string): Promise<jose.JWTPayload> {
-    const { publicKey } = await this.getKey();
+  async verify(jwt: string): Promise<jose.JWTPayload | undefined> {
+    try {
+      const { publicKey } = await this.getKey();
 
-    const { payload } = await jose.jwtVerify(jwt, publicKey, {
-      issuer: ISSUER,
-      subject: this.subject
-    });
+      const { payload } = await jose.jwtVerify(jwt, publicKey, {
+        issuer: ISSUER,
+        subject: this.subject
+      });
 
-    return payload;
+      return payload;
+    } catch (e) {
+      logDebug(this.subject, e);
+      return undefined;
+    }
   }
 }
