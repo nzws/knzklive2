@@ -9,6 +9,6 @@ export const Config: ConfigTypes = {
   commands: {
     addUser,
     generateKey,
-    createInviteCode,
+    createInviteCode
   }
 };

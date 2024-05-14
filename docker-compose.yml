@@ -48,21 +48,21 @@ services:
   #   environment:
   #     VIDEO_DOMAIN: http://
 #
-  # video_agent:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./apps/video/Dockerfile
-  #   container_name: video
-  #   expose:
-  #     - 8000
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - ./dockerdata/video-web/static:/home/node/static
-  #   environment:
-  #     SERVER_ENDPOINT: http://host.docker.internal:8080
-  #   extra_hosts:
-  #     - 'host.docker.internal:host-gateway'
+# video_agent:
+#   build:
+#     context: ./
+#     dockerfile: ./apps/video/Dockerfile
+#   container_name: video
+#   expose:
+#     - 8000
+#   env_file:
+#     - .env
+#   volumes:
+#     - ./dockerdata/video-web/static:/home/node/static
+#   environment:
+#     SERVER_ENDPOINT: http://host.docker.internal:8080
+#   extra_hosts:
+#     - 'host.docker.internal:host-gateway'
 
 volumes:
   postgres_volume:
