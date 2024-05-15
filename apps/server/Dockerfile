@@ -1,4 +1,4 @@
-FROM node:18-slim AS builder
+FROM node:20-slim AS builder
 RUN apt-get update && apt-get install -y ca-certificates gnupg openssl libssl-dev libc6
 
 USER node
@@ -12,8 +12,11 @@ COPY --chown=node:node ./packages/api-types ./packages/api-types
 
 RUN yarn workspaces focus server api-types && yarn workspace api-types build && yarn workspace server build
 
-FROM node:18-slim
-RUN apt-get update && apt-get install -y ca-certificates gnupg openssl libssl-dev libc6
+FROM node:20-slim
+RUN apt-get update &&\
+  apt-get install -y ca-certificates gnupg openssl libssl-dev libc6 &&\
+  apt-get clean &&\
+  rm -rf /var/lib/apt/lists/*
 
 USER node
 RUN mkdir /home/node/app
