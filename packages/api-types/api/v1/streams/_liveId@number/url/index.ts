@@ -6,7 +6,8 @@ export type Methods = {
 
     resBody: {
       rtmp: {
-        url: string;
+        unsecure_url: string;
+        secure_url: string | undefined;
         streamKey: string;
       };
       websocket: {

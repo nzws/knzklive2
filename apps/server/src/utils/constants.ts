@@ -19,8 +19,8 @@ export const baseVideoPlay = `${PROTOCOL}://${
   process.env.VIDEO_CDN_DOMAIN || process.env.VIDEO_DOMAIN || ''
 }`;
 export const frontendUrl = process.env.FRONTEND_ENDPOINT || '';
-export const getPushUrl = () =>
-  `rtmps://${(process.env.PUSH_DOMAIN || '').split(':')[0]}:1936/live`;
+export const pushDomain = (process.env.PUSH_DOMAIN || '').split(':')[0];
+
 export const getPushStreamKey = (
   liveId: number,
   pushToken: string,

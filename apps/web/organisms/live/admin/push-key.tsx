@@ -2,9 +2,9 @@ import {
   Button,
   FormControl,
   FormLabel,
-  HStack,
   Input,
   InputGroup,
+  VStack,
   useToast
 } from '@chakra-ui/react';
 import { FC, FocusEvent, Fragment, useCallback, useState } from 'react';
@@ -17,7 +17,8 @@ type Props = {
 };
 
 type Rtmp = {
-  url: string;
+  unsecure_url: string;
+  secure_url: string | undefined;
   streamKey: string;
 };
 
@@ -55,7 +56,7 @@ export const PushKey: FC<Props> = ({ liveId }) => {
     })();
   }, [token, liveId]);
 
-  const handleUrlFocus = useCallback(
+  const handleUnsecureUrlFocus = useCallback(
     (e: FocusEvent<HTMLInputElement>) => {
       if (!rtmp) {
         return;
@@ -63,10 +64,30 @@ export const PushKey: FC<Props> = ({ liveId }) => {
 
       void (async () => {
         e.target.select();
-        await navigator.clipboard.writeText(rtmp.url);
+        await navigator.clipboard.writeText(rtmp.unsecure_url);
 
         toast({
-          title: 'サーバーURL をコピーしました',
+          title: 'サーバーURL (RTMP) をコピーしました',
+          status: 'success',
+          isClosable: true
+        });
+      })();
+    },
+    [rtmp, toast]
+  );
+
+  const handleSecureUrlFocus = useCallback(
+    (e: FocusEvent<HTMLInputElement>) => {
+      if (!rtmp) {
+        return;
+      }
+
+      void (async () => {
+        e.target.select();
+        await navigator.clipboard.writeText(rtmp.secure_url || '');
+
+        toast({
+          title: 'サーバーURL (RTMPS) をコピーしました',
           status: 'success',
           isClosable: true
         });
@@ -108,15 +129,28 @@ export const PushKey: FC<Props> = ({ liveId }) => {
         </Button>
       )}
       {rtmp && (
-        <HStack spacing={4}>
+        <VStack gap={4}>
           <FormControl>
-            <FormLabel>サーバーURL</FormLabel>
+            <FormLabel>サーバーURL (RTMPS: 推奨)</FormLabel>
 
             <InputGroup size="md">
               <Input
                 type="text"
-                value={rtmp.url}
-                onFocus={handleUrlFocus}
+                value={rtmp.secure_url}
+                onFocus={handleSecureUrlFocus}
+                readOnly
+              />
+            </InputGroup>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>サーバーURL (RTMP: IPv6 only)</FormLabel>
+
+            <InputGroup size="md">
+              <Input
+                type="text"
+                value={rtmp.unsecure_url}
+                onFocus={handleUnsecureUrlFocus}
                 readOnly
               />
             </InputGroup>
@@ -132,7 +166,7 @@ export const PushKey: FC<Props> = ({ liveId }) => {
               readOnly
             />
           </FormControl>
-        </HStack>
+        </VStack>
       )}
     </Fragment>
   );

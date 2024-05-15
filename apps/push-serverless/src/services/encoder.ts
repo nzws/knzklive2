@@ -193,6 +193,56 @@ export class Encoder {
     await rm(this.persistentDir, { recursive: true });
   }
 
+  async encodeToHighQualityHls() {
+    if (this.streams.find(s => s.type === 'high')) {
+      return;
+    }
+
+    const idx = Math.round(Date.now() / 1000);
+    const path = await this.cleanupDirectory('high');
+
+    const stream = ffmpeg(this.rtmp)
+      .audioCodec('copy')
+      .videoCodec('copy')
+      .autopad()
+      .format('hls')
+      .outputOptions([
+        '-g 30',
+        '-hls_time 1',
+        '-hls_list_size 10',
+        '-hls_flags delete_segments+omit_endlist',
+        `-hls_segment_filename ${path}/${idx}-%d.ts`
+      ])
+      .output(`${path}/stream.m3u8`)
+      .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency']);
+
+    stream.on('start', (cmd: string) => {
+      console.log('Start HQ-HLS', this.liveId, cmd);
+    });
+
+    stream.on('error', err => {
+      console.warn('Error HQ-HLS', this.liveId, err);
+    });
+
+    stream.on('end', () => {
+      console.log('End HQ-HLS', this.liveId);
+      this.streams = this.streams.filter(s => s.stream !== stream);
+    });
+
+    stream.run();
+    this.streams.push({
+      type: 'high',
+      stream,
+      onRequestClose() {
+        stream.kill('SIGKILL');
+
+        return Promise.resolve();
+      }
+    });
+
+    return stream;
+  }
+
   async encodeToLowQualityHls() {
     if (this.streams.find(s => s.type === 'low')) {
       return;

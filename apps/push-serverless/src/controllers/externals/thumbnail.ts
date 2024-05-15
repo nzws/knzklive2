@@ -70,10 +70,14 @@ export const apiExternalThumbnail: Middleware = async ctx => {
 
   try {
     const buffer = await readFile(path);
-    await fetch(body.signedUploadUrl, {
+    const res = await fetch(body.signedUploadUrl, {
       method: 'PUT',
       body: buffer
     });
+    console.log('Uploaded thumbnail', res.status, await res.text());
+    if (!res.ok) {
+      throw new Error('Failed to upload thumbnail');
+    }
   } catch (e) {
     ctx.status = 500;
     ctx.body = {

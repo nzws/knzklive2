@@ -77,6 +77,10 @@ export const useVideoStream = <T extends 'live' | 'video'>(
         player.attachMediaElement(videoTagRef.current);
         player.load();
       } catch (e) {
+        if (e instanceof FlvNotSupportedError) {
+          throw e;
+        }
+
         setError(e);
       }
     },

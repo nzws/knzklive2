@@ -73,7 +73,7 @@ export const LiveInfoModal: FC<Props> = ({
   );
   const [hashTag, setHashTag] = useState(live?.hashtag || '');
   const [sensitive, setSensitive] = useState(live?.sensitive || false);
-  const [isRecording, setIsRecording] = useState(live?.isRecording ?? true);
+  const [isRecording, setIsRecording] = useState(live?.isRecording ?? false);
   const [preferThumbnailType, setPreferThumbnailType] = useState(
     live?.config?.preferThumbnailType || 'generate'
   );

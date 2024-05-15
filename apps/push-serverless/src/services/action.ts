@@ -27,6 +27,7 @@ export class Action {
     });
 
     setTimeout(() => {
+      void encoder.encodeToHighQualityHls();
       void encoder.encodeToLowQualityHls();
       void encoder.encodeToAudio();
 

@@ -56,7 +56,7 @@ export class JWT {
     payload: jose.JWTPayload,
     expirationTime: string
   ): Promise<string> {
-    const { privateKey, publicKey } = await this.getKey();
+    const { privateKey } = await this.getKey();
 
     const jwt = await new jose.SignJWT(payload)
       .setProtectedHeader({ alg })
@@ -66,6 +66,7 @@ export class JWT {
       .setExpirationTime(expirationTime)
       .sign(privateKey);
 
+    /*
     try {
       const { payload } = await jose.jwtVerify(jwt, publicKey, {
         issuer: ISSUER,
@@ -75,6 +76,7 @@ export class JWT {
     } catch (e) {
       logDebug(this.subject, 'sign test failed', e);
     }
+    */
 
     return jwt;
   }

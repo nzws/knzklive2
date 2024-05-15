@@ -2,8 +2,8 @@ import { Methods } from 'api-types/api/v1/streams/_liveId@number/url';
 import { jwtEdge } from '../../../services/jwt';
 import {
   getPushStreamKey,
-  getPushUrl,
-  getPushWebsocketUrl
+  getPushWebsocketUrl,
+  pushDomain
 } from '../../../utils/constants';
 import { APIRoute, LiveState } from '../../../utils/types';
 
@@ -21,7 +21,8 @@ export const getV1StreamsUrl: APIRoute<
 
   ctx.body = {
     rtmp: {
-      url: getPushUrl(),
+      unsecure_url: `rtmp://${pushDomain}/live`,
+      secure_url: `rtmps://${pushDomain}:1936/live`,
       streamKey: getPushStreamKey(live.id, token, live.watchToken || undefined)
     },
     websocket: {
