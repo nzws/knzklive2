@@ -28,8 +28,9 @@ export class Action {
 
     setTimeout(() => {
       void encoder.encodeToHighQualityHls();
-      void encoder.encodeToLowQualityHls();
-      void encoder.encodeToAudio();
+      // fixme: パフォーマンス足りない
+      // void encoder.encodeToLowQualityHls();
+      // void encoder.encodeToAudio();
 
       // this.startRecording(liveId);
     }, 500);
