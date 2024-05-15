@@ -14,7 +14,7 @@
 ## Spec
 
 - 以下のプロセスが一つの Firecracker VM 内で動作します
-  - Caddy - 静的ファイルの配信とリバースプロキシ
+  - Nginx - 静的ファイルの配信とリバースプロキシ
   - SRS - RTMP サーバー
   - KnzkLive Push Agent - 制御基盤
   - FFmpeg - ビデオエンコーダ
@@ -22,7 +22,7 @@
 ```mermaid
 graph LR
     api["KnzkLive API"]
-	  caddy["Caddy"]
+	  nginx["Nginx"]
     srs["SRS"]
     agent["KnzkLive Push Agent"]
     ffmpeg["FFmpeg"]
@@ -46,13 +46,12 @@ graph LR
 
       ffmpeg -- HLS --> storage
 
-      caddy --> storage
-      caddy --> srs
+      nginx --> storage
+      nginx --> srs
     end
 
-    caddy -- FLV (低遅延) --> viewer
-    caddy -- HLS --> viewer
-
+    nginx -- FLV (低遅延) --> viewer
+    nginx -- HLS --> viewer
 ```
 
 ## Limitations

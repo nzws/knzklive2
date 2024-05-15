@@ -12,17 +12,9 @@ FROM ossrs/srs:4
 
 RUN apt-get update &&\
   apt-get install -y \
-  # KnzkLive
-  ca-certificates gnupg openssl libssl-dev libc6 curl ffmpeg \
-  # Caddy
-  debian-keyring debian-archive-keyring apt-transport-https &&\
-  # Node.js
+  ca-certificates gnupg openssl libssl-dev libc6 curl ffmpeg nginx &&\
   curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
-  # Caddy
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg &&\
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list &&\
-  apt-get update &&\
-  apt-get install -y nodejs caddy &&\
+  apt-get install -y nodejs &&\
   apt-get clean &&\
   rm -rf /var/lib/apt/lists/*
 
@@ -31,7 +23,8 @@ ENV FFMPEG_PATH=/usr/local/srs/objs/ffmpeg/bin/ffmpeg
 ENV FFPROBE_PATH=/usr/bin/ffprobe
 
 COPY ./apps/push-serverless/vm/usr/local/srs/conf/knzklive.conf /usr/local/srs/conf/knzklive.conf
-COPY ./apps/push-serverless/vm/knzk/Caddyfile /knzk/Caddyfile
+COPY ./apps/push-serverless/vm/etc/nginx/conf.d/knzklive.conf /etc/nginx/conf.d/knzklive.conf
+COPY ./apps/push-serverless/vm/etc/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./apps/push-serverless/vm/knzk/entry.sh /knzk/entry.sh
 RUN chmod +x /knzk/entry.sh
 
