@@ -26,7 +26,7 @@ type = "requests"
 soft_limit = 9999
 hard_limit = 9999
 
-# RTMPS
+# RTMP(S)
 [[services]]
 internal_port = 1935
 protocol = "tcp"
@@ -38,16 +38,8 @@ processes = ['app']
 handlers = ["tls"]
 port = 1936
 
-# RTMP (IPv6 only)
-[[services]]
-internal_port = 1935
-protocol = "tcp"
-auto_stop_machines = true
-auto_start_machines = true
-min_machines_running = 0
-processes = ['app']
 [[services.ports]]
 port = 1935
 
 [[vm]]
-size = 'performance-2x'
+size = 'performance-1x'
