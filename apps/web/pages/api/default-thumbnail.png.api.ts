@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createCanvas, loadImage } from 'canvas';
+import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { UserPublic } from 'api-types/common/types';
 import { client } from '~/utils/api/client';
 import path from 'path';
@@ -65,7 +65,7 @@ const api = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'public, max-age=86400');
-    res.status(200).send(canvas.toBuffer());
+    res.status(200).send(canvas.toBuffer('image/png'));
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Internal Server Error' });
