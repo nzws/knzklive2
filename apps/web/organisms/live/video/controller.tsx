@@ -303,8 +303,7 @@ const livePlayTypes: { id: LivePlayType; badge?: string }[] = [
   {
     id: LivePlayType.HlsHq,
     badge: 'HLS'
-  }
-  /* fixme: パフォーマンス足りない
+  },
   {
     id: LivePlayType.HlsLq,
     badge: 'HLS'
@@ -313,7 +312,6 @@ const livePlayTypes: { id: LivePlayType; badge?: string }[] = [
     id: LivePlayType.Audio,
     badge: 'HLS'
   }
-  */
 ];
 
 const videoPlayTypes: { id: VideoPlayType; badge?: string }[] = [
