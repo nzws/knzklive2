@@ -27,7 +27,7 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
   const intl = useIntl();
   const [enablePublish, setEnablePublish] = useLocalStorage<boolean>(
     'knzklive-enable-publish',
-    false
+    true
   );
   const [comment, setComment] = useState('');
   const [isLoading, setIsLoading] = useState(false);
