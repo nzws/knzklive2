@@ -13,14 +13,14 @@ import {
   useDisclosure,
   VStack
 } from '@chakra-ui/react';
-import { FC, Fragment, useCallback, useRef } from 'react';
+import { FC, Fragment, useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 type Props = {
   acct?: string;
   hashtag?: string;
   isSignedIn: boolean;
-  enablePublish?: boolean;
+  enablePublish: boolean;
   toggleEnablePublish: () => void;
 };
 
@@ -41,14 +41,18 @@ export const PublicPostSwitch: FC<Props> = ({
       : 'live.comment-post.publish.tooltip.disabled'
     : 'live.comment-post.publish.tooltip.disabled-in-live';
 
-  const handleSwitch = useCallback(() => {
-    toggleEnablePublish();
+  useEffect(() => {
+    if (!isFirstOpenedRef.current && hashtag && enablePublish && isSignedIn) {
+      const timeoutId = setTimeout(() => {
+        isFirstOpenedRef.current = true;
+        onOpen();
+      }, 1000);
 
-    if (!isFirstOpenedRef.current) {
-      isFirstOpenedRef.current = true;
-      onOpen();
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
-  }, [toggleEnablePublish, onOpen]);
+  }, [onOpen, hashtag, enablePublish, isSignedIn]);
 
   return (
     <Fragment>
@@ -71,8 +75,8 @@ export const PublicPostSwitch: FC<Props> = ({
               <Switch
                 size="sm"
                 disabled={!isSignedIn || !hashtag}
-                isChecked={hashtag ? enablePublish ?? false : false}
-                onChange={handleSwitch}
+                isChecked={hashtag ? enablePublish : false}
+                onChange={toggleEnablePublish}
               />
             </PopoverAnchor>
           </VStack>
@@ -89,7 +93,7 @@ export const PublicPostSwitch: FC<Props> = ({
             <PopoverCloseButton />
 
             <PopoverBody>
-              <VStack gap="4px">
+              <VStack gap={2}>
                 <Text fontWeight="bold">
                   <FormattedMessage id={statusIntlId} />
                 </Text>
@@ -99,6 +103,10 @@ export const PublicPostSwitch: FC<Props> = ({
                     id="live.comment-post.publish.popover.description"
                     values={{ acct: acct || '', hashtag }}
                   />
+                </Text>
+
+                <Text fontSize="xs">
+                  <FormattedMessage id="live.comment-post.publish.popover.description2" />
                 </Text>
               </VStack>
             </PopoverBody>

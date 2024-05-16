@@ -4,7 +4,8 @@ import { comments, lives, users } from '../models';
 import { pubsub } from '../services/redis/pubsub/client';
 
 const token = process.env.MASTODON_ACCESS_TOKEN || '';
-const domain = process.env.MASTODON_DOMAIN || '';
+const mastodonDomain = process.env.MASTODON_DOMAIN || '';
+const streamingDomain = process.env.MASTODON_STREAMING_DOMAIN || mastodonDomain;
 
 type Hashtag = {
   hashtag: string;
@@ -26,7 +27,7 @@ export class MastodonStreaming {
 
     try {
       const ws = new WebSocket(
-        `wss://${domain}/api/v1/streaming/?access_token=${token}`
+        `wss://${streamingDomain}/api/v1/streaming/?access_token=${token}`
       );
       this.ws = ws;
 
@@ -200,7 +201,7 @@ export class MastodonStreaming {
       if (liveIds.length > 0) {
         const acct =
           payload.account.acct === payload.account.username
-            ? `${payload.account.acct}@${domain}`
+            ? `${payload.account.acct}@${mastodonDomain}`
             : payload.account.acct;
 
         const user = await users.getOrCreateForRemote(
