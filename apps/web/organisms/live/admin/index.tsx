@@ -118,6 +118,11 @@ export const Admin: FC<Props> = ({
                       キーフレーム間隔: <b>1s</b> (重要:
                       間隔が大きい/オートだと視聴がカクつきます)
                     </ListItem>
+                    <ListItem>
+                      映像エンコーダ: <b>H264</b>{' '}
+                      の任意のハードウェア/ソフトウェアエンコーダ (重要:
+                      H265(HEVC) は対応していません)
+                    </ListItem>
                     <ListItem>出力解像度: 1920x1080</ListItem>
                     <ListItem>
                       ビットレート: 2000 kbps 前後

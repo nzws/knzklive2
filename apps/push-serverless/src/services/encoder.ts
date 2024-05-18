@@ -254,7 +254,7 @@ export class Encoder {
     const stream = ffmpeg(this.rtmp)
       .audioCodec('aac')
       .audioBitrate('128k')
-      .audioChannels(2)
+      // .audioChannels(2)
       .videoCodec('libx264')
       .videoBitrate('800k')
       .size('640x360')
@@ -262,7 +262,7 @@ export class Encoder {
       .format('hls')
       .outputOptions([
         '-g 30',
-        '-hls_time 1',
+        '-hls_time 2',
         '-hls_list_size 10',
         '-hls_flags delete_segments+omit_endlist',
         `-hls_segment_filename ${path}/${idx}-%d.ts`,
@@ -351,9 +351,9 @@ export class Encoder {
     const stream = ffmpeg(pipe)
       .audioCodec('aac')
       .audioBitrate('128k')
-      .audioChannels(2)
+      // .audioChannels(2)
       .videoCodec('libx264')
-      .videoBitrate('1500k')
+      .videoBitrate('1000k')
       .format('flv')
       .inputOptions(['-re'])
       .outputOptions(['-preset', 'ultrafast', '-tune', 'zerolatency'])

@@ -4,6 +4,7 @@ import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useAPIError } from './api/use-api-error';
 import { VideoUrls } from 'api-types/api/v1/videos/_liveId@number';
+import type { HlsConfig } from 'hls.js';
 
 export enum LivePlayType {
   Flv = 'flv',
@@ -11,6 +12,8 @@ export enum LivePlayType {
   HlsLq = 'hlsLq',
   Audio = 'audio'
 }
+
+const LowLatency = [LivePlayType.Flv, LivePlayType.HlsHq, LivePlayType.Audio];
 
 export enum VideoPlayType {
   HlsHq = 'hlsHq'
@@ -69,7 +72,12 @@ export const useVideoStream = <T extends 'live' | 'video'>(
             autoCleanupSourceBuffer: true,
             liveBufferLatencyChasing: true,
             liveBufferLatencyMaxLatency: 2,
-            liveBufferLatencyMinRemain: 0.5
+            liveBufferLatencyMinRemain: 0.5,
+            // @ts-expect-error: type error
+            enableWorkerForMSE: true,
+            liveBufferLatencyChasingOnPaused: true,
+            liveSync: true,
+            liveSyncTargetLatency: 0.5
           }
         );
         mpegtsPlayerRef.current = player;
@@ -88,7 +96,11 @@ export const useVideoStream = <T extends 'live' | 'video'>(
   );
 
   const handleHls = useCallback(
-    async (url: string, isLive: boolean) => {
+    async (
+      url: string,
+      playType: LivePlayType | VideoPlayType,
+      isLive: boolean
+    ) => {
       if (!videoTagRef.current) {
         return;
       }
@@ -103,26 +115,23 @@ export const useVideoStream = <T extends 'live' | 'video'>(
 
         if (Hls.isSupported()) {
           if (isLive) {
-            player = new Hls({
+            let hlsConfig: Partial<HlsConfig> = {
               enableWorker: true,
-              maxBufferLength: 1,
-              liveBackBufferLength: 0,
-              liveSyncDuration: 0,
-              liveMaxLatencyDuration: 5,
               liveDurationInfinity: true,
-              highBufferWatchdogPeriod: 1,
-              manifestLoadingTimeOut: 3000,
-              manifestLoadingMaxRetry: 10,
-              manifestLoadingMaxRetryTimeout: 3000,
-              levelLoadingTimeOut: 3000,
-              levelLoadingMaxRetry: 10,
-              levelLoadingMaxRetryTimeout: 3000,
-              fragLoadingTimeOut: 3000,
-              fragLoadingMaxRetry: 10,
-              fragLoadingMaxRetryTimeout: 3000,
-              startFragPrefetch: false,
+              startFragPrefetch: true,
               progressive: true
-            });
+            };
+
+            if (LowLatency.includes(playType as LivePlayType)) {
+              hlsConfig = {
+                ...hlsConfig,
+                liveSyncDuration: 0,
+                liveMaxLatencyDuration: 5,
+                highBufferWatchdogPeriod: 1
+              };
+            }
+
+            player = new Hls(hlsConfig);
           } else {
             player = new Hls({
               enableWorker: true
@@ -193,16 +202,16 @@ export const useVideoStream = <T extends 'live' | 'video'>(
             await handleFlv(live.flv);
           } catch (e) {
             if (e instanceof FlvNotSupportedError) {
-              setPlayType(LivePlayType.HlsLq as PlayType<T>);
+              setPlayType(LivePlayType.HlsHq as PlayType<T>);
             }
           }
         })();
       } else if (playType === LivePlayType.HlsHq) {
-        void handleHls(live.hlsHq, true);
+        void handleHls(live.hlsHq, playType, true);
       } else if (playType === LivePlayType.HlsLq) {
-        void handleHls(live.hlsLq, true);
+        void handleHls(live.hlsLq, playType, true);
       } else if (playType === LivePlayType.Audio) {
-        void handleHls(live.audio, true);
+        void handleHls(live.audio, playType, true);
       } else {
         setPlayType(LivePlayType.Flv as PlayType<T>);
       }
@@ -211,7 +220,7 @@ export const useVideoStream = <T extends 'live' | 'video'>(
       if (playType === VideoPlayType.HlsHq) {
         // todo: lq でフォールバック？
         if (video.hlsHq) {
-          void handleHls(video.hlsHq, false);
+          void handleHls(video.hlsHq, playType, false);
         }
       } else {
         setPlayType(VideoPlayType.HlsHq as PlayType<T>);
