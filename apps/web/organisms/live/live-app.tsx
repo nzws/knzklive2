@@ -87,6 +87,9 @@ export const LiveApp: FC<Props> = ({ live, streamer }) => {
           overflowY="auto"
           width={{ lg: 'calc(100% - 400px)' }}
           flexShrink={0}
+          sx={{
+            scrollbarWidth: 'none'
+          }}
         >
           {url ? (
             <LivePlayer

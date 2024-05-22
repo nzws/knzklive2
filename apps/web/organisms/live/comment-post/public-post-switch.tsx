@@ -54,6 +54,22 @@ export const PublicPostSwitch: FC<Props> = ({
     }
   }, [onOpen, hashtag, enablePublish, isSignedIn]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handler = () => {
+      onClose();
+    };
+
+    document.addEventListener('click', handler);
+
+    return () => {
+      document.removeEventListener('click', handler);
+    };
+  }, [isOpen, onClose]);
+
   return (
     <Fragment>
       <Popover
@@ -63,6 +79,7 @@ export const PublicPostSwitch: FC<Props> = ({
         closeOnBlur
         isLazy
         offset={[28, 24]}
+        autoFocus={false}
       >
         <Tooltip
           label={intl.formatMessage({

@@ -35,7 +35,11 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
   );
   const [comment, setComment] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const fediverseSyncPopoverDisclosure = useDisclosure();
+  const {
+    isOpen: fediSyncPopoverIsOpen,
+    onOpen: fediSyncPopoverOnOpen,
+    onClose: fediSyncPopoverOnClose
+  } = useDisclosure();
   const { handlePublish } = useCommentPublish(liveId, hashtag);
   const [error, setError] = useState<unknown>();
   useAPIError(error);
@@ -72,27 +76,43 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
     [comment, token, enablePublish, handlePublish, hashtag]
   );
 
-  const onOpen = fediverseSyncPopoverDisclosure.onOpen;
   useEffect(() => {
     if (!isSignedIn && hashtag) {
       const timeoutId = setTimeout(() => {
-        onOpen();
+        fediSyncPopoverOnOpen();
       }, 1000 * 3);
 
       return () => {
         clearTimeout(timeoutId);
       };
     }
-  }, [isSignedIn, onOpen, hashtag]);
+  }, [isSignedIn, fediSyncPopoverOnOpen, hashtag]);
+
+  useEffect(() => {
+    if (!fediSyncPopoverIsOpen) {
+      return;
+    }
+
+    const handler = () => {
+      fediSyncPopoverOnClose();
+    };
+
+    document.addEventListener('click', handler);
+
+    return () => {
+      document.removeEventListener('click', handler);
+    };
+  }, [fediSyncPopoverOnClose, fediSyncPopoverIsOpen]);
 
   return (
     <form onSubmit={handleSubmit}>
       <Popover
-        isOpen={fediverseSyncPopoverDisclosure.isOpen}
-        onClose={fediverseSyncPopoverDisclosure.onClose}
+        isOpen={fediSyncPopoverIsOpen}
+        onClose={fediSyncPopoverOnClose}
         placement="bottom"
         closeOnBlur
         isLazy
+        autoFocus={false}
       >
         <PopoverAnchor>
           <InputGroup>
@@ -115,6 +135,11 @@ export const CommentPost: FC<Props> = ({ liveId, hashtag }) => {
               )}
               isDisabled={!isSignedIn}
               maxLength={100}
+              borderTopRadius={0}
+              borderBottomRadius={{
+                base: 8,
+                md: 15
+              }}
             />
 
             <InputRightElement width="6rem">

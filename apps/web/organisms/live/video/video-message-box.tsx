@@ -21,6 +21,11 @@ export const VideoMessageBox: FC<Props> = ({
         thumbnailUrl || `/api/default-thumbnail.png?userId=${streamerUserId}`
       })`
     }}
+    borderTopRadius={{
+      base: 8,
+      md: 15
+    }}
+    overflow="hidden"
   >
     <Inner>
       <Flex>

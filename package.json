@@ -14,7 +14,7 @@
   "scripts": {
     "lint": "prettier --check --cache .",
     "format": "prettier --write --cache .",
-    "dev-all": "docker compose up -d redis && yarn dev:migrate && yarn workspaces foreach --verbose --parallel -j unlimited --interlaced run dev",
+    "dev-all": "docker compose up -d redis && yarn dev:migrate && yarn workspaces foreach --worktree --verbose --parallel -j unlimited --interlaced run dev",
     "dev": "docker compose up --build",
     "dev:migrate": "yarn workspace server prisma migrate dev",
     "dev:sql": "yarn workspace server prisma studio",

@@ -238,7 +238,7 @@ const Page: NextPage<PageProps<Props, Params & PathProps>> = ({
       <Grid
         gridTemplateRows="auto 1fr auto"
         gridTemplateColumns="1fr"
-        height="100vh"
+        height="100dvh"
       >
         <GridItem>
           {live && (

@@ -86,9 +86,16 @@ export const Navbar: FC = () => {
         />
       )}
 
-      <Box as="nav" bg="gray.900">
-        <Container py={{ base: '3' }} maxW="container.xl">
-          <HStack spacing="10" justify="space-between">
+      <Box as="nav">
+        <Container py={{ base: 3 }} maxW="full">
+          <HStack
+            gap={4}
+            px={{
+              base: 0,
+              md: 4
+            }}
+            justify="space-between"
+          >
             <Link href="/">
               <Heading size="md">KnzkLive</Heading>
             </Link>

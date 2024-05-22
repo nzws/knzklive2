@@ -10,7 +10,8 @@ import {
   MenuItem,
   Icon,
   LinkOverlay,
-  LinkBox
+  LinkBox,
+  HStack
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { FC } from 'react';
@@ -25,10 +26,10 @@ export const Footer: FC = () => {
 
   return (
     <Box marginTop="auto">
-      <Container as={Stack} maxW="container.xl" py={8}>
+      <Container as={Stack} maxW="full" py={8}>
         <Divider mb={2} />
 
-        <Stack as={Stack} direction={{ base: 'column', lg: 'row' }} spacing={6}>
+        <HStack flexWrap="wrap" spacing={6}>
           <Box color="gray.400">
             <ChakraLink href="https://github.com/nzws/knzklive2" isExternal>
               <Icon as={FiGithub} mr={2} />
@@ -85,7 +86,7 @@ export const Footer: FC = () => {
               </MenuList>
             </Menu>
           </Box>
-        </Stack>
+        </HStack>
       </Container>
     </Box>
   );

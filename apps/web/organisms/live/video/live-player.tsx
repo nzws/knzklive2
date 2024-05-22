@@ -1,4 +1,4 @@
-import { AspectRatio, Center, Spinner } from '@chakra-ui/react';
+import { AspectRatio, Box, Center, Spinner } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
@@ -154,12 +154,18 @@ export const LivePlayer: FC<Props> = ({
   }, [canPlay, autoSeek]);
 
   return (
-    <Container
+    <Box
       {...events}
       ref={containerRef}
       style={{
         cursor: show ? 'auto' : 'none'
       }}
+      position="relative"
+      borderTopRadius={{
+        base: 8,
+        md: 15
+      }}
+      overflow="hidden"
     >
       <VideoContainer
         ratio={16 / 9}
@@ -191,13 +197,9 @@ export const LivePlayer: FC<Props> = ({
         playType={playType}
         onChangePlayType={setPlayType}
       />
-    </Container>
+    </Box>
   );
 };
-
-const Container = styled.div`
-  position: relative;
-`;
 
 const VideoContainer = styled(AspectRatio)`
   background-color: #000;
