@@ -7,7 +7,7 @@ export const apiInternalOnPlay: Middleware = async ctx => {
   const body = ctx.request.body as SRSCallback;
 
   const liveId = parseInt(body.stream.split('_')[0], 10);
-  const token = body.param.replace('?token=', '');
+  const token = body.param.replace('?token=', '').replace('token=', '');
   if (!liveId || !token) {
     ctx.status = 400;
     ctx.body = {

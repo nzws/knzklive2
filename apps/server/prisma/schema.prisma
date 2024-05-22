@@ -79,6 +79,7 @@ model Live {
   sensitive        Boolean     @default(false)
   watchingSumCount Int?
   watchToken       String?     @db.VarChar(100)
+  pushToken        String?     @db.VarChar(100)
   thumbnailId      Int?
   config           Json        @default("{}")
   isDeleted        Boolean     @default(false)

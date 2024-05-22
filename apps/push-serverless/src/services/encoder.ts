@@ -14,6 +14,8 @@ ffmpeg.setFfprobePath(ffprobePath);
 
 export class Encoder {
   private rtmp: string;
+  private srtPublish: string;
+  private srtRequest: string;
   private dir: string;
   private persistentDir: string;
   private streams: {
@@ -27,7 +29,12 @@ export class Encoder {
     watchToken: string,
     pushToken: string
   ) {
-    this.rtmp = `rtmp://localhost:1935/live/${liveId}_${watchToken}?token=${pushToken}`;
+    const stream = `${liveId}_${watchToken}`;
+    this.rtmp = `rtmp://localhost:1935/live/${stream}?token=${pushToken}`;
+    // this.srtPublish = `srt://localhost:10080?streamid=#!::r=live/${stream},token=${pushToken},m=publish`;
+    // this.srtRequest = `srt://localhost:10080?streamid=#!::r=live/${stream},token=${pushToken},m=request`;
+    this.srtPublish = this.rtmp;
+    this.srtRequest = this.rtmp;
     this.dir = `/tmp/knzklive/static/live/${liveId}_${watchToken}`;
     this.persistentDir = `/tmp/knzklive/record/${liveId}_${watchToken}`;
   }
@@ -67,7 +74,7 @@ export class Encoder {
 
     const timestamp = Math.round(Date.now() / 1000);
 
-    const stream = ffmpeg(this.rtmp)
+    const stream = ffmpeg(this.srtRequest)
       .audioCodec('aac')
       .audioBitrate('128k')
       .audioChannels(2)
@@ -201,7 +208,7 @@ export class Encoder {
     const idx = Math.round(Date.now() / 1000);
     const path = await this.cleanupDirectory('high');
 
-    const stream = ffmpeg(this.rtmp)
+    const stream = ffmpeg(this.srtRequest)
       .audioCodec('copy')
       .videoCodec('copy')
       .autopad()
@@ -251,7 +258,7 @@ export class Encoder {
     const idx = Math.round(Date.now() / 1000);
     const path = await this.cleanupDirectory('low');
 
-    const stream = ffmpeg(this.rtmp)
+    const stream = ffmpeg(this.srtRequest)
       .audioCodec('aac')
       .audioBitrate('128k')
       // .audioChannels(2)
@@ -306,7 +313,7 @@ export class Encoder {
     const idx = Math.round(Date.now() / 1000);
     const path = await this.cleanupDirectory('audio');
 
-    const stream = ffmpeg(this.rtmp)
+    const stream = ffmpeg(this.srtRequest)
       .audioCodec('copy')
       .noVideo()
       .format('hls')
@@ -356,8 +363,15 @@ export class Encoder {
       .videoBitrate('1000k')
       .format('flv')
       .inputOptions(['-re'])
-      .outputOptions(['-preset', 'ultrafast', '-tune', 'zerolatency'])
-      .output(this.rtmp);
+      .outputOptions([
+        '-preset',
+        'ultrafast',
+        '-tune',
+        'zerolatency'
+        // '-pes_payload_size',
+        // '0'
+      ])
+      .output(this.srtPublish);
 
     stream.on('start', (cmd: string) => {
       console.log('Start RTMP', this.liveId, cmd);
@@ -392,7 +406,7 @@ export class Encoder {
     return new Promise<string>((resolve, reject) => {
       const file = `${Math.round(Date.now() / 1000)}.png`;
 
-      const stream = ffmpeg(this.rtmp)
+      const stream = ffmpeg(this.srtRequest)
         .noAudio()
         // https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/352#issuecomment-136297117
         .outputOptions([

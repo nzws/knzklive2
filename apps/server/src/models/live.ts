@@ -223,6 +223,7 @@ export const Lives = (client: PrismaClient['live']) =>
       thumbnailId?: number
     ) => {
       const watchToken = crypto.randomBytes(48).toString('hex');
+      const pushToken = crypto.randomBytes(48).toString('hex');
       const lastLive = await client.findFirst({
         where: {
           tenantId
@@ -246,6 +247,7 @@ export const Lives = (client: PrismaClient['live']) =>
           privacy,
           hashtag,
           watchToken,
+          pushToken,
           config,
           thumbnailId,
           isRecording
@@ -420,6 +422,20 @@ export const Lives = (client: PrismaClient['live']) =>
       });
 
       return data;
+    },
+    regeneratePushToken: async (live: Live) => {
+      const pushToken = crypto.randomBytes(48).toString('hex');
+
+      await client.update({
+        where: {
+          id: live.id
+        },
+        data: {
+          pushToken
+        }
+      });
+
+      return pushToken;
     }
   });
 
