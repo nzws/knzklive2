@@ -7,18 +7,13 @@ import { apiExternalRecordingPublish } from './controllers/externals/recording/p
 import { apiExternalRecordingUnPublish } from './controllers/externals/recording/unpublish';
 import * as Sentry from '@sentry/node';
 import { Action } from './services/action';
-import { CaptureConsole } from '@sentry/integrations';
 
 const dsn = process.env.SENTRY_DSN;
 
 if (dsn) {
   Sentry.init({
     dsn,
-    integrations: [
-      new CaptureConsole({
-        levels: ['error', 'warn']
-      })
-    ],
+    integrations: [Sentry.captureConsoleIntegration()],
     tracesSampleRate: 1.0
   });
 }
@@ -27,13 +22,7 @@ const app = new Koa();
 app.use(bodyParser());
 app.use(logger());
 
-app.on('error', (err, ctx) => {
-  Sentry.withScope(scope => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    scope.setSDKProcessingMetadata({ request: ctx.request });
-    Sentry.captureException(err);
-  });
-});
+Sentry.setupKoaErrorHandler(app);
 
 const route = new Router();
 

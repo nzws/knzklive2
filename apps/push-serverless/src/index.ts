@@ -9,7 +9,6 @@ import { apiInternalOnPublish } from './controllers/internal/on_publish';
 import { apiInternalOnUnPublish } from './controllers/internal/on_unpublish';
 import { Streaming } from './streaming';
 import * as Sentry from '@sentry/node';
-import { CaptureConsole } from '@sentry/integrations';
 import { isServerIdling } from './utils/sessions';
 
 const dsn = process.env.SENTRY_DSN;
@@ -17,11 +16,7 @@ const dsn = process.env.SENTRY_DSN;
 if (dsn) {
   Sentry.init({
     dsn,
-    integrations: [
-      new CaptureConsole({
-        levels: ['error', 'warn']
-      })
-    ],
+    integrations: [Sentry.captureConsoleIntegration()],
     tracesSampleRate: 1.0
   });
 }
@@ -30,13 +25,7 @@ const app = new Koa();
 app.use(bodyParser());
 app.use(logger());
 
-app.on('error', (err, ctx) => {
-  Sentry.withScope(scope => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    scope.setSDKProcessingMetadata({ request: ctx.request });
-    Sentry.captureException(err);
-  });
-});
+Sentry.setupKoaErrorHandler(app);
 
 const route = new Router();
 

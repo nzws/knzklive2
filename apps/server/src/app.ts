@@ -20,13 +20,7 @@ export const app = async (): Promise<void> => {
   app.use(cors());
   app.use(middlewareGetUserId);
 
-  app.on('error', (err, ctx) => {
-    Sentry.withScope(scope => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      scope.setSDKProcessingMetadata({ request: ctx.request });
-      Sentry.captureException(err);
-    });
-  });
+  Sentry.setupKoaErrorHandler(app);
 
   if (process.env.ENABLE_QUEUE_DASHBOARD_YOU_HAVE_TO_PROTECT_IT) {
     app.use(createBoard('/admin/queues').registerPlugin());

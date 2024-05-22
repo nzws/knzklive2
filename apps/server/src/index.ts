@@ -1,16 +1,11 @@
 import * as Sentry from '@sentry/node';
-import { CaptureConsole } from '@sentry/integrations';
 
 const dsn = process.env.SENTRY_DSN;
 
 if (dsn) {
   Sentry.init({
     dsn,
-    integrations: [
-      new CaptureConsole({
-        levels: ['error', 'warn']
-      })
-    ],
+    integrations: [Sentry.captureConsoleIntegration()],
     tracesSampleRate: 1.0
   });
 }
