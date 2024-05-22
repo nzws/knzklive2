@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "AGPL-3.0",
   "private": true,
+  "packageManager": "yarn@4.2.2",
   "scripts": {
     "lint": "tsc --noEmit && eslint --cache '**/*.{ts,tsx}'",
     "test": "jest",
