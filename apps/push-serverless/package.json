@@ -4,6 +4,7 @@
   "license": "AGPL-3.0",
   "private": true,
   "packageManager": "yarn@3.5.0",
+  "type": "module",
   "scripts": {
     "test": "jest --passWithNoTests",
     "lint": "tsc && eslint --cache '**/*.{ts,tsx}'",

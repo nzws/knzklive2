@@ -18,7 +18,7 @@ export const apiInternalOnPublish: Middleware = async ctx => {
   const [LiveId, watchToken] = body.stream.split('_');
   const liveId = parseInt(LiveId, 10);
   // todo: 仮
-  const token = body.param.replace('?token=', '');
+  const token = body.param.replace('?token=', '').replace('token=', '');
   if (!liveId || !token) {
     ctx.status = 400;
     ctx.body = {
