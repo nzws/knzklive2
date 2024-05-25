@@ -7,6 +7,7 @@
   "navbar.logout": "Logout",
   "auth.toast.login": "Successfully logged in",
   "auth.toast.logout": "Successfully logged out",
+  "auth.toast.invalid-domain": "Invalid domain. The domain must be specified as \"example.com\" without any slashes.",
   "toast.api-error.title": "An error has occurred",
   "api-error.unauthorized": "Authentication failed: trying to re-login...",
   "api-error.invalid_request": "Internal error: Invalid request. Please contact the administrator for more information.",

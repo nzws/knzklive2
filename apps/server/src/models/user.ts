@@ -48,6 +48,9 @@ export const Users = (prismaUser: PrismaClient['user']) =>
       if (account) {
         account = account.toLowerCase();
       }
+      if (!id && !account) {
+        return undefined;
+      }
 
       const user = await prismaUser.findUnique({
         where: {

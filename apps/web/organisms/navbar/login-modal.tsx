@@ -16,8 +16,10 @@ import {
   Link,
   useDisclosure,
   Spinner,
-  Collapse
+  Collapse,
+  useToast
 } from '@chakra-ui/react';
+import isValidDomain from 'is-valid-domain';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getDocsUrl } from '~/utils/constants';
@@ -48,6 +50,7 @@ const placeholderDomain: Record<ServerType, string> = {
 export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
   const { signIn } = useAuth();
   const intl = useIntl();
+  const toast = useToast();
   const {
     isOpen: isOpeningSignIn,
     onOpen: onOpenSignIn,
@@ -66,6 +69,14 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
         setHasNotDomain(true);
         return;
       }
+      if (!isValidDomain(domain)) {
+        toast({
+          title: intl.formatMessage({ id: 'auth.toast.invalid-domain' }),
+          status: 'error',
+          isClosable: true
+        });
+        return;
+      }
 
       onOpenSignIn();
       if (serverType === ServerType.Mastodon) {
@@ -75,7 +86,7 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
       }
       onClose();
     })();
-  }, [onOpenSignIn, onClose, signIn, domain, serverType]);
+  }, [signIn, domain, onOpenSignIn, serverType, onClose, toast, intl]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -102,6 +113,12 @@ export const LoginModal: FC<Props> = ({ isOpen, onClose }) => {
       setHasNotDomain(false);
     }
   }, [domain]);
+
+  useEffect(() => {
+    setServerType(undefined);
+    setDomain('');
+    setHasNotDomain(false);
+  }, [isOpen]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
