@@ -13,7 +13,11 @@ const dsn = process.env.SENTRY_DSN;
 if (dsn) {
   Sentry.init({
     dsn,
-    integrations: [Sentry.captureConsoleIntegration()],
+    integrations: [
+      Sentry.captureConsoleIntegration({
+        levels: ['error', 'warn']
+      })
+    ],
     tracesSampleRate: 1.0
   });
 }
