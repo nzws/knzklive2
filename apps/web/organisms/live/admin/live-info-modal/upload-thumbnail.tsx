@@ -20,6 +20,7 @@ type Props = {
   tenantId?: number;
   hideButton?: boolean;
   streamerIdForDefaultThumbnail?: number;
+  thumbnailOuterComponent?: FC;
 };
 
 export const UploadThumbnail: FC<Props> = ({
@@ -28,7 +29,8 @@ export const UploadThumbnail: FC<Props> = ({
   onUploading,
   tenantId,
   hideButton,
-  streamerIdForDefaultThumbnail
+  streamerIdForDefaultThumbnail,
+  thumbnailOuterComponent: ThumbnailOuterComponent = Fragment
 }) => {
   const { token } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -104,27 +106,29 @@ export const UploadThumbnail: FC<Props> = ({
           </Button>
         )}
 
-        <VideoContainer
-          ratio={16 / 9}
-          onClick={isLoading ? undefined : handleOpenFile}
-        >
-          {thumbnailUrl || streamerIdForDefaultThumbnail ? (
-            <Image
-              src={
-                thumbnailUrl ||
-                `/api/default-thumbnail.png?userId=${
-                  streamerIdForDefaultThumbnail || 0
-                }`
-              }
-              style={{
-                objectFit: 'contain'
-              }}
-              alt="image"
-            />
-          ) : (
-            <div />
-          )}
-        </VideoContainer>
+        <ThumbnailOuterComponent>
+          <VideoContainer
+            ratio={16 / 9}
+            onClick={isLoading ? undefined : handleOpenFile}
+          >
+            {thumbnailUrl || streamerIdForDefaultThumbnail ? (
+              <Image
+                src={
+                  thumbnailUrl ||
+                  `/api/default-thumbnail.png?userId=${
+                    streamerIdForDefaultThumbnail || 0
+                  }`
+                }
+                style={{
+                  objectFit: 'contain'
+                }}
+                alt="image"
+              />
+            ) : (
+              <div />
+            )}
+          </VideoContainer>
+        </ThumbnailOuterComponent>
       </Stack>
     </Fragment>
   );

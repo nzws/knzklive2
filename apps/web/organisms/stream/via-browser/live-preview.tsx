@@ -5,7 +5,17 @@ import { useAuth } from '~/utils/hooks/use-auth';
 import { useAPIError } from '~/utils/hooks/api/use-api-error';
 import { ImagePublic } from '~/../../packages/api-types/common/types';
 import { client } from '~/utils/api/client';
-import { useToast } from '@chakra-ui/react';
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverHeader,
+  Portal,
+  useDisclosure,
+  useToast
+} from '@chakra-ui/react';
 
 type Props = {
   liveId?: number;
@@ -25,6 +35,9 @@ export const LivePreview: FC<Props> = ({
   const { token } = useAuth();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { isOpen: popoverIsOpen, onClose: popoverOnClose } = useDisclosure({
+    defaultIsOpen: true
+  });
   const [error, setError] = useState<unknown>();
   useAPIError(error);
 
@@ -71,17 +84,59 @@ export const LivePreview: FC<Props> = ({
     };
   }, [isLoading, toast]);
 
+  useEffect(() => {
+    if (!isPushing) {
+      return;
+    }
+
+    const handler = () => {
+      popoverOnClose();
+    };
+
+    document.addEventListener('click', handler);
+
+    return () => {
+      document.removeEventListener('click', handler);
+    };
+  }, [isPushing, popoverOnClose]);
+
   return (
     <Fragment>
       {isPushing ? (
-        <UploadThumbnail
-          thumbnailUrl={thumbnailUrl}
-          onThumbnailChange={handleSubmit}
-          onUploading={setIsLoading}
-          tenantId={tenantId}
-          streamerIdForDefaultThumbnail={streamerUserId}
-          hideButton
-        />
+        <Popover
+          isOpen={popoverIsOpen}
+          onClose={popoverOnClose}
+          placement="bottom"
+          closeOnBlur
+          isLazy
+          autoFocus={false}
+          size="2xl"
+          offset={[0, -16]}
+        >
+          <UploadThumbnail
+            thumbnailUrl={thumbnailUrl}
+            onThumbnailChange={handleSubmit}
+            onUploading={setIsLoading}
+            tenantId={tenantId}
+            streamerIdForDefaultThumbnail={streamerUserId}
+            hideButton
+            thumbnailOuterComponent={PopoverAnchor}
+          />
+
+          <Portal>
+            <PopoverContent shadow="2x">
+              <PopoverArrow />
+
+              <PopoverHeader textAlign="center" fontWeight="bold" fontSize="md">
+                👆 ここをタップして画像を変更
+              </PopoverHeader>
+
+              <PopoverBody textAlign="center" fontSize="sm">
+                変更はリアルタイムに視聴者へ同期されます。
+              </PopoverBody>
+            </PopoverContent>
+          </Portal>
+        </Popover>
       ) : (
         <VideoMessageBox
           thumbnailUrl={thumbnailUrl}
