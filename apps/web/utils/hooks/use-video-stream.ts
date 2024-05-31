@@ -7,13 +7,19 @@ import { VideoUrls } from 'api-types/api/v1/videos/_liveId@number';
 import type { HlsConfig } from 'hls.js';
 
 export enum LivePlayType {
-  Flv = 'flv',
+  FlvHttp = 'flvHttp',
+  FlvWs = 'flvWs',
   HlsHq = 'hlsHq',
   HlsLq = 'hlsLq',
   Audio = 'audio'
 }
 
-const LowLatency = [LivePlayType.Flv, LivePlayType.HlsHq, LivePlayType.Audio];
+const LowLatency = [
+  LivePlayType.FlvHttp,
+  LivePlayType.FlvWs,
+  LivePlayType.HlsHq,
+  LivePlayType.Audio
+];
 
 export enum VideoPlayType {
   HlsHq = 'hlsHq'
@@ -42,7 +48,7 @@ export const useVideoStream = <T extends 'live' | 'video'>(
   }, [videoTagRef]);
 
   const handleFlv = useCallback(
-    async (url: string) => {
+    async (playType: LivePlayType, url: string) => {
       if (!videoTagRef.current) {
         return;
       }
@@ -61,7 +67,7 @@ export const useVideoStream = <T extends 'live' | 'video'>(
 
         const player = Mpegts.createPlayer(
           {
-            type: 'flv',
+            type: playType === LivePlayType.FlvWs ? 'mse' : 'flv',
             isLive: true,
             url
           },
@@ -146,6 +152,10 @@ export const useVideoStream = <T extends 'live' | 'video'>(
           player.on(Hls.Events.ERROR, (event, data) => {
             console.warn(event, data);
 
+            if (!data.fatal) {
+              return;
+            }
+
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR: {
                 if (data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR) {
@@ -164,12 +174,9 @@ export const useVideoStream = <T extends 'live' | 'video'>(
                 setTimeout(() => {
                   player.recoverMediaError();
                 }, 1000);
-
                 break;
               default:
-                if (data.fatal) {
-                  player.destroy();
-                }
+                player.destroy();
                 break;
             }
           });
@@ -196,10 +203,20 @@ export const useVideoStream = <T extends 'live' | 'video'>(
 
     if (entityType === 'live') {
       const live = url as LiveUrls;
-      if (playType === LivePlayType.Flv) {
+      if (playType === LivePlayType.FlvHttp) {
         void (async () => {
           try {
-            await handleFlv(live.flv);
+            await handleFlv(playType, live.flvHttp);
+          } catch (e) {
+            if (e instanceof FlvNotSupportedError) {
+              setPlayType(LivePlayType.HlsHq as PlayType<T>);
+            }
+          }
+        })();
+      } else if (playType === LivePlayType.FlvWs) {
+        void (async () => {
+          try {
+            await handleFlv(playType, live.flvWs);
           } catch (e) {
             if (e instanceof FlvNotSupportedError) {
               setPlayType(LivePlayType.HlsHq as PlayType<T>);
@@ -213,7 +230,7 @@ export const useVideoStream = <T extends 'live' | 'video'>(
       } else if (playType === LivePlayType.Audio) {
         void handleHls(live.audio, playType, true);
       } else {
-        setPlayType(LivePlayType.Flv as PlayType<T>);
+        setPlayType(LivePlayType.FlvWs as PlayType<T>);
       }
     } else {
       const video = url as VideoUrls;

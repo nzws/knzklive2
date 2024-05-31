@@ -1,7 +1,8 @@
 import { AuthorizationHeader } from '../../../../../common/types';
 
 export type LiveUrls = {
-  flv: string;
+  flvWs: string;
+  flvHttp: string;
   hlsHq: string;
   hlsLq: string;
   audio: string;

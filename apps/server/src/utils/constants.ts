@@ -7,12 +7,17 @@ export const REDIS_CONNECTION = {
 };
 
 export const PROTOCOL = `http${process.env.USE_HTTP ? '' : 's'}`;
+export const PROTOCOL_WS = `ws${process.env.USE_HTTP ? '' : 's'}`;
+
 export const basePushStream = `${PROTOCOL}://${process.env.PUSH_DOMAIN || ''}`;
 export const enableVideo = !!process.env.VIDEO_DOMAIN;
 export const baseVideoStream = `${PROTOCOL}://${
   process.env.VIDEO_DOMAIN || ''
 }`;
 export const basePushPlay = `${PROTOCOL}://${
+  process.env.PUSH_CDN_DOMAIN || process.env.PUSH_DOMAIN || ''
+}`;
+export const basePushPlayWs = `${PROTOCOL_WS}://${
   process.env.PUSH_CDN_DOMAIN || process.env.PUSH_DOMAIN || ''
 }`;
 export const baseVideoPlay = `${PROTOCOL}://${

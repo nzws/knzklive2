@@ -230,15 +230,17 @@ export const Controller: FC<Props> = props => {
                   >
                     {(isLive ? livePlayTypes : videoPlayTypes).map(playType => (
                       <MenuItemOption value={playType.id} key={playType.id}>
-                        {playType.badge && (
-                          <Badge mr="1">{playType.badge}</Badge>
-                        )}
-
                         <FormattedMessage
                           id={`${
                             isLive ? 'live' : 'video'
                           }.player.settings.type.${playType.id}.title`}
                         />
+
+                        {playType.badge && (
+                          <Badge ml="1" mb="1">
+                            {playType.badge}
+                          </Badge>
+                        )}
 
                         <Text fontSize="xs" color="gray.500">
                           <FormattedMessage
@@ -297,8 +299,12 @@ const Container = styled.div`
 
 const livePlayTypes: { id: LivePlayType; badge?: string }[] = [
   {
-    id: LivePlayType.Flv,
-    badge: 'FLV'
+    id: LivePlayType.FlvWs,
+    badge: 'FLV-WS'
+  },
+  {
+    id: LivePlayType.FlvHttp,
+    badge: 'FLV-HTTP'
   },
   {
     id: LivePlayType.HlsHq,
