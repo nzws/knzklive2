@@ -23,7 +23,7 @@
     "@napi-rs/canvas": "0.1.52",
     "api-types": "*",
     "aspida": "1.14.0",
-    "framer-motion": "11.2.6",
+    "framer-motion": "11.2.10",
     "hls.js": "1.5.8",
     "is-valid-domain": "0.1.6",
     "jose": "5.3.0",
