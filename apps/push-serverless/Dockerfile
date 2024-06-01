@@ -10,20 +10,19 @@ RUN yarn workspaces focus push-serverless api-types && yarn workspace api-types 
 
 FROM ossrs/srs:6
 
-RUN apt-get update &&\
-  apt-get install -y \
-  ca-certificates gnupg openssl libssl-dev libc6 curl nginx wget unzip &&\
-  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
-  apt-get install -y nodejs &&\
-  apt-get clean &&\
-  rm -rf /var/lib/apt/lists/*
-
-ENV FFMPEG_VERSION=6.1
 ENV NODE_ENV=production
 ENV FFMPEG_PATH=/usr/local/bin/ffmpeg
 ENV FFPROBE_PATH=/usr/local/bin/ffprobe
 
-RUN ARCH=$(uname -m) && \
+RUN apt-get update &&\
+  apt-get install -y \
+  nginx curl wget unzip &&\
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash - &&\
+  apt-get install -y nodejs &&\
+  apt-get clean &&\
+  rm -rf /var/lib/apt/lists/* &&\
+  FFMPEG_VERSION=6.1 && \
+  ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then \
         ARCH="64"; \
     elif [ "$ARCH" = "aarch64" ]; then \
@@ -39,7 +38,8 @@ RUN ARCH=$(uname -m) && \
     wget $URL -O /tmp/ffprobe.zip && \
     unzip /tmp/ffprobe.zip -d /tmp && \
     mv /tmp/ffprobe /usr/local/bin/ffprobe && \
-    rm -rf /tmp/ffmpeg.zip /tmp/ffprobe.zip
+    rm -rf /tmp/ffmpeg.zip /tmp/ffprobe.zip && \
+    apt-get purge -y wget unzip curl
 
 COPY ./apps/push-serverless/vm/usr/local/srs/conf/knzklive.conf /usr/local/srs/conf/knzklive.conf
 COPY ./apps/push-serverless/vm/etc/nginx/conf.d/knzklive.conf /etc/nginx/conf.d/knzklive.conf
