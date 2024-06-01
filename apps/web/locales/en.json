@@ -100,7 +100,7 @@
   "live.player.settings.type.flvWs.title": "Source quality",
   "live.player.settings.type.flvWs.note": "Ultra-Low latency (iOS is not supported) (Beta)",
   "live.player.settings.type.flvHttp.title": "Source quality",
-  "live.player.settings.type.flvHttp.note": "Low latency (iOS is not supported)",
+  "live.player.settings.type.flvHttp.note": "Ultra-Low latency (iOS is not supported)",
   "live.player.settings.type.hlsHq.title": "High quality",
   "live.player.settings.type.hlsHq.note": "Low latency (For iOS)",
   "live.player.settings.type.hlsLq.title": "Low quality",

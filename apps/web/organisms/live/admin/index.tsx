@@ -14,7 +14,8 @@ import {
   Spinner,
   Text,
   UnorderedList,
-  ListItem
+  ListItem,
+  Badge
 } from '@chakra-ui/react';
 import { FC, useEffect } from 'react';
 import { useStream } from '~/utils/hooks/api/use-stream';
@@ -24,7 +25,6 @@ import { GeneralSettings } from './general-settings';
 import Link from 'next/link';
 import { LivePublic } from '~/../../packages/api-types/common/types';
 import { AutoMods } from './auto-mods';
-import { NewFeature } from '~/atoms/new-badge';
 
 type Props = {
   liveId: number;
@@ -79,10 +79,7 @@ export const Admin: FC<Props> = ({
           <TabList>
             <Tab>配信設定</Tab>
             <Tab>配信ソフトウェア設定</Tab>
-            <Tab>
-              モデレーション
-              <NewFeature />
-            </Tab>
+            <Tab>モデレーション</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
@@ -113,16 +110,32 @@ export const Admin: FC<Props> = ({
                     現在、配信システム側でハードリミットは設定されていませんが、快適な配信をするために以下の設定を推奨します。
                   </Text>
 
-                  <UnorderedList>
+                  <UnorderedList spacing={1}>
                     <ListItem>
-                      キーフレーム間隔: <b>1s</b> (重要:
-                      間隔が大きい/オートだと視聴がカクつきます)
+                      キーフレーム間隔:{' '}
+                      <b>1s (重要: 間隔が大きい/0(オート)だとカクつきます)</b>
                     </ListItem>
                     <ListItem>
-                      映像エンコーダ: <b>H264</b>{' '}
-                      の任意のハードウェア/ソフトウェアエンコーダ (重要:
-                      H265(HEVC) は対応していません)
+                      映像エンコーダ: H265(HEVC) / H264{' '}
+                      の任意のハードウェア/ソフトウェアエンコーダ
                     </ListItem>
+                    <UnorderedList>
+                      <ListItem>
+                        <Badge colorScheme="teal" mr={2} mb={1}>
+                          NEW
+                        </Badge>
+                        H265(HEVC)
+                        コーデックを使用すると、より少ないビットレートで高画質な配信ができます。
+                      </ListItem>
+
+                      <ListItem>
+                        <b>
+                          (OBS)
+                          エンコーダーを変更すると他の設定がリセットされることがあります。変更後は再確認してください。
+                        </b>
+                      </ListItem>
+                    </UnorderedList>
+
                     <ListItem>出力解像度: 1920x1080</ListItem>
                     <ListItem>
                       ビットレート: 2000 kbps 前後

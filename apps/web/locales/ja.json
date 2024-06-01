@@ -100,7 +100,7 @@
   "live.player.settings.type.flvWs.title": "ソース画質",
   "live.player.settings.type.flvWs.note": "超低遅延 (iOS 非対応) (Beta)",
   "live.player.settings.type.flvHttp.title": "ソース画質",
-  "live.player.settings.type.flvHttp.note": "低遅延 (iOS 非対応)",
+  "live.player.settings.type.flvHttp.note": "超低遅延 (iOS 非対応)",
   "live.player.settings.type.hlsHq.title": "高画質",
   "live.player.settings.type.hlsHq.note": "低遅延 (iOS 向け)",
   "live.player.settings.type.hlsLq.title": "低画質",

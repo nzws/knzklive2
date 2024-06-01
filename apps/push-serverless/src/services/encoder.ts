@@ -71,13 +71,19 @@ export class Encoder {
       .audioCodec('aac')
       .audioBitrate('128k')
       .audioChannels(2)
-      .videoCodec('libx264')
+      .videoCodec('libx265')
       .videoBitrate('2500k')
       .size('1920x1080')
       .autopad()
       .format('mp4')
       .output(`${chunkDir}/${timestamp}.mp4`)
-      .outputOptions(['-async 1', '-vsync 1', '-filter:v fps=30'])
+      .outputOptions([
+        '-async 1',
+        '-vsync 1',
+        '-filter:v fps=30',
+        '-tag:v hvc1',
+        '-crf 22'
+      ])
       .duration(remainingSeconds);
 
     stream.on('start', (cmd: string) => {
@@ -211,7 +217,9 @@ export class Encoder {
         '-hls_time 1',
         '-hls_list_size 10',
         '-hls_flags delete_segments+omit_endlist',
-        `-hls_segment_filename ${path}/${idx}-%d.ts`
+        '-segment_list_flags live',
+        `-hls_segment_filename ${path}/${idx}-%d.ts`,
+        '-tag:v hvc1'
       ])
       .output(`${path}/stream.m3u8`)
       .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency']);
@@ -255,7 +263,7 @@ export class Encoder {
       .audioCodec('aac')
       .audioBitrate('128k')
       // .audioChannels(2)
-      .videoCodec('libx264')
+      .videoCodec('libx265')
       .videoBitrate('800k')
       .size('640x360')
       .autopad()
@@ -265,8 +273,11 @@ export class Encoder {
         '-hls_time 2',
         '-hls_list_size 10',
         '-hls_flags delete_segments+omit_endlist',
+        '-segment_list_flags live',
         `-hls_segment_filename ${path}/${idx}-%d.ts`,
-        '-filter:v fps=30'
+        '-filter:v fps=30',
+        '-tag:v hvc1',
+        '-crf 25'
       ])
       .output(`${path}/stream.m3u8`)
       .inputOptions(['-re', '-preset', 'ultrafast', '-tune', 'zerolatency']);
@@ -315,6 +326,7 @@ export class Encoder {
         '-hls_time 1',
         '-hls_list_size 10',
         '-hls_flags delete_segments+omit_endlist',
+        '-segment_list_flags live',
         `-hls_segment_filename ${path}/${idx}-%d.ts`
       ])
       .output(`${path}/stream.m3u8`)
@@ -352,7 +364,7 @@ export class Encoder {
       .audioCodec('aac')
       .audioBitrate('128k')
       // .audioChannels(2)
-      .videoCodec('libx264')
+      .videoCodec('libx265')
       .videoBitrate('1000k')
       .format('flv')
       .inputOptions(['-re'])
