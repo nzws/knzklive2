@@ -28,6 +28,9 @@ export enum VideoPlayType {
 export type PlayType<T> = T extends 'live' ? LivePlayType : VideoPlayType;
 type UrlType<T> = T extends 'live' ? LiveUrls : VideoUrls;
 
+let hlsInterface: typeof Hls | undefined;
+let mpegtsInterface: typeof Mpegts | undefined;
+
 export const useVideoStream = <T extends 'live' | 'video'>(
   entityType: T,
   videoTagRef: RefObject<HTMLVideoElement>,
@@ -59,10 +62,32 @@ export const useVideoStream = <T extends 'live' | 'video'>(
       }
 
       try {
-        const Mpegts = (await import('mpegts.js')).default;
+        const Mpegts = mpegtsInterface || (await import('mpegts.js')).default;
+        mpegtsInterface = Mpegts;
 
         if (!Mpegts.getFeatureList().mseLivePlayback) {
           throw new FlvNotSupportedError();
+        }
+
+        let flvConfig: Partial<Mpegts.Config> = {
+          enableWorker: true,
+          autoCleanupSourceBuffer: true,
+          liveBufferLatencyChasing: true,
+          // @ts-expect-error: type error
+          enableWorkerForMSE: true,
+          liveBufferLatencyChasingOnPaused: true,
+          liveSync: true
+        };
+
+        const isLowLatency = LowLatency.includes(playType);
+        if (isLowLatency) {
+          flvConfig = {
+            ...flvConfig,
+            enableStashBuffer: false,
+            liveBufferLatencyMaxLatency: 1,
+            // @ts-expect-error: type error
+            liveSyncTargetLatency: 0.5
+          };
         }
 
         const player = Mpegts.createPlayer(
@@ -71,20 +96,7 @@ export const useVideoStream = <T extends 'live' | 'video'>(
             isLive: true,
             url
           },
-          {
-            enableStashBuffer: false,
-            stashInitialSize: 1024 * 64,
-            enableWorker: true,
-            autoCleanupSourceBuffer: true,
-            liveBufferLatencyChasing: true,
-            liveBufferLatencyMaxLatency: 2,
-            liveBufferLatencyMinRemain: 0.5,
-            // @ts-expect-error: type error
-            enableWorkerForMSE: true,
-            liveBufferLatencyChasingOnPaused: true,
-            liveSync: true,
-            liveSyncTargetLatency: 0.5
-          }
+          flvConfig
         );
         mpegtsPlayerRef.current = player;
 
@@ -117,7 +129,8 @@ export const useVideoStream = <T extends 'live' | 'video'>(
 
       let player: Hls;
       try {
-        const Hls = (await import('hls.js')).default;
+        const Hls = hlsInterface || (await import('hls.js')).default;
+        hlsInterface = Hls;
 
         if (Hls.isSupported()) {
           if (isLive) {
