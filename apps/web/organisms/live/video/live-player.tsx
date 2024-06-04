@@ -7,6 +7,7 @@ import { Blocking } from './blocking';
 import { Controller } from './controller';
 import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useVideoStream } from '~/utils/hooks/use-video-stream';
+import { useMuxData } from '~/utils/hooks/use-mux-data';
 
 type Props = {
   thumbnailUrl: string;
@@ -15,6 +16,9 @@ type Props = {
   onToggleContainerSize?: () => void;
   isStreamer?: boolean;
   streamerUserId: number;
+  liveId?: number;
+  liveTitle?: string;
+  userId?: number;
 };
 
 export const LivePlayer: FC<Props> = ({
@@ -22,7 +26,10 @@ export const LivePlayer: FC<Props> = ({
   url,
   updateUrl,
   onToggleContainerSize,
-  isStreamer
+  isStreamer,
+  liveId,
+  liveTitle,
+  userId
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,6 +41,7 @@ export const LivePlayer: FC<Props> = ({
   const [canPlay, setCanPlay] = useState(false);
   const [maybeBlocked, setMaybeBlocked] = useState(false);
   const { playType, setPlayType, play } = useVideoStream('live', videoRef, url);
+  useMuxData(videoRef, liveId, liveTitle, userId, playType);
 
   const autoSeek = useCallback(() => {
     void (async () => {

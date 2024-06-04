@@ -11040,6 +11040,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mux-embed@npm:5.2.1":
+  version: 5.2.1
+  resolution: "mux-embed@npm:5.2.1"
+  checksum: 10/899afe2977a4ee900418c22ed306a262223ac16b90058461f020410fbb340679bfcf088ce9ede4e1852fe5484f59f0a2ecfd91a5c62906fc5fdfb5af302c4138
+  languageName: node
+  linkType: hard
+
 "mz@npm:^2.4.0":
   version: 2.7.0
   resolution: "mz@npm:2.7.0"
@@ -14240,6 +14247,7 @@ __metadata:
     jest-environment-jsdom: "npm:29.7.0"
     jose: "npm:5.3.0"
     mpegts.js: "npm:1.7.3"
+    mux-embed: "npm:5.2.1"
     next: "npm:14.2.3"
     nextjs-progressbar: "npm:0.0.16"
     react: "npm:18.3.1"

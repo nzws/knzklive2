@@ -29,6 +29,7 @@ services:
     ports:
       - '8081:80'
       - '1935:1935'
+      - '1985:1985'
     env_file:
       - .env
     environment:

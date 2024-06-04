@@ -99,6 +99,9 @@ export const LiveApp: FC<Props> = ({ live, streamer }) => {
               updateUrl={updateUrl}
               onToggleContainerSize={toggleContainerSize}
               streamerUserId={live.userId}
+              liveId={live.id}
+              liveTitle={live.title}
+              userId={user?.id}
             />
           ) : (
             <VideoMessageBox
