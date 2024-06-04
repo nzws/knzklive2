@@ -1,5 +1,5 @@
 import type { AspidaClient } from 'aspida';
-import type { Methods as Methods0 } from './api/notes/create';
+import type { Methods as Methods_17gbsmd } from './api/notes/create';
 
 const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
   const prefix = (baseURL === undefined ? '' : baseURL).replace(/\/$/, '');
@@ -11,20 +11,25 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
       notes: {
         create: {
           post: (option: {
-            body: Methods0['post']['reqBody'];
+            body: Methods_17gbsmd['post']['reqBody'];
             config?: T | undefined;
           }) =>
-            fetch<Methods0['post']['resBody']>(
+            fetch<Methods_17gbsmd['post']['resBody']>(
               prefix,
               PATH0,
               POST,
               option
             ).json(),
           $post: (option: {
-            body: Methods0['post']['reqBody'];
+            body: Methods_17gbsmd['post']['reqBody'];
             config?: T | undefined;
           }) =>
-            fetch<Methods0['post']['resBody']>(prefix, PATH0, POST, option)
+            fetch<Methods_17gbsmd['post']['resBody']>(
+              prefix,
+              PATH0,
+              POST,
+              option
+            )
               .json()
               .then(r => r.body),
           $path: () => `${prefix}${PATH0}`

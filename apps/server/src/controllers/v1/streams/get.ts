@@ -10,8 +10,9 @@ export const getV1Streams: APIRoute<
   never,
   Response,
   UserState & LiveState
-> = ctx => {
+> = async ctx => {
   ctx.body = {
-    live: lives.getPrivate(ctx.state.live)
+    live: lives.getPrivate(ctx.state.live),
+    stats: await lives.getStats(ctx.state.live)
   };
 };

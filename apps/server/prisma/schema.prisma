@@ -81,6 +81,7 @@ model Live {
   watchToken       String?     @db.VarChar(100)
   thumbnailId      Int?
   config           Json        @default("{}")
+  stats            Json        @default("{}")
   isDeleted        Boolean     @default(false)
   isRecording      Boolean     @default(false)
   isPushing        Boolean     @default(false)

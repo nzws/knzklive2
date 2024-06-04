@@ -11,20 +11,19 @@ import {
   AlertIcon,
   Button,
   Center,
-  Spinner,
-  Text,
-  UnorderedList,
-  ListItem
+  Spinner
 } from '@chakra-ui/react';
 import { FC, useEffect } from 'react';
 import { useStream } from '~/utils/hooks/api/use-stream';
-import { PushKey } from './push-key';
+import { PushKey } from './stream-software/push-key';
 import { CommentViewer } from './comment-viewer';
 import { GeneralSettings } from './general-settings';
 import Link from 'next/link';
 import { LivePublic } from '~/../../packages/api-types/common/types';
 import { AutoMods } from './auto-mods';
 import { NewFeature } from '~/atoms/new-badge';
+import { ConfigDescription } from './stream-software/config-description';
+import { Stats } from './stream-software/stats';
 
 type Props = {
   liveId: number;
@@ -93,6 +92,11 @@ export const Admin: FC<Props> = ({
             </TabPanel>
             <TabPanel>
               <Stack spacing={6}>
+                <Stats
+                  isPushing={stream?.live?.isPushing}
+                  stats={stream?.stats}
+                />
+
                 <Stack spacing={4}>
                   <Heading size="sm">配信サーバー設定</Heading>
 
@@ -109,26 +113,7 @@ export const Admin: FC<Props> = ({
                 <Stack spacing={4}>
                   <Heading size="sm">配信ソフトウェア設定</Heading>
 
-                  <Text>
-                    現在、配信システム側でハードリミットは設定されていませんが、快適な配信をするために以下の設定を推奨します。
-                  </Text>
-
-                  <UnorderedList>
-                    <ListItem>
-                      キーフレーム間隔: <b>1s</b> (重要:
-                      間隔が大きい/オートだと視聴がカクつきます)
-                    </ListItem>
-                    <ListItem>
-                      映像エンコーダ: <b>H264</b>{' '}
-                      の任意のハードウェア/ソフトウェアエンコーダ (重要:
-                      H265(HEVC) は対応していません)
-                    </ListItem>
-                    <ListItem>出力解像度: 1920x1080</ListItem>
-                    <ListItem>
-                      ビットレート: 2000 kbps 前後
-                      (重くなる場合は落としてください)
-                    </ListItem>
-                  </UnorderedList>
+                  <ConfigDescription />
                 </Stack>
 
                 <Stack spacing={4}>

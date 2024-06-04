@@ -29,7 +29,8 @@ const reqBodySchema: JSONSchemaType<Request> = {
         'stream:stop',
         'record:processing',
         'record:done',
-        'record:failed'
+        'record:failed',
+        'stream:heartbeat'
       ]
     },
     serverToken: {
@@ -41,6 +42,66 @@ const reqBodySchema: JSONSchemaType<Request> = {
     },
     fileSize: {
       type: 'string',
+      nullable: true
+    },
+    stats: {
+      type: 'object',
+      properties: {
+        kbps: {
+          type: 'object',
+          properties: {
+            recv_30s: {
+              type: 'number'
+            },
+            send_30s: {
+              type: 'number'
+            }
+          },
+          required: ['recv_30s', 'send_30s']
+        },
+        video: {
+          type: 'object',
+          properties: {
+            codec: {
+              type: 'string'
+            },
+            profile: {
+              type: 'string'
+            },
+            level: {
+              type: 'string'
+            },
+            width: {
+              type: 'number'
+            },
+            height: {
+              type: 'number'
+            }
+          },
+          required: ['codec', 'profile', 'level', 'width', 'height'],
+          nullable: true
+        },
+        audio: {
+          type: 'object',
+          properties: {
+            codec: {
+              type: 'string'
+            },
+            sample_rate: {
+              type: 'number'
+            },
+            channel: {
+              type: 'number'
+            },
+            profile: {
+              type: 'string'
+            }
+          },
+          required: ['codec', 'sample_rate', 'channel', 'profile'],
+          nullable: true
+        }
+      },
+      required: ['kbps'],
       nullable: true
     }
   },
@@ -127,6 +188,16 @@ export const postV1InternalsPushAction: APIRoute<
       live.id,
       LiveRecordingStatus.Failed
     );
+  } else if (body.action === 'stream:heartbeat') {
+    if (!body.stats) {
+      ctx.status = 400;
+      ctx.body = {
+        errorCode: 'invalid_request'
+      };
+      return;
+    }
+
+    await lives.updateStats(live, body.stats);
   }
 
   if (newLive) {

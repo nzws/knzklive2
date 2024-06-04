@@ -8,6 +8,7 @@ export type SRSPublishCallback = {
   stream: string;
   tcUrl: string;
   param: string;
+  stream_id: string;
 };
 
 export type SRSUnPublishCallback = {

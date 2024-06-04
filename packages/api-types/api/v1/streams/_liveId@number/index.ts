@@ -1,4 +1,4 @@
-import { LivePrivate } from 'api-types/common/types';
+import { LivePrivate, LiveStats } from 'api-types/common/types';
 import { AuthorizationHeader } from '../../../../common/types';
 import { LiveSetting } from '../index';
 
@@ -18,6 +18,7 @@ export type Methods = {
 
     resBody: {
       live: LivePrivate;
+      stats: LiveStats;
     };
   };
 

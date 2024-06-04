@@ -52,6 +52,26 @@ export type LiveConfig = {
   isRequiredFollower?: boolean;
 };
 
+export type LiveStats = {
+  kbps: {
+    recv_30s: number;
+    send_30s: number;
+  };
+  video?: {
+    codec: string;
+    profile: string;
+    level: string;
+    width: number;
+    height: number;
+  } | null;
+  audio?: {
+    codec: string;
+    sample_rate: number;
+    channel: number;
+    profile: string;
+  } | null;
+};
+
 export type LivePrivacy = 'Public' | 'Private' | 'Hidden';
 
 export type LivePublic = {

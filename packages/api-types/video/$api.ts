@@ -1,6 +1,6 @@
 import type { AspidaClient } from 'aspida';
-import type { Methods as Methods0 } from './api/externals/v1/recording/publish';
-import type { Methods as Methods1 } from './api/externals/v1/recording/unpublish';
+import type { Methods as Methods_4p4vzr } from './api/externals/v1/recording/publish';
+import type { Methods as Methods_17uvs9a } from './api/externals/v1/recording/unpublish';
 
 const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
   const prefix = (baseURL === undefined ? '' : baseURL).replace(/\/$/, '');
@@ -15,40 +15,50 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
           recording: {
             publish: {
               post: (option: {
-                body: Methods0['post']['reqBody'];
+                body: Methods_4p4vzr['post']['reqBody'];
                 config?: T | undefined;
               }) =>
-                fetch<Methods0['post']['resBody']>(
+                fetch<Methods_4p4vzr['post']['resBody']>(
                   prefix,
                   PATH0,
                   POST,
                   option
                 ).json(),
               $post: (option: {
-                body: Methods0['post']['reqBody'];
+                body: Methods_4p4vzr['post']['reqBody'];
                 config?: T | undefined;
               }) =>
-                fetch<Methods0['post']['resBody']>(prefix, PATH0, POST, option)
+                fetch<Methods_4p4vzr['post']['resBody']>(
+                  prefix,
+                  PATH0,
+                  POST,
+                  option
+                )
                   .json()
                   .then(r => r.body),
               $path: () => `${prefix}${PATH0}`
             },
             unpublish: {
               post: (option: {
-                body: Methods1['post']['reqBody'];
+                body: Methods_17uvs9a['post']['reqBody'];
                 config?: T | undefined;
               }) =>
-                fetch<Methods1['post']['resBody']>(
+                fetch<Methods_17uvs9a['post']['resBody']>(
                   prefix,
                   PATH1,
                   POST,
                   option
                 ).json(),
               $post: (option: {
-                body: Methods1['post']['reqBody'];
+                body: Methods_17uvs9a['post']['reqBody'];
                 config?: T | undefined;
               }) =>
-                fetch<Methods1['post']['resBody']>(prefix, PATH1, POST, option)
+                fetch<Methods_17uvs9a['post']['resBody']>(
+                  prefix,
+                  PATH1,
+                  POST,
+                  option
+                )
                   .json()
                   .then(r => r.body),
               $path: () => `${prefix}${PATH1}`

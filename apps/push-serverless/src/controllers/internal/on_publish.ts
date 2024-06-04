@@ -37,7 +37,7 @@ export const apiInternalOnPublish: Middleware = async ctx => {
     return;
   }
 
-  await Action.startStream(liveId, watchToken, body.client_id);
+  await Action.startStream(liveId, watchToken, body.client_id, body.stream_id);
 
   void client.v1.internals.push.action.$post({
     body: {

@@ -1,7 +1,12 @@
 import crypto from 'crypto';
 import { Image, Live, LivePrivacy, PrismaClient, Tenant } from '@prisma/client';
 import { images, liveStreamProgresses, lives, tenants } from '.';
-import { LiveConfig, LivePrivate, LivePublic } from 'api-types/common/types';
+import {
+  LiveConfig,
+  LivePrivate,
+  LivePublic,
+  LiveStats
+} from 'api-types/common/types';
 import {
   basePushStream,
   frontendUrl,
@@ -13,6 +18,7 @@ import { pushApi } from '../services/push-api';
 import { thumbnailStorage } from '../services/storage/thumbnail';
 import { jwtWebInternalAPI } from '../services/jwt';
 import { RelationCache } from '../services/redis/relation-cache';
+import { LiveBitrateStats } from '../services/redis/live-bitrate-stats';
 
 export const Lives = (client: PrismaClient['live']) =>
   Object.assign(client, {
@@ -65,6 +71,17 @@ export const Lives = (client: PrismaClient['live']) =>
         isRequiredFollowing: config.isRequiredFollowing ?? false,
         isRequiredFollower: config.isRequiredFollower ?? false
       };
+    },
+    getStats: async (live: Live) => {
+      const stats = (live.stats || {}) as LiveStats;
+      const bitrate = await new LiveBitrateStats(live.id).getLatest();
+      return {
+        ...stats,
+        kbps: {
+          recv_30s: bitrate?.recv_30s || 0,
+          send_30s: bitrate?.send_30s || 0
+        }
+      } satisfies LiveStats;
     },
     get: async (id: number) => {
       const live = await client.findUnique({
@@ -420,6 +437,44 @@ export const Lives = (client: PrismaClient['live']) =>
       });
 
       return data;
+    },
+    updateStats: async (live: Live, stats: LiveStats) => {
+      const currentStats = (live.stats || {}) as LiveStats;
+      const same =
+        currentStats.audio?.channel === stats.audio?.channel &&
+        currentStats.audio?.codec === stats.audio?.codec &&
+        currentStats.audio?.profile === stats.audio?.profile &&
+        currentStats.audio?.sample_rate === stats.audio?.sample_rate &&
+        // いれてない
+        // currentStats.kbps.recv_30s === stats.kbps.recv_30s &&
+        // currentStats.kbps.send_30s === stats.kbps.send_30s &&
+        currentStats.video?.codec === stats.video?.codec &&
+        currentStats.video?.height === stats.video?.height &&
+        currentStats.video?.level === stats.video?.level &&
+        currentStats.video?.profile === stats.video?.profile &&
+        currentStats.video?.width === stats.video?.width;
+      const hasUpdate = !same;
+
+      await new LiveBitrateStats(live.id).insert(
+        stats.kbps.recv_30s,
+        stats.kbps.send_30s
+      );
+
+      if (hasUpdate) {
+        return await client.update({
+          where: {
+            id: live.id
+          },
+          data: {
+            stats: {
+              audio: stats.audio,
+              video: stats.video
+            }
+          }
+        });
+      }
+
+      return undefined;
     }
   });
 

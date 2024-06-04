@@ -7,6 +7,7 @@ export const sessions = new Map<
     clientId: string;
     encoder: Encoder;
     internalToken: string;
+    heartbeatInterval?: NodeJS.Timeout;
   }
 >();
 
@@ -35,6 +36,10 @@ export const rejectSession = async (liveId: number) => {
     void session.encoder.cleanup();
   } catch (e) {
     console.warn('cleanup error', liveId, e);
+  }
+
+  if (session.heartbeatInterval) {
+    clearInterval(session.heartbeatInterval);
   }
 
   try {
