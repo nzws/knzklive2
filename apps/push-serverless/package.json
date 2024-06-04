@@ -33,7 +33,7 @@
     "@aspida/fetch": "1.14.0",
     "@koa/router": "12.0.1",
     "@sentry/node": "8.4.0",
-    "ajv": "8.13.0",
+    "ajv": "8.16.0",
     "api-types": "workspace:^",
     "aspida": "1.14.0",
     "fluent-ffmpeg": "2.1.3",
