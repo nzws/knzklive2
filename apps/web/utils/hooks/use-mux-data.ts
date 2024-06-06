@@ -29,6 +29,7 @@ export function useMuxData(
         const initTime = mux.utils.now();
         mux.monitor(media, {
           debug: process.env.NODE_ENV === 'development',
+          respectDoNotTrack: true,
           data: {
             env_key: muxEnv,
             player_init_time: initTime,
