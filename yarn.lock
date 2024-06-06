@@ -1239,6 +1239,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bull-board/api@npm:5.20.1":
+  version: 5.20.1
+  resolution: "@bull-board/api@npm:5.20.1"
+  dependencies:
+    redis-info: "npm:^3.0.8"
+  peerDependencies:
+    "@bull-board/ui": 5.20.1
+  checksum: 10/8f9fbf27baf1f12a6f4faedd8ac6131f041f3fefede13f4f586c357b14ca859051b851c5286dd71c95f396dee0a2b9ec078c73c47c89338000b25e3240c221fe
+  languageName: node
+  linkType: hard
+
 "@bull-board/koa@npm:5.18.3":
   version: 5.18.3
   resolution: "@bull-board/koa@npm:5.18.3"
@@ -12710,7 +12721,7 @@ __metadata:
     "@aws-sdk/client-s3": "npm:3.583.0"
     "@aws-sdk/middleware-endpoint": "npm:3.374.0"
     "@aws-sdk/s3-request-presigner": "npm:3.583.0"
-    "@bull-board/api": "npm:5.18.3"
+    "@bull-board/api": "npm:5.20.1"
     "@bull-board/koa": "npm:5.18.3"
     "@dotplants/cli": "npm:0.2.3"
     "@koa/cors": "npm:5.0.0"
