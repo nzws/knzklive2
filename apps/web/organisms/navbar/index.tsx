@@ -16,6 +16,7 @@ import { LoginModal } from './login-modal';
 import { User } from './user';
 import { LiveInfoModal } from '../live/admin/live-info-modal';
 import { useRouter } from 'next/router';
+import { Announcements } from './announcements';
 
 export const Navbar: FC = () => {
   const router = useRouter();
@@ -85,6 +86,8 @@ export const Navbar: FC = () => {
           allowUnstable={me?.config.allowUnstableFeatures}
         />
       )}
+
+      <Announcements />
 
       <Box as="nav">
         <Container py={{ base: 3 }} maxW="full">
