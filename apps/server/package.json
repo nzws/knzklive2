@@ -19,7 +19,7 @@
     "@aws-sdk/middleware-endpoint": "3.374.0",
     "@aws-sdk/s3-request-presigner": "3.583.0",
     "@bull-board/api": "5.18.3",
-    "@bull-board/koa": "5.18.3",
+    "@bull-board/koa": "5.20.1",
     "@dotplants/cli": "0.2.3",
     "@koa/cors": "5.0.0",
     "@koa/multer": "3.0.2",

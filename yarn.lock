@@ -1239,28 +1239,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bull-board/koa@npm:5.18.3":
-  version: 5.18.3
-  resolution: "@bull-board/koa@npm:5.18.3"
+"@bull-board/api@npm:5.20.1":
+  version: 5.20.1
+  resolution: "@bull-board/api@npm:5.20.1"
   dependencies:
-    "@bull-board/api": "npm:5.18.3"
-    "@bull-board/ui": "npm:5.18.3"
+    redis-info: "npm:^3.0.8"
+  peerDependencies:
+    "@bull-board/ui": 5.20.1
+  checksum: 10/8f9fbf27baf1f12a6f4faedd8ac6131f041f3fefede13f4f586c357b14ca859051b851c5286dd71c95f396dee0a2b9ec078c73c47c89338000b25e3240c221fe
+  languageName: node
+  linkType: hard
+
+"@bull-board/koa@npm:5.20.1":
+  version: 5.20.1
+  resolution: "@bull-board/koa@npm:5.20.1"
+  dependencies:
+    "@bull-board/api": "npm:5.20.1"
+    "@bull-board/ui": "npm:5.20.1"
     ejs: "npm:^3.1.10"
     koa: "npm:^2.13.1"
     koa-mount: "npm:^4.0.0"
     koa-router: "npm:^10.0.0"
     koa-static: "npm:^5.0.0"
     koa-views: "npm:^7.0.1"
-  checksum: 10/9d61f04eaffb67ecfd1e0a1ae8fc2d15a49cbeb5305c4a0ec5bd7679d6fb1a7dc56fb5be9eea022ea7cd92ab3c99ede77b5b306f8afa6a7aaf5183912b29d54c
+  checksum: 10/4b1f94d83b7fbe671a9414f58b29f12ab2dbfebf8a3a1d60a409374d3e4a84788c022213dbbb5c7d16e87f9701fd56f92715aee977ed0c209450230fd6a89749
   languageName: node
   linkType: hard
 
-"@bull-board/ui@npm:5.18.3":
-  version: 5.18.3
-  resolution: "@bull-board/ui@npm:5.18.3"
+"@bull-board/ui@npm:5.20.1":
+  version: 5.20.1
+  resolution: "@bull-board/ui@npm:5.20.1"
   dependencies:
-    "@bull-board/api": "npm:5.18.3"
-  checksum: 10/acda398d8292ffbb7291df3c0b2f4dd7f8bf0ecc06696df788b92b0262b789c1820ec1bbdcc008d39aa1e7cabd2cc453fe036bf48167a0160a85673c862bb27a
+    "@bull-board/api": "npm:5.20.1"
+  checksum: 10/a6ae43c3aef2d59f50767f4ed4f69cda6351394199e8298f7d2501cffad3419f5e651e776c24e4dc518be892904a890187c08a9bc794137e4fae5229f5cfc768
   languageName: node
   linkType: hard
 
@@ -12711,7 +12722,7 @@ __metadata:
     "@aws-sdk/middleware-endpoint": "npm:3.374.0"
     "@aws-sdk/s3-request-presigner": "npm:3.583.0"
     "@bull-board/api": "npm:5.18.3"
-    "@bull-board/koa": "npm:5.18.3"
+    "@bull-board/koa": "npm:5.20.1"
     "@dotplants/cli": "npm:0.2.3"
     "@koa/cors": "npm:5.0.0"
     "@koa/multer": "npm:3.0.2"
