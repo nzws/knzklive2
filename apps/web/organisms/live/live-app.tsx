@@ -102,6 +102,7 @@ export const LiveApp: FC<Props> = ({ live, streamer }) => {
               liveId={live.id}
               liveTitle={live.title}
               userId={user?.id}
+              comments={comments}
             />
           ) : (
             <VideoMessageBox

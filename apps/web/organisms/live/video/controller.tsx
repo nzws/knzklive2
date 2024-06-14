@@ -23,6 +23,7 @@ import { FC, Fragment, RefObject, useEffect, useState } from 'react';
 import {
   FiChevronsUp,
   FiMaximize,
+  FiMessageCircle,
   FiPause,
   FiPlay,
   FiRefreshCw,
@@ -52,6 +53,7 @@ type LiveProps = {
   latency: number;
   playType: PlayType<'live'> | undefined;
   onChangePlayType: (type: PlayType<'live'>) => void;
+  onChangeDanmaku: () => void;
 };
 
 type VideoProps = {
@@ -203,6 +205,14 @@ export const Controller: FC<Props> = props => {
           )}
 
           <Spacer />
+
+          {isLive && (
+            <Tooltip label={intl.formatMessage({ id: 'live.player.danmaku' })}>
+              <Button variant="ghost" onClick={props.onChangeDanmaku} size="sm">
+                <FiMessageCircle />
+              </Button>
+            </Tooltip>
+          )}
 
           {props.playType && (
             <Menu>

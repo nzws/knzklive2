@@ -112,6 +112,7 @@
   "live.player.autoplay-blocked": "Click/tap to play",
   "live.player.seek-latest": "Seek to the latest",
   "live.player.reload": "Reload the stream",
+  "live.player.danmaku": "弾幕の表示/非表示切り替え",
   "live.player.wide": "Wide in window",
   "live.player.maximize": "Maximize",
   "page.account-settings.title": "Account settings",

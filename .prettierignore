@@ -158,3 +158,5 @@ dist
 Caddyfile
 dockerdata/
 packages/api-types/dist
+
+apps/web/public/static/vendor/

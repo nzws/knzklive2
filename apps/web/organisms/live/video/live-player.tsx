@@ -8,6 +8,8 @@ import { Controller } from './controller';
 import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useVideoStream } from '~/utils/hooks/use-video-stream';
 import { useMuxData } from '~/utils/hooks/use-mux-data';
+import { CommentPublic } from 'api-types/common/types';
+import { Gravity } from '~/utils/danmaku/gravity/jgravity-fork';
 
 type Props = {
   thumbnailUrl: string;
@@ -19,6 +21,7 @@ type Props = {
   liveId?: number;
   liveTitle?: string;
   userId?: number;
+  comments: CommentPublic[];
 };
 
 export const LivePlayer: FC<Props> = ({
@@ -29,10 +32,14 @@ export const LivePlayer: FC<Props> = ({
   isStreamer,
   liveId,
   liveTitle,
-  userId
+  userId,
+  comments
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const danmakuRef = useRef<HTMLDivElement>(null);
+  const gravityRef = useRef<Gravity | null>(null);
+  const commentAddedRef = useRef<Set<number> | null>(null);
   const lastPlayingRef = useRef(0);
   const [latency, setLatency] = useState<number>(-1);
   const [error, setError] = useState<unknown>();
@@ -40,6 +47,7 @@ export const LivePlayer: FC<Props> = ({
   const { show, events } = usePlayerTouch();
   const [canPlay, setCanPlay] = useState(false);
   const [maybeBlocked, setMaybeBlocked] = useState(false);
+  const [danmaku, setDanmaku] = useState(true);
   const { playType, setPlayType, play } = useVideoStream('live', videoRef, url);
   useMuxData(videoRef, liveId, liveTitle, userId, playType);
 
@@ -161,6 +169,61 @@ export const LivePlayer: FC<Props> = ({
     }
   }, [canPlay, autoSeek]);
 
+  useEffect(() => {
+    const container = danmakuRef.current;
+    if (!container || !danmaku) {
+      return;
+    }
+
+    void (async () => {
+      const gravity = new Gravity({}, container);
+      await gravity.init();
+      gravityRef.current = gravity;
+    })();
+
+    return () => {
+      const gravity = gravityRef.current;
+      if (gravity) {
+        gravity.destroy();
+        gravityRef.current = null;
+      }
+    };
+  }, [danmaku]);
+
+  useEffect(() => {
+    if (!danmaku) {
+      commentAddedRef.current = null;
+      return;
+    }
+    if (!commentAddedRef.current) {
+      const set = new Set<number>();
+      commentAddedRef.current = set;
+
+      comments.forEach(comment => {
+        set.add(comment.id);
+      });
+      return;
+    }
+
+    const gravity = gravityRef.current;
+    if (!gravity) {
+      return;
+    }
+
+    for (const comment of comments) {
+      if (commentAddedRef.current?.has(comment.id)) {
+        break;
+      }
+
+      commentAddedRef.current.add(comment.id);
+      const dom = gravity.add(comment.content, false);
+
+      setTimeout(() => {
+        gravity.remove(dom);
+      }, 10000);
+    }
+  }, [comments, danmaku]);
+
   return (
     <Box
       {...events}
@@ -184,6 +247,8 @@ export const LivePlayer: FC<Props> = ({
         <video ref={videoRef} autoPlay playsInline controls={false} />
       </VideoContainer>
 
+      <DanmakuContainer ref={danmakuRef} />
+
       {!canPlay && (
         <LoadingContainer>
           <Spinner size="xl" />
@@ -204,6 +269,7 @@ export const LivePlayer: FC<Props> = ({
         latency={latency}
         playType={playType}
         onChangePlayType={setPlayType}
+        onChangeDanmaku={() => setDanmaku(prev => !prev)}
       />
     </Box>
   );
@@ -214,6 +280,56 @@ const VideoContainer = styled(AspectRatio)`
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
+`;
+
+const DanmakuContainer = styled(Box)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  user-select: none;
+
+  span {
+    /* credit: https://qiita.com/NoxGit/items/eb0904822c0f0fe97650 */
+    text-shadow:
+      black 2px 0,
+      black -2px 0,
+      black 0 -2px,
+      black 0 2px,
+      black 2px 2px,
+      black -2px 2px,
+      black 2px -2px,
+      black -2px -2px,
+      black 1px 2px,
+      black -1px 2px,
+      black 1px -2px,
+      black -1px -2px,
+      black 2px 1px,
+      black -2px 1px,
+      black 2px -1px,
+      black -2px -1px;
+
+    font-size: 1.5rem;
+    line-height: 1 !important;
+    color: #fff !important;
+    opacity: 0.7;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      font-size: 2rem;
+    }
+  }
 `;
 
 const LoadingContainer = styled(Center)`
