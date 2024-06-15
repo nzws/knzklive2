@@ -24,6 +24,9 @@ type Props = {
   comments: CommentPublic[];
 };
 
+// コンポーネント再マウントしても保持したいのでとりあえず
+let stealingCount = 0;
+
 export const LivePlayer: FC<Props> = ({
   thumbnailUrl,
   url,
@@ -48,7 +51,11 @@ export const LivePlayer: FC<Props> = ({
   const [canPlay, setCanPlay] = useState(false);
   const [maybeBlocked, setMaybeBlocked] = useState(false);
   const [danmaku, setDanmaku] = useState(true);
-  const { playType, setPlayType, play } = useVideoStream('live', videoRef, url);
+  const { playType, setPlayType, play, handleToLowerQuality } = useVideoStream(
+    'live',
+    videoRef,
+    url
+  );
   useMuxData(videoRef, liveId, liveTitle, userId, playType);
 
   const autoSeek = useCallback(() => {
@@ -216,6 +223,29 @@ export const LivePlayer: FC<Props> = ({
       }, 10 * 1000);
     }
   }, [comments, danmaku]);
+
+  useEffect(() => {
+    if (latency > 0 || !canPlay) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      // 長期間バッファチェック
+
+      stealingCount++;
+      console.warn('Stealing, count:', stealingCount);
+      // 連続でバッファリングが発生した場合は画質を下げる
+      if (stealingCount > 2) {
+        stealingCount = 0;
+        handleToLowerQuality();
+        console.warn('Stealing, lower quality');
+      }
+
+      void updateUrl();
+    }, 5 * 1000);
+
+    return () => clearTimeout(timeout);
+  }, [latency, handleToLowerQuality, canPlay, updateUrl]);
 
   return (
     <Box

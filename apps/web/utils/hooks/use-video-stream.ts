@@ -5,10 +5,11 @@ import { LiveUrls } from 'api-types/api/v1/lives/_liveId@number/url';
 import { useAPIError } from './api/use-api-error';
 import { VideoUrls } from 'api-types/api/v1/videos/_liveId@number';
 import type { HlsConfig } from 'hls.js';
+import { useLocalStorage } from 'react-use';
 
 export enum LivePlayType {
-  FlvHttp = 'flvHttp',
   FlvWs = 'flvWs',
+  FlvHttp = 'flvHttp',
   HlsHq = 'hlsHq',
   HlsLq = 'hlsLq',
   Audio = 'audio'
@@ -31,6 +32,9 @@ type UrlType<T> = T extends 'live' ? LiveUrls : VideoUrls;
 let hlsInterface: typeof Hls | undefined;
 let mpegtsInterface: typeof Mpegts | undefined;
 
+const isLivePlayType = (type: string): type is LivePlayType =>
+  Object.values(LivePlayType).includes(type as LivePlayType);
+
 export const useVideoStream = <T extends 'live' | 'video'>(
   entityType: T,
   videoTagRef: RefObject<HTMLVideoElement>,
@@ -38,7 +42,9 @@ export const useVideoStream = <T extends 'live' | 'video'>(
 ) => {
   const mpegtsPlayerRef = useRef<Mpegts.Player>();
   const hlsPlayerRef = useRef<Hls>();
-  const [playType, setPlayType] = useState<PlayType<T>>();
+  const [playType, setPlayType] = useLocalStorage<PlayType<T>>(
+    `knzklive-${entityType}-play-type`
+  );
   const [error, setError] = useState<unknown>();
   useAPIError(error);
 
@@ -210,6 +216,24 @@ export const useVideoStream = <T extends 'live' | 'video'>(
     [videoTagRef]
   );
 
+  const handleToLowerQuality = useCallback(() => {
+    if (!playType) {
+      return;
+    }
+    if (isLivePlayType(playType)) {
+      const qualities = Object.values(LivePlayType);
+      const currentIndex = qualities.indexOf(playType);
+      const nextQuality = qualities[currentIndex + 1];
+      if (nextQuality && nextQuality !== LivePlayType.Audio) {
+        setPlayType(nextQuality as PlayType<T>);
+
+        return true;
+      }
+    }
+
+    return false;
+  }, [playType, setPlayType]);
+
   useEffect(() => {
     const video = videoTagRef.current;
     if (!video || !url) {
@@ -273,12 +297,21 @@ export const useVideoStream = <T extends 'live' | 'video'>(
         video.src = '';
       }
     };
-  }, [videoTagRef, url, playType, handleFlv, handleHls, entityType]);
+  }, [
+    videoTagRef,
+    url,
+    playType,
+    handleFlv,
+    handleHls,
+    entityType,
+    setPlayType
+  ]);
 
   return {
     playType,
     setPlayType,
-    play
+    play,
+    handleToLowerQuality
   } as const;
 };
 

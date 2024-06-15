@@ -103,6 +103,7 @@ export const LiveApp: FC<Props> = ({ live, streamer }) => {
               liveTitle={live.title}
               userId={user?.id}
               comments={comments}
+              key={url?.flvWs} // 強制再読み込み用
             />
           ) : (
             <VideoMessageBox
