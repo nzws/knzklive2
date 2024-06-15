@@ -196,12 +196,8 @@ export const LivePlayer: FC<Props> = ({
       return;
     }
     if (!commentAddedRef.current) {
-      const set = new Set<number>();
+      const set = new Set<number>(comments.map(comment => comment.id));
       commentAddedRef.current = set;
-
-      comments.forEach(comment => {
-        set.add(comment.id);
-      });
       return;
     }
 
@@ -210,17 +206,14 @@ export const LivePlayer: FC<Props> = ({
       return;
     }
 
-    for (const comment of comments) {
-      if (commentAddedRef.current?.has(comment.id)) {
-        break;
-      }
-
+    const comment = comments[0];
+    if (!commentAddedRef.current?.has(comment.id)) {
       commentAddedRef.current.add(comment.id);
       const dom = gravity.add(comment.content, false);
 
       setTimeout(() => {
         gravity.remove(dom);
-      }, 10000);
+      }, 10 * 1000);
     }
   }, [comments, danmaku]);
 

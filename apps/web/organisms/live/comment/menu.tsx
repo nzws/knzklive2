@@ -114,58 +114,60 @@ export const CommentMenu: FC<Props> = ({
           <FiMoreHorizontal />
         </MenuButton>
 
-        <Portal>
-          <MenuList zIndex={99999}>
-            <MenuGroup
-              title={intl.formatMessage(
-                {
-                  id: commentTypeIntlId
-                },
-                {
-                  relative: relativeTime
-                }
-              )}
-            >
-              {isAbleToDelete && (
-                <MenuItem
-                  onClick={() => void handleDelete()}
-                  isDisabled={isLoading}
-                >
-                  <FormattedMessage id="live.comment.delete" />
-                </MenuItem>
-              )}
-            </MenuGroup>
-
-            <MenuGroup title={user?.account}>
-              {isStreamer && (
-                <Fragment>
+        {isOpen && (
+          <Portal>
+            <MenuList zIndex={99999}>
+              <MenuGroup
+                title={intl.formatMessage(
+                  {
+                    id: commentTypeIntlId
+                  },
+                  {
+                    relative: relativeTime
+                  }
+                )}
+              >
+                {isAbleToDelete && (
                   <MenuItem
-                    onClick={() => setConfirmAutoMod('Account')}
+                    onClick={() => void handleDelete()}
                     isDisabled={isLoading}
-                    color="red.400"
                   >
-                    {user?.account} を非表示
+                    <FormattedMessage id="live.comment.delete" />
                   </MenuItem>
+                )}
+              </MenuGroup>
 
-                  <MenuItem
-                    onClick={() => setConfirmAutoMod('Domain')}
-                    isDisabled={isLoading}
-                    color="red.400"
-                  >
-                    *.{domain} を非表示
-                  </MenuItem>
-                </Fragment>
-              )}
+              <MenuGroup title={user?.account}>
+                {isStreamer && (
+                  <Fragment>
+                    <MenuItem
+                      onClick={() => setConfirmAutoMod('Account')}
+                      isDisabled={isLoading}
+                      color="red.400"
+                    >
+                      {user?.account} を非表示
+                    </MenuItem>
 
-              <LinkBox as={MenuItem}>
-                <LinkOverlay href={user?.url} isExternal>
-                  <FormattedMessage id="live.comment.account-page" />
-                  <ExternalLinkIcon mb={1} ml={2} />
-                </LinkOverlay>
-              </LinkBox>
-            </MenuGroup>
-          </MenuList>
-        </Portal>
+                    <MenuItem
+                      onClick={() => setConfirmAutoMod('Domain')}
+                      isDisabled={isLoading}
+                      color="red.400"
+                    >
+                      *.{domain} を非表示
+                    </MenuItem>
+                  </Fragment>
+                )}
+
+                <LinkBox as={MenuItem}>
+                  <LinkOverlay href={user?.url} isExternal>
+                    <FormattedMessage id="live.comment.account-page" />
+                    <ExternalLinkIcon mb={1} ml={2} />
+                  </LinkOverlay>
+                </LinkBox>
+              </MenuGroup>
+            </MenuList>
+          </Portal>
+        )}
       </Menu>
     </Fragment>
   );

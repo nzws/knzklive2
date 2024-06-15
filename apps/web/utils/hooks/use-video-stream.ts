@@ -73,6 +73,7 @@ export const useVideoStream = <T extends 'live' | 'video'>(
           enableWorker: true,
           autoCleanupSourceBuffer: true,
           liveBufferLatencyChasing: true,
+          liveBufferLatencyMinRemain: 0.2,
           // @ts-expect-error: type error
           enableWorkerForMSE: true,
           liveBufferLatencyChasingOnPaused: true,
@@ -84,7 +85,7 @@ export const useVideoStream = <T extends 'live' | 'video'>(
           flvConfig = {
             ...flvConfig,
             enableStashBuffer: false,
-            liveBufferLatencyMaxLatency: 1,
+            liveBufferLatencyMaxLatency: 3,
             // @ts-expect-error: type error
             liveSyncTargetLatency: 0.5
           };
@@ -138,7 +139,8 @@ export const useVideoStream = <T extends 'live' | 'video'>(
               enableWorker: true,
               liveDurationInfinity: true,
               startFragPrefetch: true,
-              progressive: true
+              progressive: true,
+              autoStartLoad: true
             };
 
             if (LowLatency.includes(playType as LivePlayType)) {
