@@ -214,7 +214,7 @@ export const LivePlayer: FC<Props> = ({
     }
 
     const comment = comments[0];
-    if (!commentAddedRef.current?.has(comment.id)) {
+    if (comment && !commentAddedRef.current?.has(comment.id)) {
       commentAddedRef.current.add(comment.id);
       const dom = gravity.add(comment.content, false);
 
