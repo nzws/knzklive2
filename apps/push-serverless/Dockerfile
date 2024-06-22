@@ -8,7 +8,7 @@ COPY . ./
 
 RUN yarn workspaces focus push-serverless api-types && yarn workspace api-types build && yarn workspace push-serverless build
 
-FROM ossrs/srs:5
+FROM ossrs/srs:v6
 
 RUN apt-get update &&\
   apt-get install -y \
