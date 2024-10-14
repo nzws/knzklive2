@@ -20,7 +20,7 @@
     "@chakra-ui/react": "2.8.2",
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
-    "@napi-rs/canvas": "0.1.52",
+    "@napi-rs/canvas": "0.1.58",
     "api-types": "*",
     "aspida": "1.14.0",
     "framer-motion": "11.2.10",
