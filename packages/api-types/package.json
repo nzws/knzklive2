@@ -21,7 +21,7 @@
     "@typescript-eslint/experimental-utils": "5.62.0",
     "@typescript-eslint/parser": "7.12.0",
     "aspida": "1.14.0",
-    "eslint": "8.57.0",
+    "eslint": "9.13.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-aspida": "0.1.0",
     "prettier": "3.3.1",
