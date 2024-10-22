@@ -6840,9 +6840,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bullmq@npm:5.7.15":
-  version: 5.7.15
-  resolution: "bullmq@npm:5.7.15"
+"bullmq@npm:5.21.2":
+  version: 5.21.2
+  resolution: "bullmq@npm:5.21.2"
   dependencies:
     cron-parser: "npm:^4.6.0"
     ioredis: "npm:^5.4.1"
@@ -6851,7 +6851,7 @@ __metadata:
     semver: "npm:^7.5.4"
     tslib: "npm:^2.0.0"
     uuid: "npm:^9.0.0"
-  checksum: 10/f60cfe96d0c178645ee09e5b0b77a349821c8ab599fb7fc5dcbf1d3404f96c0dc8950c17c4128c2ac048f52b6dc6a99833bdc9d2af58f96bb869a7f8a9c8ea20
+  checksum: 10/37e5cb67ce9bf796104108ce4d487525d7043be7e4a2d3bc476678f295dc898d436db15eacb7875ed271b136d191cf12c8220dcb97c2486edcf04d97d6ae8137
   languageName: node
   linkType: hard
 
@@ -13095,7 +13095,7 @@ __metadata:
     ajv: "npm:8.16.0"
     api-types: "workspace:^"
     aspida: "npm:1.14.0"
-    bullmq: "npm:5.7.15"
+    bullmq: "npm:5.21.2"
     dotenv: "npm:16.4.5"
     eslint: "npm:8.57.0"
     eslint-config-prettier: "npm:9.1.0"

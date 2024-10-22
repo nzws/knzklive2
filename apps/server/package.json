@@ -29,7 +29,7 @@
     "ajv": "8.16.0",
     "api-types": "workspace:^",
     "aspida": "1.14.0",
-    "bullmq": "5.7.15",
+    "bullmq": "5.21.2",
     "dotenv": "16.4.5",
     "ioredis": "5.4.1",
     "is-valid-domain": "0.1.6",
