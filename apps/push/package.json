@@ -9,7 +9,7 @@
     "build": "tsc --project tsconfig.build.json"
   },
   "devDependencies": {
-    "@tsconfig/node18": "18.2.4",
+    "@tsconfig/node20": "20.1.0",
     "@types/fluent-ffmpeg": "2.1.24",
     "@types/koa": "2.15.0",
     "@types/koa-bodyparser": "4.3.12",

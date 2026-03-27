@@ -5233,10 +5233,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node18@npm:18.2.4":
-  version: 18.2.4
-  resolution: "@tsconfig/node18@npm:18.2.4"
-  checksum: 10/80623cb9c129c78d51fe6c4a256ba986f12f02ff02dc2a1e5b33dd13a7983f767b6792cfcd51b3dd1c8256ea105f1fea31f64a2070564e37787ab3d9a1a1e7e3
+"@tsconfig/node20@npm:20.1.0":
+  version: 20.1.0
+  resolution: "@tsconfig/node20@npm:20.1.0"
+  checksum: 10/be4c29944236c10433bafbbf5763cc26d7a095d894faf9bcefe527f7bd55a0aca56b9178b287579b8ad76af9624e9a0713bc1072e891e676e269fa933677386c
   languageName: node
   linkType: hard
 
@@ -6366,7 +6366,7 @@ __metadata:
   resolution: "api-types@workspace:packages/api-types"
   dependencies:
     "@knzk/prettier-config": "npm:1.0.0"
-    "@tsconfig/node18": "npm:18.2.4"
+    "@tsconfig/node20": "npm:20.1.0"
     "@types/node": "npm:20.14.2"
     "@types/node-fetch": "npm:2.6.11"
     "@typescript-eslint/eslint-plugin": "npm:7.12.0"
@@ -12375,7 +12375,7 @@ __metadata:
     "@aspida/fetch": "npm:1.14.0"
     "@koa/router": "npm:12.0.1"
     "@sentry/node": "npm:8.7.0"
-    "@tsconfig/node18": "npm:18.2.4"
+    "@tsconfig/node20": "npm:20.1.0"
     "@types/fluent-ffmpeg": "npm:2.1.24"
     "@types/koa": "npm:2.15.0"
     "@types/koa-bodyparser": "npm:4.3.12"
@@ -12412,7 +12412,7 @@ __metadata:
     "@aws-sdk/client-s3": "npm:3.591.0"
     "@koa/router": "npm:12.0.1"
     "@sentry/node": "npm:8.7.0"
-    "@tsconfig/node18": "npm:18.2.4"
+    "@tsconfig/node20": "npm:20.1.0"
     "@types/fluent-ffmpeg": "npm:2.1.24"
     "@types/koa": "npm:2.15.0"
     "@types/koa-bodyparser": "npm:4.3.12"
@@ -13078,7 +13078,7 @@ __metadata:
     "@koa/router": "npm:12.0.1"
     "@prisma/client": "npm:5.15.0"
     "@sentry/node": "npm:8.7.0"
-    "@tsconfig/node18": "npm:18.2.4"
+    "@tsconfig/node20": "npm:20.1.0"
     "@types/jest": "npm:29.5.12"
     "@types/koa": "npm:2.15.0"
     "@types/koa-bodyparser": "npm:4.3.12"
@@ -14537,7 +14537,7 @@ __metadata:
     "@aspida/fetch": "npm:1.14.0"
     "@koa/router": "npm:12.0.1"
     "@sentry/node": "npm:8.7.0"
-    "@tsconfig/node18": "npm:18.2.4"
+    "@tsconfig/node20": "npm:20.1.0"
     "@types/fluent-ffmpeg": "npm:2.1.24"
     "@types/koa": "npm:2.15.0"
     "@types/koa-bodyparser": "npm:4.3.12"

@@ -14,7 +14,7 @@
   "prettier": "@knzk/prettier-config",
   "devDependencies": {
     "@knzk/prettier-config": "1.0.0",
-    "@tsconfig/node18": "18.2.4",
+    "@tsconfig/node20": "20.1.0",
     "@types/node": "20.14.2",
     "@types/node-fetch": "2.6.11",
     "@typescript-eslint/eslint-plugin": "7.12.0",
