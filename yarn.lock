@@ -6376,7 +6376,7 @@ __metadata:
     eslint: "npm:8.57.0"
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-aspida: "npm:0.1.0"
-    prettier: "npm:3.3.1"
+    prettier: "npm:3.9.6"
     typescript: "npm:5.4.5"
   languageName: unknown
   linkType: soft
@@ -10725,7 +10725,7 @@ __metadata:
   resolution: "knzklive2@workspace:."
   dependencies:
     "@knzk/prettier-config": "npm:1.0.0"
-    prettier: "npm:3.3.1"
+    prettier: "npm:3.9.6"
     turbo: "npm:1.13.4"
   languageName: unknown
   linkType: soft
@@ -12239,12 +12239,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.3.1":
-  version: 3.3.1
-  resolution: "prettier@npm:3.3.1"
+"prettier@npm:3.9.6":
+  version: 3.9.6
+  resolution: "prettier@npm:3.9.6"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/31ca48d07a163fe6bff5483feb9bdf3bd7e4305e8d976373375cddc2949180a007be3ef08c36f4d7b31e449acef1ebbf46d3b94dc32f5a276837bf48c393be69
+  checksum: 10/1dd1a1e0e40ec3b91cda9d294c4a95022aef61880ca3f441aad99b1252279f58a766c4cece81132c01550dcff1fd445efbd8812ea4a2374313e7fc6c8136f11f
   languageName: node
   linkType: hard
 
